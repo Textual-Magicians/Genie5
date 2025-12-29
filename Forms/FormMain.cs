@@ -175,39 +175,11 @@ namespace GenieClient
 
 
 
-        public async void UpdateOnStartup()
+        public void UpdateOnStartup()
         {
             // DISABLED: Update checking at startup is disabled while migrating to a new repository.
             // The update infrastructure is not yet set up for the new repo.
             // Re-enable this once the new update system is configured.
-            // Original code checked Updater.ClientIsCurrent and triggered auto-update if enabled.
-            return;
-
-            /* Original implementation - re-enable when update infra is ready:
-            await Task.Run(async () =>
-            {
-                if (m_oGlobals.Config.CheckForUpdates || m_oGlobals.Config.AutoUpdate)
-                {
-                    if (Updater.ClientIsCurrent)
-                    {
-                        AddText("You are running the latest version of Genie.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                    }
-                    else
-                    {
-
-                        AddText("An Update is Available.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                        if (m_oGlobals.Config.AutoUpdate)
-                        {
-                            AddText("AutoUpdate is Enabled. Exiting and launching Updater.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                            if (await Updater.RunUpdate(m_oGlobals.Config.AutoUpdateLamp))
-                            {
-                                System.Windows.Forms.Application.Exit();
-                            }
-                        }
-                    }
-                }
-            });
-            */
         }
 
         public void DirectConnect(string[] parameters)
@@ -8474,135 +8446,28 @@ namespace GenieClient
             checkUpdatesOnStartupToolStripMenuItem.Checked = m_oGlobals.Config.CheckForUpdates;
         }
 
-        private async void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // DISABLED: Manual update checking is disabled while migrating to a new repository.
             // The update infrastructure is not yet set up for the new repo.
             // Re-enable this once the new update system is configured.
             AddText("Update checking is temporarily disabled while migrating to a new repository.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor);
-            return;
-
-            /* Original implementation - re-enable when update infra is ready:
-            await Task.Run(async () =>
-            {
-                if (Updater.ClientIsCurrent)
-                {
-                    AddText("You have the latest version of Genie.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor);
-                }
-                else
-                {
-                    AddText("An Update is Available.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                    DialogResult response = MessageBox.Show("An Update is Available. Would you like to update?", "Rub the Bottle?", MessageBoxButtons.YesNoCancel);
-                    if (response == DialogResult.Yes)
-                    {
-                        if (m_oGame.IsConnectedToGame)
-                        {
-                            response = MessageBox.Show("Genie will close and this will disconnect you from the game.", "Close Genie?", MessageBoxButtons.YesNoCancel);
-                            if (response == DialogResult.Yes)
-                            {
-                                AddText("Saving Config and Exiting Genie to Update.", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                                m_oGlobals.Config.Save();
-                                if (await Updater.RunUpdate(m_oGlobals.Config.AutoUpdateLamp))
-                                {
-                                    m_oGame.Disconnect(true);
-                                    System.Windows.Forms.Application.Exit();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            AddText("Saving Config and Exiting Genie to Update.", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                            m_oGlobals.Config.Save();
-                            if (await Updater.RunUpdate(m_oGlobals.Config.AutoUpdateLamp))
-                            {
-                                System.Windows.Forms.Application.Exit();
-                            }
-
-                        }
-                    }
-                }
-            });
-            */
         }
 
-        private async void forceUpdateToolStripMenuItem_Click(object sender, EventArgs e)
+        private void forceUpdateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // DISABLED: Force update is disabled while migrating to a new repository.
             // The update infrastructure is not yet set up for the new repo.
             // Re-enable this once the new update system is configured.
             AddText("Force update is temporarily disabled while migrating to a new repository.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor);
-            return;
-
-            /* Original implementation - re-enable when update infra is ready:
-            if (m_oGame.IsConnectedToGame)
-            {
-                DialogResult response = MessageBox.Show("Genie will close and this will disconnect you from the game. Are you sure?", "Close Genie?", MessageBoxButtons.YesNoCancel);
-                if (response == DialogResult.Yes)
-                {
-                    AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                    m_oGlobals.Config.Save();
-                    if (await Updater.ForceUpdate())
-                    {
-                        m_oGame.Disconnect(true);
-                        System.Windows.Forms.Application.Exit();
-                    }
-                }
-            }
-            else
-            {
-                AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                m_oGlobals.Config.Save();
-                if (await Updater.ForceUpdate())
-                {
-                    System.Windows.Forms.Application.Exit();
-                }
-            }
-            */
         }
 
-        private async void loadTestClientToolStripMenuItem_Click(object sender, EventArgs e)
+        private void loadTestClientToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // DISABLED: Load test client is disabled while migrating to a new repository.
             // The update infrastructure is not yet set up for the new repo.
             // Re-enable this once the new update system is configured.
             AddText("Load test client is temporarily disabled while migrating to a new repository.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor);
-            return;
-
-            /* Original implementation - re-enable when update infra is ready:
-            DialogResult response = MessageBox.Show("This will force your client to the Test Release Version. Test is not considered stable and may introduce bugs. If Autoupdate is enabled it will be disabled. Checking for Updates will restore you to the Latest build. Are you sure?", "Load Test Client?", MessageBoxButtons.YesNoCancel);
-            if (response == DialogResult.Yes)
-            {
-                if (m_oGame.IsConnectedToGame)
-                {
-                    response = MessageBox.Show("Genie will close and this will disconnect you from the game. Are you sure?", "Close Genie?", MessageBoxButtons.YesNoCancel);
-                    if (response == DialogResult.Yes)
-                    {
-                        AddText("Disabling Autoupdate.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                        m_oGlobals.Config.AutoUpdate = false;
-                        m_oGlobals.Config.Save(m_oGlobals.Config.ConfigDir + @"\settings.cfg");
-                        AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                        m_oGlobals.Config.Save();
-                        if (await Updater.UpdateToTest(m_oGlobals.Config.AutoUpdateLamp))
-                        {
-                            m_oGame.Disconnect(true);
-                            System.Windows.Forms.Application.Exit();
-                        }
-                    }
-                }
-                else
-                {
-                    AddText("Disabling Autoupdate.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                    m_oGlobals.Config.AutoUpdate = false;
-                    m_oGlobals.Config.Save(m_oGlobals.Config.ConfigDir + @"\settings.cfg");
-                    AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                    m_oGlobals.Config.Save();
-                    if (await Updater.UpdateToTest(m_oGlobals.Config.AutoUpdateLamp))
-                    {
-                        System.Windows.Forms.Application.Exit();
-                    }
-                }
-            }
-            */
         }
 
         private async void updateMapsToolStripMenuItem_Click(object sender, EventArgs e)

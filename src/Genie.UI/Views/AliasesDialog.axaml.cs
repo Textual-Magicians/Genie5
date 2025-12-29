@@ -25,11 +25,26 @@ public partial class AliasesDialog : Window
     private readonly ObservableCollection<AliasEntry> _displayAliases = new();
     private AliasEntry? _selectedAlias;
     private bool _hasUnsavedChanges = false;
+    
+    // Control references (manually resolved since code generation may not work)
+    private DataGrid _aliasesGrid = null!;
+    private Button _editButton = null!;
+    private Button _deleteButton = null!;
+    private TextBlock _statusText = null!;
+    private TextBlock _countText = null!;
 
     public AliasesDialog()
     {
         InitializeComponent();
-        AliasesGrid.ItemsSource = _displayAliases;
+        
+        // Manually find controls
+        _aliasesGrid = this.FindControl<DataGrid>("AliasesGrid")!;
+        _editButton = this.FindControl<Button>("EditButton")!;
+        _deleteButton = this.FindControl<Button>("DeleteButton")!;
+        _statusText = this.FindControl<TextBlock>("StatusText")!;
+        _countText = this.FindControl<TextBlock>("CountText")!;
+        
+        _aliasesGrid.ItemsSource = _displayAliases;
     }
 
     public AliasesDialog(Aliases? aliasList) : this()
@@ -67,26 +82,26 @@ public partial class AliasesDialog : Window
 
     private void UpdateStatus()
     {
-        CountText.Text = $"{_displayAliases.Count} alias{(_displayAliases.Count != 1 ? "es" : "")} loaded";
+        _countText.Text = $"{_displayAliases.Count} alias{(_displayAliases.Count != 1 ? "es" : "")} loaded";
         
         if (_hasUnsavedChanges)
         {
-            StatusText.Text = "⚠️ You have unsaved changes!";
-            StatusText.Foreground = Avalonia.Media.Brushes.Orange;
+            _statusText.Text = "⚠️ You have unsaved changes!";
+            _statusText.Foreground = Avalonia.Media.Brushes.Orange;
         }
         else
         {
-            StatusText.Text = "Double-click to edit, or use buttons above";
-            StatusText.Foreground = Avalonia.Media.Brushes.LightYellow;
+            _statusText.Text = "Double-click to edit, or use buttons above";
+            _statusText.Foreground = Avalonia.Media.Brushes.LightYellow;
         }
     }
 
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        _selectedAlias = AliasesGrid.SelectedItem as AliasEntry;
+        _selectedAlias = _aliasesGrid.SelectedItem as AliasEntry;
         
-        EditButton.IsEnabled = _selectedAlias != null;
-        DeleteButton.IsEnabled = _selectedAlias != null;
+        _editButton.IsEnabled = _selectedAlias != null;
+        _deleteButton.IsEnabled = _selectedAlias != null;
     }
 
     private async void OnRowDoubleClick(object? sender, RoutedEventArgs e)
@@ -181,7 +196,7 @@ public partial class AliasesDialog : Window
     {
         if (_hasUnsavedChanges)
         {
-            StatusText.Text = "⚠️ Reload will discard unsaved changes!";
+            _statusText.Text = "⚠️ Reload will discard unsaved changes!";
         }
         
         LoadAliases();
@@ -197,14 +212,14 @@ public partial class AliasesDialog : Window
             {
                 _aliasList.Save();
                 _hasUnsavedChanges = false;
-                StatusText.Text = "✅ Aliases saved successfully!";
-                StatusText.Foreground = Avalonia.Media.Brushes.LightGreen;
+                _statusText.Text = "✅ Aliases saved successfully!";
+                _statusText.Foreground = Avalonia.Media.Brushes.LightGreen;
                 UpdateStatus();
             }
             catch (Exception ex)
             {
-                StatusText.Text = $"❌ Error saving: {ex.Message}";
-                StatusText.Foreground = Avalonia.Media.Brushes.Red;
+                _statusText.Text = $"❌ Error saving: {ex.Message}";
+                _statusText.Foreground = Avalonia.Media.Brushes.Red;
             }
         }
     }
@@ -229,13 +244,13 @@ public partial class AliasesDialog : Window
                 _aliasList?.Load(result[0]);
                 LoadAliases();
                 _hasUnsavedChanges = true;
-                StatusText.Text = $"✅ Imported from {System.IO.Path.GetFileName(result[0])}";
-                StatusText.Foreground = Avalonia.Media.Brushes.LightGreen;
+                _statusText.Text = $"✅ Imported from {System.IO.Path.GetFileName(result[0])}";
+                _statusText.Foreground = Avalonia.Media.Brushes.LightGreen;
             }
             catch (Exception ex)
             {
-                StatusText.Text = $"❌ Import error: {ex.Message}";
-                StatusText.Foreground = Avalonia.Media.Brushes.Red;
+                _statusText.Text = $"❌ Import error: {ex.Message}";
+                _statusText.Foreground = Avalonia.Media.Brushes.Red;
             }
         }
     }
