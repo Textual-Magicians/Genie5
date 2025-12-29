@@ -1,15 +1,20 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Windows.Forms; // Required for Form - plugin API backward compatibility
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using GenieClient.Services;
 
 namespace GenieClient
 {
+    /// <summary>
+    /// Legacy host interface implementation for older Genie plugins.
+    /// Note: ParentForm property requires Windows Forms for backward compatibility with existing plugins.
+    /// Cross-platform plugins should avoid using ParentForm and use the event-based API instead.
+    /// </summary>
     public class LegacyPluginHost : GeniePlugin.Interfaces.IHost
     {
         public event EventEchoTextEventHandler EventEchoText;
 
-        public delegate void EventEchoTextEventHandler(string sText, Color oColor, Color oBgColor);
+        public delegate void EventEchoTextEventHandler(string sText, GenieColor oColor, GenieColor oBgColor);
 
         public event EventSendTextEventHandler EventSendText;
 
@@ -24,7 +29,7 @@ namespace GenieClient
 
         public void EchoText(string Text)
         {
-            EventEchoText?.Invoke(Text + System.Environment.NewLine, Color.Cyan, Color.Transparent);
+            EventEchoText?.Invoke(Text + System.Environment.NewLine, GenieColor.Cyan, GenieColor.Transparent);
         }
 
         public void SendText(string Text)

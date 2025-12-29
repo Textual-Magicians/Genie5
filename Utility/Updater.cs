@@ -2,33 +2,41 @@
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Runtime.CompilerServices;
 
 namespace GenieClient
 {
     public static class Updater
     {
-        private static string GitHubUpdaterReleaseURL = @"https://api.github.com/repos/GenieClient/Lamp/releases/latest";
+        /// <summary>
+        /// Event to request user confirmation. UI layer should handle this.
+        /// Return true to proceed, false to cancel.
+        /// </summary>
+        public static event Func<string, string, bool> ConfirmationRequested;
+
+        /// <summary>
+        /// Shows a confirmation dialog via the registered handler.
+        /// Falls back to true (auto-confirm) if no handler is registered.
+        /// </summary>
+        private static bool RequestConfirmation(string message, string title)
+        {
+            return ConfirmationRequested?.Invoke(message, title) ?? true;
+        }
+
         private static string GitHubClientReleaseURL = @"https://api.github.com/repos/GenieClient/Genie4/releases/latest";
-        private static string UpdaterFilename = @"Lamp.exe";
-        private static string LocalUpdater = @$"{Environment.CurrentDirectory}\{UpdaterFilename}";
         private static HttpClient client = new HttpClient();
 
-        public static string LocalUpdaterVersion
-        {
-            get
-            {
-                if (File.Exists(LocalUpdater)) return FileVersionInfo.GetVersionInfo(LocalUpdater).FileVersion;
-                return "0";
-            }
-        }
+        // Default GitHub repository URLs for direct downloads
+        private static string DefaultMapsRepoURL = @"https://github.com/GenieClient/Maps/archive/refs/heads/main.zip";
+        private static string DefaultPluginsRepoURL = @"https://github.com/GenieClient/Plugins/archive/refs/heads/main.zip";
+
         public static string LocalClientVersion
         {
             get
@@ -36,20 +44,7 @@ namespace GenieClient
                 return FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "\\Genie.exe").FileVersion;
             }
         }
-        public static string ServerUpdaterVersion
-        {
-            get 
-            {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-                client.DefaultRequestHeaders.Add("User-Agent", "Genie Client Updater");
 
-                var streamTask = client.GetStreamAsync(GitHubUpdaterReleaseURL).Result;
-                Release latest = JsonSerializer.Deserialize<Release>(streamTask);
-
-                return latest.Version;
-            }
-        }
         public static string ServerClientVersion
         {
             get
@@ -81,73 +76,145 @@ namespace GenieClient
             } 
         }
 
-        public static bool UpdaterIsCurrent
+        public static async Task<bool> RunUpdate()
         {
-            get 
-            {
-                return LocalUpdaterVersion == ServerUpdaterVersion;
-            }
+            return await Task.FromResult(false);
         }
 
-        public static async Task UpdateUpdater(bool autoUpdate)
+        public static async Task<bool> UpdateToTest()
         {
-            if (!UpdaterIsCurrent && !autoUpdate && MessageBox.Show(@"An updated version of Lamp is available. It is recommended to update Lamp before continuing. Would you like to update now?", "Update Lamp?", MessageBoxButtons.YesNoCancel) != DialogResult.Yes) return;
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-            client.DefaultRequestHeaders.Add("User-Agent", "Genie Client Updater");
+            return await Task.FromResult(false);
+        }
 
-            var streamTask = client.GetStreamAsync(GitHubUpdaterReleaseURL).Result;
-            Release latest = JsonSerializer.Deserialize<Release>(streamTask);
-            
-            latest.LoadAssets();
-            if (latest.Assets.ContainsKey(UpdaterFilename))
+        public static async Task<bool> UpdateMaps(string mapdir)
+        {
+            return await DownloadAndExtractZip(DefaultMapsRepoURL, mapdir);
+        }
+
+        public static async Task<bool> UpdatePlugins(string plugindir)
+        {
+            return await DownloadAndExtractZip(DefaultPluginsRepoURL, plugindir);
+        }
+
+        public static async Task<bool> UpdateScripts(string scriptdir, string scriptrepo)
+        {
+            if (string.IsNullOrWhiteSpace(scriptrepo))
             {
-                Asset updaterAsset = latest.Assets[UpdaterFilename];
-                var response = client.GetAsync(new Uri(updaterAsset.DownloadURL)).Result;
-                using (var updaterFile = new FileStream(updaterAsset.LocalFilepath, FileMode.Create))
+                return false; // No script repo configured
+            }
+            return await DownloadAndExtractZip(scriptrepo, scriptdir);
+        }
+
+        public static async Task<bool> UpdateArt(string artdir, string artrepo)
+        {
+            if (string.IsNullOrWhiteSpace(artrepo))
+            {
+                return false; // No art repo configured
+            }
+            return await DownloadAndExtractZip(artrepo, artdir);
+        }
+
+        /// <summary>
+        /// Downloads a zip file from a URL and extracts its contents to the target directory.
+        /// Handles GitHub's zip structure where files are in a subdirectory like "Maps-main/".
+        /// </summary>
+        private static async Task<bool> DownloadAndExtractZip(string zipUrl, string targetDirectory)
+        {
+            try
+            {
+                // Ensure target directory exists
+                if (!Directory.Exists(targetDirectory))
                 {
-                    await response.Content.CopyToAsync(updaterFile);
+                    Directory.CreateDirectory(targetDirectory);
+                }
+
+                // Download the zip file
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("User-Agent", "Genie Client Updater");
+
+                using var response = await client.GetAsync(zipUrl, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+
+                // Create a temporary file to store the zip
+                string tempZipPath = Path.Combine(Path.GetTempPath(), $"genie_update_{Guid.NewGuid()}.zip");
+
+                try
+                {
+                    // Download to temp file
+                    using (var fileStream = new FileStream(tempZipPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        await response.Content.CopyToAsync(fileStream);
+                    }
+
+                    // Extract the zip
+                    using (var archive = ZipFile.OpenRead(tempZipPath))
+                    {
+                        // GitHub zips have a root folder like "Maps-main", we need to extract contents from inside that
+                        string rootFolder = null;
+
+                        // Find the root folder (first entry that's a directory)
+                        foreach (var entry in archive.Entries)
+                        {
+                            if (string.IsNullOrEmpty(entry.Name) && entry.FullName.EndsWith("/"))
+                            {
+                                // This is the root directory
+                                rootFolder = entry.FullName;
+                                break;
+                            }
+                        }
+
+                        // Extract files, stripping the root folder prefix
+                        foreach (var entry in archive.Entries)
+                        {
+                            // Skip directory entries and the root folder itself
+                            if (string.IsNullOrEmpty(entry.Name))
+                                continue;
+
+                            string relativePath = entry.FullName;
+
+                            // Strip the root folder prefix if present
+                            if (rootFolder != null && relativePath.StartsWith(rootFolder))
+                            {
+                                relativePath = relativePath.Substring(rootFolder.Length);
+                            }
+
+                            if (string.IsNullOrEmpty(relativePath))
+                                continue;
+
+                            string destinationPath = Path.Combine(targetDirectory, relativePath);
+
+                            // Create directory if needed
+                            string destinationDir = Path.GetDirectoryName(destinationPath);
+                            if (!string.IsNullOrEmpty(destinationDir) && !Directory.Exists(destinationDir))
+                            {
+                                Directory.CreateDirectory(destinationDir);
+                            }
+
+                            // Extract the file, overwriting if exists
+                            entry.ExtractToFile(destinationPath, overwrite: true);
+                        }
+                    }
+
+                    return true;
+                }
+                finally
+                {
+                    // Clean up temp file
+                    if (File.Exists(tempZipPath))
+                    {
+                        try { File.Delete(tempZipPath); } catch { /* ignore cleanup errors */ }
+                    }
                 }
             }
-        }
-
-        public static async Task<bool> RunUpdate(bool autoUpdateLamp)
-        {
-            await UpdateUpdater(autoUpdateLamp);
-            return await Utility.ExecuteProcess($@"{Environment.CurrentDirectory}\{UpdaterFilename}", "--a", false, true);
-        }
-
-        public static async Task<bool> UpdateToTest(bool autoUpdateLamp)
-        {
-            await UpdateUpdater(autoUpdateLamp);
-            return await Utility.ExecuteProcess($@"{Environment.CurrentDirectory}\{UpdaterFilename}", "--a --t", false, true);
-        }
-        public static async Task<bool> UpdateMaps(string mapdir, bool autoUpdateLamp)
-        {
-            await UpdateUpdater(autoUpdateLamp);
-            return await Utility.ExecuteProcess($@"{Environment.CurrentDirectory}\{UpdaterFilename}", $"--background --maps", true, false);
-        }
-
-        public static async Task<bool> UpdatePlugins(string plugindir, bool autoUpdateLamp)
-        {
-            await UpdateUpdater(autoUpdateLamp);
-            return await Utility.ExecuteProcess($@"{Environment.CurrentDirectory}\{UpdaterFilename}", $"--background --plugins", true, false);
-        }
-        public static async Task<bool> UpdateScripts(string scriptdir, string scriptrepo, bool autoUpdateLamp)
-        {
-            await UpdateUpdater(autoUpdateLamp);
-            return await Utility.ExecuteProcess($@"{Environment.CurrentDirectory}\{UpdaterFilename}", $"--background --scripts", true, false);
-        }
-
-        public static async Task<bool> UpdateArt(string artdir, string artrepo, bool autoUpdateLamp)
-        {
-            await UpdateUpdater(autoUpdateLamp);
-            return await Utility.ExecuteProcess($@"{Environment.CurrentDirectory}\{UpdaterFilename}", $"--background --art", true, false);
+            catch (Exception ex)
+            {
+                GenieError.Error("Updater", $"Error downloading/extracting from {zipUrl}", ex.Message);
+                return false;
+            }
         }
         public static async Task<bool> ForceUpdate()
         {
-            await UpdateUpdater(true);
-            return await Utility.ExecuteProcess($@"{Environment.CurrentDirectory}\{UpdaterFilename}", "--a --f", false, true);
+            return await Task.FromResult(false);
         }
         public class Release
         {

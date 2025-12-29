@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using Accessibility;
 using GenieClient.Forms;
 using GenieClient.Genie;
+using GenieClient.Services;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 
@@ -34,6 +35,11 @@ namespace GenieClient
             m_oLegacyPluginHost = new LegacyPluginHost(this, ref _m_oGlobals);
             m_oPluginHost = new PluginHost(this, ref _m_oGlobals);
             m_PluginDialog = new FormPlugins(ref _m_oGlobals.PluginList);
+
+            // Register platform-specific UI handlers for cross-platform abstractions
+            Updater.ConfirmationRequested += (message, title) =>
+                MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel) == DialogResult.Yes;
+
             // This call is required by the Windows Form Designer.
             InitializeComponent();
             RecolorUI();
@@ -171,6 +177,13 @@ namespace GenieClient
 
         public async void UpdateOnStartup()
         {
+            // DISABLED: Update checking at startup is disabled while migrating to a new repository.
+            // The update infrastructure is not yet set up for the new repo.
+            // Re-enable this once the new update system is configured.
+            // Original code checked Updater.ClientIsCurrent and triggered auto-update if enabled.
+            return;
+
+            /* Original implementation - re-enable when update infra is ready:
             await Task.Run(async () =>
             {
                 if (m_oGlobals.Config.CheckForUpdates || m_oGlobals.Config.AutoUpdate)
@@ -194,6 +207,7 @@ namespace GenieClient
                     }
                 }
             });
+            */
         }
 
         public void DirectConnect(string[] parameters)
@@ -395,6 +409,7 @@ namespace GenieClient
                     _m_oGame.EventRoundTime -= Game_EventRoundtime;
                     _m_oGame.EventTriggerPrompt -= Game_EventTriggerPrompt;
                     _m_oGame.EventTriggerMove -= Game_EventTriggerMove;
+                    _m_oGame.EventExitRequested -= Game_EventExitRequested;
                 }
 
                 _m_oGame = value;
@@ -418,8 +433,15 @@ namespace GenieClient
                     _m_oGame.EventRoundTime += Game_EventRoundtime;
                     _m_oGame.EventTriggerPrompt += Game_EventTriggerPrompt;
                     _m_oGame.EventTriggerMove += Game_EventTriggerMove;
+                    _m_oGame.EventExitRequested += Game_EventExitRequested;
                 }
             }
+        }
+
+        private void Game_EventExitRequested()
+        {
+            // Handle exit request from Game - platform-specific implementation
+            Application.Exit();
         }
 
         private Genie.Command _m_oCommand;
@@ -1091,8 +1113,12 @@ namespace GenieClient
                 }
             }
         }
-        private void Plugin_EventEchoText(string sText, Color oColor, Color oBgColor)
+        private void Plugin_EventEchoText(string sText, GenieColor oGenieColor, GenieColor oBgGenieColor)
         {
+            // Convert platform-agnostic GenieColor to System.Drawing.Color at the UI boundary
+            Color oColor = oGenieColor.ToDrawingColor();
+            Color oBgColor = oBgGenieColor.ToDrawingColor();
+
             Genie.Game.WindowTarget argoTargetWindow = Genie.Game.WindowTarget.Main;
             string argsTargetWindow = "";
             AddText(sText, oColor, oBgColor, oTargetWindow: argoTargetWindow, sTargetWindow: argsTargetWindow);
@@ -1634,9 +1660,11 @@ namespace GenieClient
         {
             if (My.MyProject.Forms.FormConfig.Visible == false | TextBoxInput.Focused == true)
             {
-                if (m_oGlobals.MacroList.Contains(e.KeyData) == true)
+                // Convert Windows Forms Keys to platform-agnostic KeyCode.Keys
+                var keyCode = Genie.KeyCode.FromInt32((int)e.KeyData);
+                if (m_oGlobals.MacroList.Contains(keyCode) == true)
                 {
-                    m_oCommand.ParseCommand(((Genie.Macros.Macro)m_oGlobals.MacroList[e.KeyData]).sAction, true, true);
+                    m_oCommand.ParseCommand(((Genie.Macros.Macro)m_oGlobals.MacroList[keyCode]).sAction, true, true);
                     string argsText = "";
                     var argoColor = Color.Transparent;
                     var argoBgColor = Color.Transparent;
@@ -2269,12 +2297,12 @@ namespace GenieClient
                     {
                         string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
                         string sBgColor = sColorName.Substring(sColorName.IndexOf(",") + 1).Trim();
-                        m_oOutputMain.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColor);
-                        m_oOutputMain.RichTextBoxOutput.BackColor = Genie.ColorCode.StringToColor(sBgColor);
+                        m_oOutputMain.RichTextBoxOutput.ForeColor = Genie.ColorCodeWindows.StringToColor(sColor);
+                        m_oOutputMain.RichTextBoxOutput.BackColor = Genie.ColorCodeWindows.StringToColor(sBgColor);
                     }
                     else
                     {
-                        m_oOutputMain.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColorName);
+                        m_oOutputMain.RichTextBoxOutput.ForeColor = Genie.ColorCodeWindows.StringToColor(sColorName);
                     }
                 }
 
@@ -2294,8 +2322,8 @@ namespace GenieClient
                 {
                     float oFontSize = m_oConfig.GetValueSingle("Genie/Windows/MonoFont", "Size", 9);
                     string sFontStyle = m_oConfig.GetValue("Genie/Windows/MonoFont", "Style", "Regular");
-                    FontStyle oFontStyle = (FontStyle)Enum.Parse(typeof(FontStyle), sFontStyle, true);
-                    m_oGlobals.Config.MonoFont = new Font(sMonoFontFamily, oFontSize, oFontStyle);
+                    var oFontStyle = (Services.GenieFontStyle)Enum.Parse(typeof(Services.GenieFontStyle), sFontStyle, true);
+                    m_oGlobals.Config.MonoFont = new Services.GenieFont(sMonoFontFamily, oFontSize, oFontStyle);
                 }
 
                 string sInputFontFamily = m_oConfig.GetValue("Genie/Windows/InputFont", "Family", string.Empty);
@@ -2303,8 +2331,8 @@ namespace GenieClient
                 {
                     float oFontSize = m_oConfig.GetValueSingle("Genie/Windows/InputFont", "Size", 9);
                     string sFontStyle = m_oConfig.GetValue("Genie/Windows/InputFont", "Style", "Regular");
-                    FontStyle oFontStyle = (FontStyle)Enum.Parse(typeof(FontStyle), sFontStyle, true);
-                    m_oGlobals.Config.InputFont = new Font(sInputFontFamily, oFontSize, oFontStyle);
+                    var oFontStyle = (Services.GenieFontStyle)Enum.Parse(typeof(Services.GenieFontStyle), sFontStyle, true);
+                    m_oGlobals.Config.InputFont = new Services.GenieFont(sInputFontFamily, oFontSize, oFontStyle);
                     UpdateInputFont();
                 }
 
@@ -2445,10 +2473,10 @@ namespace GenieClient
 
             m_oConfig.SetValue("Genie/Windows/Main", "Maximized", (WindowState == FormWindowState.Maximized).ToString());
             m_oConfig.SetValue("Genie/ScriptBar", "Visible", ToolStripButtons.Visible.ToString());
-            m_oConfig.SetValue("Genie/Windows/MonoFont", "Family", m_oGlobals.Config.MonoFont.Name.ToString());
+            m_oConfig.SetValue("Genie/Windows/MonoFont", "Family", m_oGlobals.Config.MonoFont.FamilyName);
             m_oConfig.SetValue("Genie/Windows/MonoFont", "Size", m_oGlobals.Config.MonoFont.Size.ToString());
             m_oConfig.SetValue("Genie/Windows/MonoFont", "Style", m_oGlobals.Config.MonoFont.Style.ToString());
-            m_oConfig.SetValue("Genie/Windows/InputFont", "Family", m_oGlobals.Config.InputFont.Name.ToString());
+            m_oConfig.SetValue("Genie/Windows/InputFont", "Family", m_oGlobals.Config.InputFont.FamilyName);
             m_oConfig.SetValue("Genie/Windows/InputFont", "Size", m_oGlobals.Config.InputFont.Size.ToString());
             m_oConfig.SetValue("Genie/Windows/InputFont", "Style", m_oGlobals.Config.InputFont.Style.ToString());
             m_oConfig.SetValue("Genie/Windows/Game", "ID", "main");
@@ -2458,7 +2486,7 @@ namespace GenieClient
             m_oConfig.SetValue("Genie/Windows/Game", "Left", m_oOutputMain.Left.ToString());
             m_oConfig.SetValue("Genie/Windows/Game", "Top", m_oOutputMain.Top.ToString());
             m_oConfig.SetValue("Genie/Windows/Game", "TimeStamp", m_oOutputMain.TimeStamp.ToString());
-            m_oConfig.SetValue("Genie/Windows/Game", "Colors", Genie.ColorCode.ColorToString(m_oOutputMain.RichTextBoxOutput.ForeColor, m_oOutputMain.RichTextBoxOutput.BackColor));
+            m_oConfig.SetValue("Genie/Windows/Game", "Colors", Genie.ColorCodeWindows.ColorToString(m_oOutputMain.RichTextBoxOutput.ForeColor, m_oOutputMain.RichTextBoxOutput.BackColor));
             m_oConfig.SetValue("Genie/Windows/Game", "NameListOnly", m_oOutputMain.NameListOnly.ToString());
             m_oConfig.SetValue("Genie/Windows/Game/Font", "Family", m_oOutputMain.TextFont.Name.ToString());
             m_oConfig.SetValue("Genie/Windows/Game/Font", "Size", m_oOutputMain.TextFont.Size.ToString());
@@ -2490,7 +2518,7 @@ namespace GenieClient
                 m_oConfig.SetValue("Genie/Windows/Window" + i.ToString(), "Top", tmpFormSkin.Top.ToString());
                 m_oConfig.SetValue("Genie/Windows/Window" + i.ToString(), "Visible", tmpFormSkin.Visible.ToString());
                 m_oConfig.SetValue("Genie/Windows/Window" + i.ToString(), "TimeStamp", tmpFormSkin.TimeStamp.ToString());
-                m_oConfig.SetValue("Genie/Windows/Window" + i.ToString(), "Colors", Genie.ColorCode.ColorToString(tmpFormSkin.RichTextBoxOutput.ForeColor, tmpFormSkin.RichTextBoxOutput.BackColor));
+                m_oConfig.SetValue("Genie/Windows/Window" + i.ToString(), "Colors", Genie.ColorCodeWindows.ColorToString(tmpFormSkin.RichTextBoxOutput.ForeColor, tmpFormSkin.RichTextBoxOutput.BackColor));
                 m_oConfig.SetValue("Genie/Windows/Window" + i.ToString(), "NameListOnly", tmpFormSkin.NameListOnly.ToString());
                 m_oConfig.SetValue("Genie/Windows/Window" + i.ToString() + "/Font", "Family", tmpFormSkin.TextFont.Name.ToString());
                 m_oConfig.SetValue("Genie/Windows/Window" + i.ToString() + "/Font", "Size", tmpFormSkin.TextFont.Size.ToString());
@@ -3731,7 +3759,7 @@ namespace GenieClient
                 oForm.TextFont = oFont;
             }
 
-            oForm.RichTextBoxOutput.MonoFont = m_oGlobals.Config.MonoFont;
+            oForm.RichTextBoxOutput.MonoFont = m_oGlobals.Config.MonoFont.ToDrawingFont();
             oForm.Width = iWidth;
             oForm.Height = iHeight;
             oForm.Top = iTop;
@@ -3743,12 +3771,12 @@ namespace GenieClient
                 {
                     string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
                     string sBgColor = sColorName.Substring(sColorName.IndexOf(",") + 1).Trim();
-                    oForm.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColor);
-                    oForm.RichTextBoxOutput.BackColor = Genie.ColorCode.StringToColor(sBgColor);
+                    oForm.RichTextBoxOutput.ForeColor = Genie.ColorCodeWindows.StringToColor(sColor);
+                    oForm.RichTextBoxOutput.BackColor = Genie.ColorCodeWindows.StringToColor(sBgColor);
                 }
                 else
                 {
-                    oForm.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColorName);
+                    oForm.RichTextBoxOutput.ForeColor = Genie.ColorCodeWindows.StringToColor(sColorName);
                 }
             }
 
@@ -3998,8 +4026,12 @@ namespace GenieClient
             oTargetWindow.RichTextBoxOutput.InsertLink(sText, sLink);
         }
 
-        private void ClassCommand_EchoColorText(string sText, Color oColor, Color oBgColor, string sWindow)
+        private void ClassCommand_EchoColorText(string sText, GenieColor oGenieColor, GenieColor oBgGenieColor, string sWindow)
         {
+            // Convert platform-agnostic GenieColor to System.Drawing.Color at the UI boundary
+            Color oColor = oGenieColor.ToDrawingColor();
+            Color oBgColor = oBgGenieColor.ToDrawingColor();
+
             try
             {
                 FormSkin oFormSkin = null;
@@ -5239,10 +5271,13 @@ namespace GenieClient
             }
         }
 
-        private void Simutronics_EventPrintText(string sText, Color oColor, Color oBgColor, Genie.Game.WindowTarget oTargetWindow, string sTargetWindow, bool bMono, bool bPrompt, bool bInput)
+        private void Simutronics_EventPrintText(string sText, GenieColor oGenieColor, GenieColor oBgGenieColor, Genie.Game.WindowTarget oTargetWindow, string sTargetWindow, bool bMono, bool bPrompt, bool bInput)
         {
             try
             {
+                // Convert platform-agnostic GenieColor to System.Drawing.Color at the UI boundary
+                Color oColor = oGenieColor.ToDrawingColor();
+                Color oBgColor = oBgGenieColor.ToDrawingColor();
                 AddText(sText, oColor, oBgColor, oTargetWindow, sTargetWindow, false, bMono, bPrompt, bInput); // False = Cache this
             }
             /* TODO ERROR: Skipped IfDirectiveTrivia */
@@ -5254,8 +5289,12 @@ namespace GenieClient
         }
 
         // Script Print
-        private void Script_EventPrintText(string sText, Color oColor, Color oBgColor)
+        private void Script_EventPrintText(string sText, GenieColor oGenieColor, GenieColor oBgGenieColor)
         {
+            // Convert platform-agnostic GenieColor to System.Drawing.Color at the UI boundary
+            Color oColor = oGenieColor.ToDrawingColor();
+            Color oBgColor = oBgGenieColor.ToDrawingColor();
+
             Genie.Game.WindowTarget argoTargetWindow = Genie.Game.WindowTarget.Main;
             string argsTargetWindow = "";
             AddText(sText, oColor, oBgColor, oTargetWindow: argoTargetWindow, sTargetWindow: argsTargetWindow);
@@ -6897,12 +6936,12 @@ namespace GenieClient
 
         private void UpdateMonoFont()
         {
-            m_oOutputMain.RichTextBoxOutput.MonoFont = m_oGlobals.Config.MonoFont;
+            m_oOutputMain.RichTextBoxOutput.MonoFont = m_oGlobals.Config.MonoFont.ToDrawingFont();
             var oEnumerator = m_oFormList.GetEnumerator();
             while (oEnumerator.MoveNext())
             {
                 FormSkin oForm = (FormSkin)oEnumerator.Current;
-                oForm.RichTextBoxOutput.MonoFont = m_oGlobals.Config.MonoFont;
+                oForm.RichTextBoxOutput.MonoFont = m_oGlobals.Config.MonoFont.ToDrawingFont();
             }
         }
 
@@ -6922,7 +6961,7 @@ namespace GenieClient
 
         private void UpdateInputFont()
         {
-            TextBoxInput.Font = m_oGlobals.Config.InputFont;
+            TextBoxInput.Font = m_oGlobals.Config.InputFont.ToDrawingFont();
             PanelInput.Height = TextBoxInput.FontHeight + 6;
         }
 
@@ -6993,11 +7032,6 @@ namespace GenieClient
                 case Genie.Config.ConfigFieldUpdated.AutoUpdate:
                     {
                         autoUpdateToolStripMenuItem.Checked = m_oGlobals.Config.AutoUpdate;
-                        break;
-                    }
-                case Genie.Config.ConfigFieldUpdated.AutoUpdateLamp:
-                    {
-                        autoUpdateLampToolStripMenuItem.Checked = m_oGlobals.Config.AutoUpdateLamp;
                         break;
                     }
                 case Genie.Config.ConfigFieldUpdated.ImagesEnabled:
@@ -8442,6 +8476,13 @@ namespace GenieClient
 
         private async void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // DISABLED: Manual update checking is disabled while migrating to a new repository.
+            // The update infrastructure is not yet set up for the new repo.
+            // Re-enable this once the new update system is configured.
+            AddText("Update checking is temporarily disabled while migrating to a new repository.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor);
+            return;
+
+            /* Original implementation - re-enable when update infra is ready:
             await Task.Run(async () =>
             {
                 if (Updater.ClientIsCurrent)
@@ -8481,10 +8522,18 @@ namespace GenieClient
                     }
                 }
             });
+            */
         }
 
         private async void forceUpdateToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // DISABLED: Force update is disabled while migrating to a new repository.
+            // The update infrastructure is not yet set up for the new repo.
+            // Re-enable this once the new update system is configured.
+            AddText("Force update is temporarily disabled while migrating to a new repository.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor);
+            return;
+
+            /* Original implementation - re-enable when update infra is ready:
             if (m_oGame.IsConnectedToGame)
             {
                 DialogResult response = MessageBox.Show("Genie will close and this will disconnect you from the game. Are you sure?", "Close Genie?", MessageBoxButtons.YesNoCancel);
@@ -8508,10 +8557,18 @@ namespace GenieClient
                     System.Windows.Forms.Application.Exit();
                 }
             }
+            */
         }
 
         private async void loadTestClientToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // DISABLED: Load test client is disabled while migrating to a new repository.
+            // The update infrastructure is not yet set up for the new repo.
+            // Re-enable this once the new update system is configured.
+            AddText("Load test client is temporarily disabled while migrating to a new repository.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor);
+            return;
+
+            /* Original implementation - re-enable when update infra is ready:
             DialogResult response = MessageBox.Show("This will force your client to the Test Release Version. Test is not considered stable and may introduce bugs. If Autoupdate is enabled it will be disabled. Checking for Updates will restore you to the Latest build. Are you sure?", "Load Test Client?", MessageBoxButtons.YesNoCancel);
             if (response == DialogResult.Yes)
             {
@@ -8545,6 +8602,7 @@ namespace GenieClient
                     }
                 }
             }
+            */
         }
 
         private async void updateMapsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -8556,7 +8614,7 @@ namespace GenieClient
                 {
                     AddText($"Saving Config and Updating Maps in {m_oGlobals.Config.MapDir}\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
                     m_oGlobals.Config.Save();
-                    if (await Updater.UpdateMaps(m_oGlobals.Config.MapDir, m_oGlobals.Config.AutoUpdateLamp))
+                    if (await Updater.UpdateMaps(m_oGlobals.Config.MapDir))
                     {
                         AddText("Maps Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
                     }
@@ -8577,7 +8635,7 @@ namespace GenieClient
                 {
                     AddText($"Saving Config and Updating Plugins in {m_oGlobals.Config.PluginDir}\r\nRepo{m_oGlobals.Config.PluginRepo}", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
                     m_oGlobals.Config.Save();
-                    if (await Updater.UpdatePlugins(m_oGlobals.Config.PluginDir, m_oGlobals.Config.AutoUpdateLamp))
+                    if (await Updater.UpdatePlugins(m_oGlobals.Config.PluginDir))
                     {
                         AddText("Plugins Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
                         FormPlugin_ReloadPlugins();
@@ -8603,7 +8661,7 @@ namespace GenieClient
                 await Task.Run(async () =>
                 {
                     AddText($"Updating Scripts in {m_oGlobals.Config.ScriptDir}\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
-                    if (await Updater.UpdateScripts(m_oGlobals.Config.ScriptDir, m_oGlobals.Config.ScriptRepo, m_oGlobals.Config.AutoUpdateLamp))
+                    if (await Updater.UpdateScripts(m_oGlobals.Config.ScriptDir, m_oGlobals.Config.ScriptRepo))
                     {
                         AddText("Scripts Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
                     }
@@ -8650,12 +8708,6 @@ namespace GenieClient
             m_oGlobals.Config.bClassicConnect = ClassicConnectToolStripMenuItem.Checked;
         }
 
-        private void autoUpdateLampToolStripMenuItem_Click(global::System.Object sender, global::System.EventArgs e)
-        {
-            m_oGlobals.Config.AutoUpdateLamp = !m_oGlobals.Config.AutoUpdateLamp;
-            autoUpdateLampToolStripMenuItem.Checked = m_oGlobals.Config.AutoUpdateLamp;
-        }
-
         private void _ImagesEnabledToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _ImagesEnabledToolStripMenuItem.Checked = !m_oGlobals.Config.bShowImages;
@@ -8676,7 +8728,7 @@ namespace GenieClient
                 {
                     AddText($"Saving Config and Updating Art in {m_oGlobals.Config.ArtDir}\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
                     m_oGlobals.Config.Save();
-                    if (await Updater.UpdateArt(m_oGlobals.Config.ArtDir, m_oGlobals.Config.ArtRepo, m_oGlobals.Config.AutoUpdateLamp))
+                    if (await Updater.UpdateArt(m_oGlobals.Config.ArtDir, m_oGlobals.Config.ArtRepo))
                     {
                         AddText("Art Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
                     }
