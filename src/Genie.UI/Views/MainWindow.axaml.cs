@@ -26,8 +26,13 @@ public partial class MainWindow : Window
     private readonly Dictionary<GameWindowType, ScrollViewer> _windowScrollers = new();
     private readonly Dictionary<GameWindowType, SelectableTextBlock> _windowOutputs = new();
     
-    // Track whether auto-scroll is enabled for each window (true = should auto-scroll)
-    private readonly Dictionary<GameWindowType, bool> _autoScrollEnabled = new();
+    // Robust auto-scroll tracking: 
+    // _userScrolledUp persists user intent across rapid text additions
+    // _isProgrammaticScroll prevents our own ScrollToEnd() from being misinterpreted as user action
+    // _lastScrollMax tracks the scroll maximum from the last text addition for comparison
+    private bool _userScrolledUp = false;
+    private bool _isProgrammaticScroll = false;
+    private double _lastScrollMax = 0;
 
     public MainWindow()
     {
@@ -66,10 +71,7 @@ public partial class MainWindow : Window
         // Find scrollers (parent ScrollViewer)
         _windowScrollers[GameWindowType.Main] = OutputScroller;
         
-        // Initialize auto-scroll to enabled for all windows
-        _autoScrollEnabled[GameWindowType.Main] = true;
-        
-        // Hook up scroll changed event to detect user scrolling
+        // Hook up scroll changed event to track user scrolling
         OutputScroller.ScrollChanged += OnOutputScrollChanged;
         
         // Prevent scroll-to-top when clicking on the output (focus causes scroll reset)
@@ -97,25 +99,44 @@ public partial class MainWindow : Window
         }
     }
     
+    /// <summary>
+    /// Handles scroll changes to track user intent.
+    /// When user scrolls up, we remember this and stop auto-scrolling.
+    /// When user scrolls back to bottom, we resume auto-scrolling.
+    /// 
+    /// CRITICAL: Only react to actual user scrolls, not:
+    /// - Programmatic scrolls (ScrollToEnd) - filtered by _isProgrammaticScroll
+    /// - Extent-only changes (content added) - filtered by checking OffsetDelta
+    /// - Focus restoration - filtered by _isRestoringScroll
+    /// </summary>
     private void OnOutputScrollChanged(object? sender, ScrollChangedEventArgs e)
     {
         if (sender is not ScrollViewer scroller)
             return;
-            
-        // Check if this was a user-initiated scroll (not programmatic)
-        // If extent changed, it means content was added, not user scrolling
-        if (e.ExtentDelta.Y != 0)
+        
+        // Ignore our own programmatic scrolls
+        if (_isProgrammaticScroll)
+            return;
+        
+        // Ignore scroll events caused by focus restoration
+        if (_isRestoringScroll)
+            return;
+        
+        // Ignore scroll events that are ONLY from extent changing (content added)
+        // User scrolling always involves an offset change
+        bool hasOffsetChange = Math.Abs(e.OffsetDelta.Y) > 0.5;
+        if (!hasOffsetChange)
         {
-            // Content was added, don't change auto-scroll state
             return;
         }
-        
-        // User scrolled - check if they're at the bottom
-        var tolerance = 5.0;
+            
+        // This appears to be a user-initiated scroll (offset changed)
+        // Check if they're at/near the bottom
+        var tolerance = 10.0;
         var isAtBottom = scroller.Offset.Y >= scroller.ScrollBarMaximum.Y - tolerance;
         
-        // Update auto-scroll state based on whether user is at bottom
-        _autoScrollEnabled[GameWindowType.Main] = isAtBottom;
+        // Update user intent: if they scrolled to bottom, resume auto-scroll; otherwise pause it
+        _userScrolledUp = !isAtBottom;
     }
 
     private void InitializeGameManager()
@@ -1338,21 +1359,20 @@ public partial class MainWindow : Window
 
     /// <summary>
     /// Appends styled text to a specific SelectableTextBlock.
-    /// Automatically handles scroll preservation: only auto-scrolls if user was already at bottom.
+    /// Auto-scroll behavior is controlled by _userScrolledUp flag which persists user intent.
+    /// Only scrolls to end if user hasn't deliberately scrolled up to read history.
     /// </summary>
     private void AppendStyledTextTo(SelectableTextBlock output, string text, Color foreground, Color? background = null)
     {
         if (string.IsNullOrEmpty(text))
             return;
 
-        // Find the scroller and window type for this output
+        // Find the scroller for this output
         ScrollViewer? scroller = null;
-        GameWindowType? windowType = null;
         foreach (var kvp in _windowOutputs)
         {
             if (kvp.Value == output)
             {
-                windowType = kvp.Key;
                 _windowScrollers.TryGetValue(kvp.Key, out scroller);
                 break;
             }
@@ -1371,10 +1391,33 @@ public partial class MainWindow : Window
 
         output.Inlines?.Add(run);
 
-        // Auto-scroll if enabled for this window
-        if (scroller != null && windowType.HasValue && _autoScrollEnabled.GetValueOrDefault(windowType.Value, true))
+        // Auto-scroll logic using Windows-style approach:
+        // Check if user has scrolled up since the last text addition by comparing
+        // current offset against last known maximum. This catches user scrolling
+        // that might happen between text additions.
+        if (scroller != null)
         {
-            scroller.ScrollToEnd();
+            var tolerance = 10.0;
+            
+            // Check if user is currently at/near the bottom relative to LAST known max
+            // This catches scrolling that happened between text additions
+            var wasAtBottom = scroller.Offset.Y >= _lastScrollMax - tolerance || _lastScrollMax == 0;
+            
+            // Also check if user scrolled up via the event-based tracking
+            // Both conditions must be satisfied for auto-scroll
+            var shouldAutoScroll = wasAtBottom && !_userScrolledUp;
+            
+            if (shouldAutoScroll)
+            {
+                // Mark this as a programmatic scroll so ScrollChanged handler ignores it
+                _isProgrammaticScroll = true;
+                scroller.ScrollToEnd();
+                // Clear the flag after the current dispatch cycle completes
+                Dispatcher.UIThread.Post(() => _isProgrammaticScroll = false, DispatcherPriority.Background);
+            }
+            
+            // Remember the current max for next comparison
+            _lastScrollMax = scroller.ScrollBarMaximum.Y;
         }
     }
 
