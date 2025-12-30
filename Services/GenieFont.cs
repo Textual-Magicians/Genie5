@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Versioning;
 
 namespace GenieClient.Services
 {
@@ -51,6 +52,7 @@ namespace GenieClient.Services
         /// <summary>
         /// Converts to System.Drawing.Font (Windows only).
         /// </summary>
+        [SupportedOSPlatform("windows")]
         public System.Drawing.Font ToDrawingFont()
         {
             return new System.Drawing.Font(FamilyName, Size, (System.Drawing.FontStyle)Style);
@@ -59,6 +61,7 @@ namespace GenieClient.Services
         /// <summary>
         /// Creates from System.Drawing.Font (Windows only).
         /// </summary>
+        [SupportedOSPlatform("windows")]
         public static GenieFont FromDrawingFont(System.Drawing.Font font)
         {
             if (font == null) return Default;
@@ -82,13 +85,16 @@ namespace GenieClient.Services
     /// <summary>
     /// Extension methods for Font conversion (Windows only).
     /// </summary>
+    [SupportedOSPlatform("windows")]
     public static class GenieFontExtensions
     {
+        [SupportedOSPlatform("windows")]
         public static GenieFont ToGenieFont(this System.Drawing.Font font)
         {
             return GenieFont.FromDrawingFont(font);
         }
 
+        [SupportedOSPlatform("windows")]
         public static System.Drawing.Font ToDrawingFont(this GenieFont font)
         {
             return font.ToDrawingFont();

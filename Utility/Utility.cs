@@ -688,8 +688,6 @@ namespace GenieClient
                 return DateTime.MaxValue;
             }
         }
-
-        [Obsolete]
         public static DateTime AssemblyBuildDate(System.Reflection.Assembly a)
         {
             var AssemblyVersion = a.GetName().Version;
@@ -811,6 +809,7 @@ namespace GenieClient
         // Temporary for moving over from old dir structure...
         public static void MoveLayoutFiles()
         {
+#if WINDOWS
             try
             {
                 string sFile;
@@ -826,6 +825,30 @@ namespace GenieClient
 #pragma warning restore CS0168
             {
             }
+#else
+            // Cross-platform alternative using Directory.GetFiles
+            try
+            {
+                string configPath = Path.Combine(LocalDirectory.Path, "Config");
+                string layoutPath = Path.Combine(LocalDirectory.Path, "Config", "Layout");
+                
+                if (Directory.Exists(configPath))
+                {
+                    string[] layoutFiles = Directory.GetFiles(configPath, "*.layout");
+                    foreach (string layoutFile in layoutFiles)
+                    {
+                        string fileName = Path.GetFileName(layoutFile);
+                        string destPath = Path.Combine(layoutPath, fileName);
+                        MoveFile(layoutFile, destPath);
+                    }
+                }
+            }
+#pragma warning disable CS0168
+            catch (Exception ex)
+#pragma warning restore CS0168
+            {
+            }
+#endif
         }
 
         public static double MathCalc(double dValue, string sExpression)

@@ -1630,8 +1630,6 @@ namespace GenieClient
                 // End If
             }
         }
-
-        [Obsolete]
         private void FormMain_KeyDown(object sender, KeyEventArgs e)
         {
             if (My.MyProject.Forms.FormConfig.Visible == false | TextBoxInput.Focused == true)
@@ -3527,8 +3525,6 @@ namespace GenieClient
                 }
             }
         }
-
-        [Obsolete]
         private void RunQueueCommand(string sAction, string sOrigin)
         {
             if (sAction.Length > 0)
@@ -3876,8 +3872,6 @@ namespace GenieClient
                 }
             }
         }
-
-        [Obsolete]
         private void TextBoxInput_SendText(string sText)
         {
             try
@@ -4291,8 +4285,6 @@ namespace GenieClient
                 ClassCommand_EchoText("---------------------", "Debug");
             }
         }
-
-        [Obsolete]
         private void TriggerAction(string sAction, Genie.Collections.ArrayList oArgs)
         {
             if (m_bTriggersEnabled == true)
@@ -6387,8 +6379,6 @@ namespace GenieClient
 
             oLabel.Text = sText;
         }
-
-        [Obsolete]
         private void Script_EventSendText(string Text, string Script, bool ToQueue, bool DoCommand)
         {
             try

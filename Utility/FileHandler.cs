@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 #if WINDOWS
@@ -77,6 +78,7 @@ namespace GenieClient
         /// <summary>
         /// Loads and resizes an image. Windows-only due to System.Drawing dependency.
         /// </summary>
+        [SupportedOSPlatform("windows")]
         public static async Task<Image> GetImage(string filename, int width, int height)
         {
             if (!File.Exists(filename)) return null;

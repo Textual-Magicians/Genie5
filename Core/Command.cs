@@ -215,8 +215,6 @@ namespace GenieClient.Genie
         {
             oGlobals = cl;
         }
-
-        [Obsolete]
         public async Task<string> ParseCommand(string sText, bool bSendToGame = false, bool bUserInput = false, string sOrigin = "", bool bParseQuickSend = true)
         {
             /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
@@ -1552,7 +1550,19 @@ namespace GenieClient.Genie
                                     {
                                         if (oGlobals.Config.bPlaySounds == true)
                                         {
+#if WINDOWS
                                             Interaction.Beep();
+#else
+                                            // Cross-platform beep: use Console.Beep() which works on Windows, Linux, and macOS
+                                            try
+                                            {
+                                                Console.Beep();
+                                            }
+                                            catch
+                                            {
+                                                // Console.Beep may not be available on all platforms
+                                            }
+#endif
                                         }
 
                                         sResult = "";
@@ -2655,8 +2665,6 @@ namespace GenieClient.Genie
                 }
             }
         }
-
-        [Obsolete]
         private void Connect(ArrayList args, bool isLich = false)
         {
             if (args.Count == 1)
@@ -2874,8 +2882,6 @@ namespace GenieClient.Genie
 
         // Return sResult
         // End Function
-
-        [Obsolete]
         private string ParseAllArgs(ArrayList oList, int iStartIndex = 1, bool bParseQuickSend = true)
         {
             string sResult = string.Empty;
