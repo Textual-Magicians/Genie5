@@ -40,6 +40,8 @@ public partial class AutoMapperWindow : Window
     private readonly IBrush _currentNodeColor = new SolidColorBrush(Color.FromRgb(255, 0, 255)); // Magenta
     private readonly IBrush _labelColor = new SolidColorBrush(Color.FromRgb(200, 200, 200));
     private readonly IBrush _linkNodeBorderColor = new SolidColorBrush(Color.FromRgb(0, 0, 255));
+    private readonly IBrush _pathNodeColor = new SolidColorBrush(Color.FromRgb(0, 200, 100)); // Green for path
+    private readonly IBrush _destinationNodeColor = new SolidColorBrush(Color.FromRgb(255, 100, 100)); // Red for destination
 
     public AutoMapperWindow()
     {
@@ -116,12 +118,26 @@ public partial class AutoMapperWindow : Window
     /// </summary>
     private void TryLocateCurrentRoom()
     {
-        if (_currentMap == null || _globals?.VariableList == null) return;
+        if (_currentMap == null)
+        {
+            StatusText.Text = "No map loaded - select a map first";
+            return;
+        }
+        
+        if (_globals?.VariableList == null)
+        {
+            StatusText.Text = "Game not connected";
+            return;
+        }
 
         var roomName = GetVariable("roomname");
         var roomDesc = GetVariable("roomdesc");
 
-        if (string.IsNullOrEmpty(roomName)) return;
+        if (string.IsNullOrEmpty(roomName))
+        {
+            StatusText.Text = "No room name available - enter a room first";
+            return;
+        }
 
         // Get available exits for matching
         var exits = new HashSet<string>();
@@ -312,8 +328,21 @@ public partial class AutoMapperWindow : Window
             }
         }
 
-        // Otherwise, try to find the room by name/description
-        TryLocateCurrentRoom();
+        // If we have a map loaded, try to find the room on it
+        if (_currentMap != null)
+        {
+            TryLocateCurrentRoom();
+        }
+        else
+        {
+            // No map loaded - try to find one based on room name
+            var roomName = GetVariable("roomname");
+            var roomDesc = GetVariable("roomdesc");
+            if (!string.IsNullOrEmpty(roomName))
+            {
+                TryLoadMapForRoom(roomName, roomDesc);
+            }
+        }
     }
 
     private void TryLoadMapForCurrentZone()
@@ -686,9 +715,20 @@ public partial class AutoMapperWindow : Window
             var y = (node.Y + offsetY) * _scale - nodeSize / 2;
 
             var isCurrentLevel = node.Z == _currentLevel;
+            var isOnPath = _highlightedPath.Contains(node.Id);
+            var isDestination = isOnPath && _highlightedPath.Count > 0 && node.Id == _highlightedPath.Last();
+            
             IBrush fillBrush;
             
-            if (node.NodeColor.HasValue)
+            if (isDestination)
+            {
+                fillBrush = _destinationNodeColor;
+            }
+            else if (isOnPath)
+            {
+                fillBrush = _pathNodeColor;
+            }
+            else if (node.NodeColor.HasValue)
             {
                 fillBrush = new SolidColorBrush(node.NodeColor.Value);
             }
@@ -698,7 +738,7 @@ public partial class AutoMapperWindow : Window
             }
 
             var borderBrush = node.IsMapLink ? _linkNodeBorderColor : _nodeBorderColor;
-            var borderThickness = node.IsMapLink ? 2.0 : 1.0;
+            var borderThickness = isOnPath ? 2.0 : (node.IsMapLink ? 2.0 : 1.0);
 
             var rect = new Rectangle
             {
@@ -753,8 +793,18 @@ public partial class AutoMapperWindow : Window
     {
         if (sender is Rectangle rect && rect.Tag is MapNode node)
         {
-            // If it's a map link, load that map
-            if (node.IsMapLink && !string.IsNullOrEmpty(node.Note))
+            var props = e.GetCurrentPoint(rect).Properties;
+            
+            // Right-click: Navigate to this node
+            if (props.IsRightButtonPressed)
+            {
+                NavigateToNode(node);
+                e.Handled = true;
+                return;
+            }
+            
+            // Left-click: If it's a map link, load that map
+            if (props.IsLeftButtonPressed && node.IsMapLink && !string.IsNullOrEmpty(node.Note))
             {
                 var mapFile = node.Note.Split('|')
                     .FirstOrDefault(s => s.ToLower().EndsWith(".xml"));
@@ -778,6 +828,147 @@ public partial class AutoMapperWindow : Window
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Navigates to the specified node by finding the shortest path and sending movement commands.
+    /// </summary>
+    private void NavigateToNode(MapNode destinationNode)
+    {
+        if (_currentMap == null || _gameManager == null)
+        {
+            StatusText.Text = "Cannot navigate: Not connected or no map loaded";
+            return;
+        }
+
+        if (_currentNodeId == null)
+        {
+            StatusText.Text = "Cannot navigate: Current location unknown. Click 'Find Me' first.";
+            return;
+        }
+
+        if (_currentNodeId == destinationNode.Id)
+        {
+            StatusText.Text = "Already at destination!";
+            return;
+        }
+
+        if (!_currentMap.Nodes.TryGetValue(_currentNodeId.Value, out var startNode))
+        {
+            StatusText.Text = "Cannot navigate: Current node not found on map";
+            return;
+        }
+
+        // Find the shortest path using BFS
+        var path = FindShortestPath(startNode, destinationNode);
+        
+        if (path == null || path.Count == 0)
+        {
+            StatusText.Text = $"No path found to #{destinationNode.Id} {destinationNode.Name}";
+            return;
+        }
+
+        // Build the path string for the automapper script
+        var pathCommands = new List<string>();
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            var currentNode = path[i];
+            var nextNode = path[i + 1];
+            
+            // Find the arc from current to next
+            var arc = currentNode.Arcs.FirstOrDefault(a => a.DestinationId == nextNode.Id);
+            if (arc != null)
+            {
+                var move = !string.IsNullOrEmpty(arc.Move) ? arc.Move : DirectionToCommand(arc.Direction);
+                pathCommands.Add(move);
+            }
+        }
+
+        if (pathCommands.Count == 0)
+        {
+            StatusText.Text = "Could not build path commands";
+            return;
+        }
+
+        // Build the command string
+        var pathString = string.Join(" ", pathCommands.Select(c => c.Contains(" ") ? $"\"{c}\"" : c));
+        
+        // Run the automapper script (not SendCommand, which goes directly to the game)
+        // RunScript handles the ".scriptname args" format
+        _gameManager.RunScript($"automapper {pathString}");
+        
+        StatusText.Text = $"Navigating to #{destinationNode.Id} {destinationNode.Name} ({pathCommands.Count} moves)";
+        
+        // Highlight the destination
+        HighlightPath(path);
+    }
+
+    /// <summary>
+    /// Finds the shortest path between two nodes using BFS.
+    /// </summary>
+    private List<MapNode>? FindShortestPath(MapNode start, MapNode end)
+    {
+        if (_currentMap == null) return null;
+
+        var visited = new HashSet<int>();
+        var queue = new Queue<List<MapNode>>();
+        
+        queue.Enqueue(new List<MapNode> { start });
+        visited.Add(start.Id);
+
+        while (queue.Count > 0)
+        {
+            var path = queue.Dequeue();
+            var current = path[^1]; // Last node in path
+
+            if (current.Id == end.Id)
+            {
+                return path;
+            }
+
+            foreach (var arc in current.Arcs)
+            {
+                if (arc.DestinationId <= 0) continue;
+                if (visited.Contains(arc.DestinationId)) continue;
+                if (!_currentMap.Nodes.TryGetValue(arc.DestinationId, out var nextNode)) continue;
+
+                visited.Add(arc.DestinationId);
+                var newPath = new List<MapNode>(path) { nextNode };
+                queue.Enqueue(newPath);
+            }
+        }
+
+        return null; // No path found
+    }
+
+    /// <summary>
+    /// Highlights the path on the map.
+    /// </summary>
+    private void HighlightPath(List<MapNode> path)
+    {
+        _highlightedPath = path.Select(n => n.Id).ToHashSet();
+        RedrawMap();
+    }
+
+    private HashSet<int> _highlightedPath = new();
+
+    private static string DirectionToCommand(MapDirection direction)
+    {
+        return direction switch
+        {
+            MapDirection.North => "n",
+            MapDirection.NorthEast => "ne",
+            MapDirection.East => "e",
+            MapDirection.SouthEast => "se",
+            MapDirection.South => "s",
+            MapDirection.SouthWest => "sw",
+            MapDirection.West => "w",
+            MapDirection.NorthWest => "nw",
+            MapDirection.Up => "up",
+            MapDirection.Down => "down",
+            MapDirection.Out => "out",
+            _ => ""
+        };
     }
 
     private void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -882,17 +1073,44 @@ public partial class AutoMapperWindow : Window
 
     private void OnFindMeClick(object? sender, RoutedEventArgs e)
     {
-        // First try to locate on current map
+        // Clear any highlighted path
+        _highlightedPath.Clear();
+        
+        if (_globals?.VariableList == null)
+        {
+            StatusText.Text = "Game not connected";
+            return;
+        }
+        
+        var roomName = GetVariable("roomname");
+        var roomDesc = GetVariable("roomdesc");
+        
+        if (string.IsNullOrEmpty(roomName))
+        {
+            StatusText.Text = "No room name available - enter a room first";
+            return;
+        }
+        
+        // If no map loaded, try to find one that has this room
+        if (_currentMap == null)
+        {
+            StatusText.Text = $"Searching for '{roomName}'...";
+            if (!TryLoadMapForRoom(roomName, roomDesc))
+            {
+                StatusText.Text = $"Room not found in any map: {roomName}";
+            }
+            return;
+        }
+        
+        // Try to locate on current map
         TryLocateCurrentRoom();
         
-        // If not found, try other maps
-        if (_currentNodeId == null && _globals?.VariableList != null)
+        // If not found on current map, try other maps
+        if (_currentNodeId == null)
         {
-            var roomName = GetVariable("roomname");
-            var roomDesc = GetVariable("roomdesc");
-            if (!string.IsNullOrEmpty(roomName))
+            if (!TryLoadMapForRoom(roomName, roomDesc))
             {
-                TryLoadMapForRoom(roomName, roomDesc);
+                StatusText.Text = $"Room not found: {roomName}";
             }
         }
     }
@@ -963,6 +1181,22 @@ public partial class AutoMapperWindow : Window
     public void SetCurrentNode(int? nodeId)
     {
         _currentNodeId = nodeId;
+        
+        // Clear the path if we've reached the destination or moved away from path
+        if (_highlightedPath.Count > 0 && nodeId.HasValue)
+        {
+            // If we reached the destination, clear the path
+            if (nodeId.Value == _highlightedPath.Last())
+            {
+                _highlightedPath.Clear();
+            }
+            // If we're no longer on the path, clear it
+            else if (!_highlightedPath.Contains(nodeId.Value))
+            {
+                _highlightedPath.Clear();
+            }
+        }
+        
         RedrawMap();
     }
 

@@ -71,6 +71,30 @@ public partial class MainWindow : Window
         
         // Hook up scroll changed event to detect user scrolling
         OutputScroller.ScrollChanged += OnOutputScrollChanged;
+        
+        // Prevent scroll-to-top when clicking on the output (focus causes scroll reset)
+        GameOutput.GotFocus += OnGameOutputGotFocus;
+    }
+    
+    private double _savedScrollOffset;
+    private bool _isRestoringScroll;
+    
+    private void OnGameOutputGotFocus(object? sender, GotFocusEventArgs e)
+    {
+        // When the SelectableTextBlock gets focus, it scrolls to show the caret (position 0 = top)
+        // We need to restore the scroll position after the focus event completes
+        if (!_isRestoringScroll)
+        {
+            _savedScrollOffset = OutputScroller.Offset.Y;
+            
+            // Use BeginInvoke to restore after the focus scroll happens
+            Dispatcher.UIThread.Post(() =>
+            {
+                _isRestoringScroll = true;
+                OutputScroller.Offset = new Avalonia.Vector(OutputScroller.Offset.X, _savedScrollOffset);
+                _isRestoringScroll = false;
+            }, DispatcherPriority.Loaded);
+        }
     }
     
     private void OnOutputScrollChanged(object? sender, ScrollChangedEventArgs e)
