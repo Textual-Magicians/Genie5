@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using GenieClient.Services;
 
@@ -11,7 +11,7 @@ namespace GenieClient.Genie
     public class ColorCode
     {
         #region Cross-Platform Color Name Dictionary
-        
+
         /// <summary>
         /// Dictionary of known color names to GenieColor values.
         /// This provides cross-platform color name resolution without System.Drawing dependency.

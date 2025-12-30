@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Windows.Forms;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
@@ -206,69 +206,69 @@ namespace GenieClient
             switch (switchExpr)
             {
                 case Keys.Return:
+                {
+                    if (e.Modifiers == Keys.Control)
                     {
-                        if (e.Modifiers == Keys.Control)
-                        {
-                            KeyControlEnter();
-                        }
-
-                        SendText?.Invoke(Text);
-                        InsertHistory(Text);
-                        HistoryPos = -1;
-                        if (m_KeepInput == false)
-                        {
-                            Clear();
-                        }
-                        else
-                        {
-                            SelectAll();
-                        }
-
-                        KeyHandled = true;
-                        break;
+                        KeyControlEnter();
                     }
+
+                    SendText?.Invoke(Text);
+                    InsertHistory(Text);
+                    HistoryPos = -1;
+                    if (m_KeepInput == false)
+                    {
+                        Clear();
+                    }
+                    else
+                    {
+                        SelectAll();
+                    }
+
+                    KeyHandled = true;
+                    break;
+                }
 
                 case Keys.Up:
-                    {
-                        KeyUpHistory();
-                        e.Handled = true;
-                        break;
-                    }
+                {
+                    KeyUpHistory();
+                    e.Handled = true;
+                    break;
+                }
 
                 case Keys.Down:
-                    {
-                        KeyDownHistory();
-                        e.Handled = true;
-                        break;
-                    }
+                {
+                    KeyDownHistory();
+                    e.Handled = true;
+                    break;
+                }
 
                 case Keys.PageUp:
+                {
+                    if (e.Control)
                     {
-                        if (e.Control)
-                        {
-                            CtrlPageUp?.Invoke();
-                        }
-                        else
-                        {
-                            PageUp?.Invoke();
-                        }
-                        e.Handled = true;
-                        break;
+                        CtrlPageUp?.Invoke();
                     }
+                    else
+                    {
+                        PageUp?.Invoke();
+                    }
+                    e.Handled = true;
+                    break;
+                }
 
                 case Keys.PageDown:
+                {
+                    if (e.Control)
                     {
-                        if (e.Control)
-                        {
-                            CtrlPageDown?.Invoke();
-                        }
-                        else
-                        {
-                            PageDown?.Invoke();
-                        }
-                        e.Handled = true;
-                        break;
+                        CtrlPageDown?.Invoke();
                     }
+                    else
+                    {
+                        PageDown?.Invoke();
+                    }
+                    e.Handled = true;
+                    break;
+                }
             }
         }
 

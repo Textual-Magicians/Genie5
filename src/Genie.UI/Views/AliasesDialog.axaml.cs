@@ -26,7 +26,7 @@ public partial class AliasesDialog : Window
     private readonly ObservableCollection<AliasEntry> _displayAliases = new();
     private AliasEntry? _selectedAlias;
     private bool _hasUnsavedChanges = false;
-    
+
     // Control references (manually resolved since code generation may not work)
     private DataGrid _aliasesGrid = null!;
     private Button _editButton = null!;
@@ -37,14 +37,14 @@ public partial class AliasesDialog : Window
     public AliasesDialog()
     {
         InitializeComponent();
-        
+
         // Manually find controls
         _aliasesGrid = this.FindControl<DataGrid>("AliasesGrid")!;
         _editButton = this.FindControl<Button>("EditButton")!;
         _deleteButton = this.FindControl<Button>("DeleteButton")!;
         _statusText = this.FindControl<TextBlock>("StatusText")!;
         _countText = this.FindControl<TextBlock>("CountText")!;
-        
+
         _aliasesGrid.ItemsSource = _displayAliases;
     }
 
@@ -67,7 +67,8 @@ public partial class AliasesDialog : Window
     {
         _displayAliases.Clear();
 
-        if (_aliasList == null) return;
+        if (_aliasList == null)
+            return;
 
         foreach (System.Collections.DictionaryEntry entry in _aliasList)
         {
@@ -84,7 +85,7 @@ public partial class AliasesDialog : Window
     private void UpdateStatus()
     {
         _countText.Text = $"{_displayAliases.Count} alias{(_displayAliases.Count != 1 ? "es" : "")} loaded";
-        
+
         if (_hasUnsavedChanges)
         {
             _statusText.Text = "⚠️ You have unsaved changes!";
@@ -100,7 +101,7 @@ public partial class AliasesDialog : Window
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         _selectedAlias = _aliasesGrid.SelectedItem as AliasEntry;
-        
+
         _editButton.IsEnabled = _selectedAlias != null;
         _deleteButton.IsEnabled = _selectedAlias != null;
     }
@@ -140,7 +141,7 @@ public partial class AliasesDialog : Window
     {
         var originalKey = entry.Key;
         var editedEntry = new AliasEntry { Key = entry.Key, Value = entry.Value };
-        
+
         if (await ShowEditDialog(editedEntry, isNew: false))
         {
             if (_aliasList != null)
@@ -150,16 +151,16 @@ public partial class AliasesDialog : Window
                 {
                     _aliasList.Remove(originalKey);
                 }
-                
+
                 // Add/update with new values
                 _aliasList.Add(editedEntry.Key, editedEntry.Value);
-                
+
                 // Update display
                 entry.Key = editedEntry.Key;
                 entry.Value = editedEntry.Value;
-                
+
                 _hasUnsavedChanges = true;
-                
+
                 // Refresh the grid
                 var items = _displayAliases.ToList();
                 _displayAliases.Clear();
@@ -167,7 +168,7 @@ public partial class AliasesDialog : Window
                 {
                     _displayAliases.Add(item);
                 }
-                
+
                 UpdateStatus();
             }
         }
@@ -175,7 +176,8 @@ public partial class AliasesDialog : Window
 
     private async void OnDeleteClick(object? sender, RoutedEventArgs e)
     {
-        if (_selectedAlias == null) return;
+        if (_selectedAlias == null)
+            return;
 
         var result = await ShowConfirmDialog(
             "Delete Alias",
@@ -199,7 +201,7 @@ public partial class AliasesDialog : Window
         {
             _statusText.Text = "⚠️ Reload will discard unsaved changes!";
         }
-        
+
         LoadAliases();
         _hasUnsavedChanges = false;
         UpdateStatus();
@@ -264,10 +266,11 @@ public partial class AliasesDialog : Window
             var result = await ShowConfirmDialog(
                 "Unsaved Changes",
                 "You have unsaved changes. Close anyway?");
-            
-            if (!result) return;
+
+            if (!result)
+                return;
         }
-        
+
         Close();
     }
 

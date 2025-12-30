@@ -1,0 +1,25 @@
+<Project>
+  <!-- 
+    Directory.Build.props - Applied to all projects in this solution
+    This file enables code analysis across the solution.
+  -->
+
+  <PropertyGroup>
+    <!-- Enable .NET analyzers -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    
+    <!-- Analysis level - use 'latest' for newest rules -->
+    <AnalysisLevel>latest</AnalysisLevel>
+    
+    <!-- Analysis mode - 'Default' is balanced, 'Recommended' is stricter, 'All' enables everything -->
+    <AnalysisMode>Default</AnalysisMode>
+    
+    <!-- Enforce code style on build (matches .editorconfig rules) -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    
+    <!-- Report code style issues as warnings during build -->
+    <_SkipUpgradeNetAnalyzersNuGetWarning>true</_SkipUpgradeNetAnalyzersNuGetWarning>
+  </PropertyGroup>
+
+</Project>
+

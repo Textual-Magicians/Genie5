@@ -21,8 +21,8 @@ public class ConnectionProfile
     /// <summary>
     /// Display name combining character and game.
     /// </summary>
-    public string DisplayName => string.IsNullOrEmpty(Character) 
-        ? $"{Account} ({GameCode})" 
+    public string DisplayName => string.IsNullOrEmpty(Character)
+        ? $"{Account} ({GameCode})"
         : $"{Character} - {Account} ({GameCode})";
 }
 
@@ -56,7 +56,7 @@ public class ProfileManager
             {
                 var json = await File.ReadAllTextAsync(_profilesPath);
                 _profiles = JsonSerializer.Deserialize<List<ConnectionProfile>>(json) ?? new();
-                
+
                 // Sort by last used (most recent first)
                 _profiles.Sort((a, b) => b.LastUsed.CompareTo(a.LastUsed));
             }
@@ -90,9 +90,9 @@ public class ProfileManager
     public async Task SaveProfileAsync(ConnectionProfile profile)
     {
         profile.LastUsed = DateTime.Now;
-        
+
         // Check if profile with same name exists
-        var existingIndex = _profiles.FindIndex(p => 
+        var existingIndex = _profiles.FindIndex(p =>
             p.Account.Equals(profile.Account, StringComparison.OrdinalIgnoreCase) &&
             p.GameCode.Equals(profile.GameCode, StringComparison.OrdinalIgnoreCase) &&
             (p.Character ?? "").Equals(profile.Character ?? "", StringComparison.OrdinalIgnoreCase));
@@ -124,7 +124,7 @@ public class ProfileManager
     public async Task UpdateLastUsedAsync(ConnectionProfile profile)
     {
         profile.LastUsed = DateTime.Now;
-        
+
         // Re-sort and save
         _profiles.Sort((a, b) => b.LastUsed.CompareTo(a.LastUsed));
         await SaveAsync();
@@ -135,8 +135,9 @@ public class ProfileManager
     /// </summary>
     public static string EncryptPassword(string password, string account)
     {
-        if (string.IsNullOrEmpty(password)) return string.Empty;
-        
+        if (string.IsNullOrEmpty(password))
+            return string.Empty;
+
         // Simple XOR obfuscation with account name as key
         var key = "G5" + account.ToUpper();
         var result = new char[password.Length];
@@ -152,8 +153,9 @@ public class ProfileManager
     /// </summary>
     public static string DecryptPassword(string encrypted, string account)
     {
-        if (string.IsNullOrEmpty(encrypted)) return string.Empty;
-        
+        if (string.IsNullOrEmpty(encrypted))
+            return string.Empty;
+
         try
         {
             var key = "G5" + account.ToUpper();

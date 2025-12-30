@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using GenieClient.Genie;
 
@@ -59,7 +59,7 @@ namespace GenieClient.Forms
             _TextboxTypeahead.BackColor = textbox.BgColor;
             _TextboxTypeahead.ForeColor = textbox.FgColor;
             _TextboxClass.BackColor = textbox.BgColor;
-            _TextboxClass.ForeColor =  textbox.FgColor;
+            _TextboxClass.ForeColor = textbox.FgColor;
 
             My.MyProject.Forms.DialogDragTarget.Recolor(window, textbox, button);
             My.MyProject.Forms.DialogSetTypeahead.Recolor(window, textbox, button);
@@ -69,11 +69,16 @@ namespace GenieClient.Forms
 
         public async void VariableChanged(string variable)
         {
-            if (variable == "automapper.typeahead") _TextboxTypeahead.Text = GetVariableValue(variable);
-            else if (variable == "drag.target") _TextboxDragging.Text = GetVariableValue(variable);
-            else if (variable == "automapper.userwalkaction") _TextboxAction.Text = GetVariableValue(variable);
-            else if (variable == "automapper.userwalksuccess") _TextboxSuccess.Text = GetVariableValue(variable);
-            else if (variable == "automapper.userwalkretry") _TextboxRetry.Text = GetVariableValue(variable);
+            if (variable == "automapper.typeahead")
+                _TextboxTypeahead.Text = GetVariableValue(variable);
+            else if (variable == "drag.target")
+                _TextboxDragging.Text = GetVariableValue(variable);
+            else if (variable == "automapper.userwalkaction")
+                _TextboxAction.Text = GetVariableValue(variable);
+            else if (variable == "automapper.userwalksuccess")
+                _TextboxSuccess.Text = GetVariableValue(variable);
+            else if (variable == "automapper.userwalkretry")
+                _TextboxRetry.Text = GetVariableValue(variable);
             else if (CheckedListVariables.Items.Contains(variable))
             {
                 CheckedListVariables.ItemCheck -= CheckedListVariables_ItemCheck;
@@ -185,8 +190,10 @@ namespace GenieClient.Forms
             My.MyProject.Forms.DialogSetTypeahead.TargetText = GetVariableValue("automapper.typeahead");
             if (My.MyProject.Forms.DialogSetTypeahead.ShowDialog(Parent) == DialogResult.OK)
             {
-                if (int.TryParse(My.MyProject.Forms.DialogSetTypeahead.TargetText.Trim(), out int typeahead)) _TextboxTypeahead.Text = My.MyProject.Forms.DialogSetTypeahead.TargetText.Trim();
-                else _TextboxTypeahead.Text = GetVariableValue("automapper.typeahead");
+                if (int.TryParse(My.MyProject.Forms.DialogSetTypeahead.TargetText.Trim(), out int typeahead))
+                    _TextboxTypeahead.Text = My.MyProject.Forms.DialogSetTypeahead.TargetText.Trim();
+                else
+                    _TextboxTypeahead.Text = GetVariableValue("automapper.typeahead");
 
                 UpdateVariable("automapper.typeahead", _TextboxTypeahead.Text, false);
             }
@@ -213,7 +220,8 @@ namespace GenieClient.Forms
             {
                 if (string.IsNullOrWhiteSpace(My.MyProject.Forms.DialogDragTarget.TargetText.Trim()))
                 {
-                    if (_globals.VariableList.ContainsKey("drag.target")) _globals.VariableList.Remove("drag.target");
+                    if (_globals.VariableList.ContainsKey("drag.target"))
+                        _globals.VariableList.Remove("drag.target");
                 }
                 else
                 {
@@ -222,7 +230,8 @@ namespace GenieClient.Forms
             }
             else if (string.IsNullOrWhiteSpace(GetVariableValue("drag.target")))
             {
-                if (_globals.VariableList.ContainsKey("drag.target")) _globals.VariableList.Remove("drag.target");
+                if (_globals.VariableList.ContainsKey("drag.target"))
+                    _globals.VariableList.Remove("drag.target");
             }
 
             return _globals.VariableList.ContainsKey("drag.target");

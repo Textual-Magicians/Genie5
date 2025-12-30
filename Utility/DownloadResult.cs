@@ -1,4 +1,4 @@
-﻿
+
 namespace GenieClient
 {
     public class DownloadResult

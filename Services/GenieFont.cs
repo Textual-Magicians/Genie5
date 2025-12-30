@@ -23,13 +23,13 @@ namespace GenieClient.Services
 
         public bool Equals(GenieFont other)
         {
-            return string.Equals(FamilyName, other.FamilyName, StringComparison.OrdinalIgnoreCase) 
-                && Math.Abs(Size - other.Size) < 0.001f 
+            return string.Equals(FamilyName, other.FamilyName, StringComparison.OrdinalIgnoreCase)
+                && Math.Abs(Size - other.Size) < 0.001f
                 && Style == other.Style;
         }
 
         public override bool Equals(object obj) => obj is GenieFont other && Equals(other);
-        
+
         public override int GetHashCode()
         {
             unchecked

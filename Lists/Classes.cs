@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.IO;
 using Microsoft.VisualBasic;
@@ -93,18 +93,18 @@ namespace GenieClient.Genie
                 case "true":
                 case "on":
                 case "1":
-                    {
-                        bActive = true;
-                        break;
-                    }
+                {
+                    bActive = true;
+                    break;
+                }
 
                 case "false":
                 case "off":
                 case "0":
-                    {
-                        bActive = false;
-                        break;
-                    }
+                {
+                    bActive = false;
+                    break;
+                }
             }
 
             if (base.ContainsKey(sKey) == true)
@@ -171,9 +171,9 @@ namespace GenieClient.Genie
                     return false;
                 }
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception Err)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return false;
             }
@@ -228,9 +228,9 @@ namespace GenieClient.Genie
 
                 return true;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return false;
             }

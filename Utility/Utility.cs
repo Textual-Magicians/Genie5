@@ -55,7 +55,8 @@ namespace GenieClient
 
         public static async Task<bool> ExecuteProcess(string sFileName, string sArguments, bool closeProcess, bool showWindow)
         {
-            if (!File.Exists(sFileName)) return false;
+            if (!File.Exists(sFileName))
+                return false;
             var myProcess = new Process();
             var myProcessStartInfo = new ProcessStartInfo(sFileName);
             myProcessStartInfo.WindowStyle = showWindow ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden;
@@ -72,7 +73,8 @@ namespace GenieClient
             try
             {
                 myProcess.Start();
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 GenieError.Error("Utility", $"Error Starting {sFileName}", ex.Message);
                 return false;
@@ -117,9 +119,9 @@ namespace GenieClient
                 var re = new Regex(sRegExp);
                 return true;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return false;
             }
@@ -128,7 +130,7 @@ namespace GenieClient
         public static byte[] EncryptText(string sKey, string sText)
         {
             byte[] byteBuffer = new byte[sText.Length];
-            for(int i = 0; i < sText.Length; i++)
+            for (int i = 0; i < sText.Length; i++)
             {
                 byteBuffer[i] = (byte)((sKey[i] ^ sText[i] - 32) + 32);
             }
@@ -259,35 +261,35 @@ namespace GenieClient
             switch (sText)
             {
                 case "&quot;":
-                    {
-                        return "\"";
-                    }
+                {
+                    return "\"";
+                }
 
                 case "&amp;":
-                    {
-                        return "&";
-                    }
+                {
+                    return "&";
+                }
 
                 case "&lt;":
-                    {
-                        return "<";
-                    }
+                {
+                    return "<";
+                }
 
                 case "&gt;":
-                    {
-                        return ">";
-                    }
+                {
+                    return ">";
+                }
 
                 case "&nbsp;":
-                    {
-                        return " ";
-                    }
+                {
+                    return " ";
+                }
 
                 default:
-                    {
-                        Debug.Print("Found unknown HTML character \"" + sText + "\"" + System.Environment.NewLine);
-                        return "";
-                    }
+                {
+                    Debug.Print("Found unknown HTML character \"" + sText + "\"" + System.Environment.NewLine);
+                    return "";
+                }
             }
         }
 
@@ -481,9 +483,9 @@ namespace GenieClient
                     AddArrayItem(oList, argsText3, Conversions.ToBoolean(Interaction.IIf(oList.Count > 0, bTreatUnderscoreAsSpace, false)));
                 }
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 throw new Exception("Invalid string in Parse Arguments: " + sText);
             }
@@ -523,16 +525,16 @@ namespace GenieClient
             {
                 File.Move(sSourceFileName, sDestFileName);
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (IOException ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 // The destination file already exists.
                 return false;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (UnauthorizedAccessException ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 // The caller does not have the required permission. 
                 return false;
@@ -547,15 +549,15 @@ namespace GenieClient
             {
                 File.Delete(sourceFileName);
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (IOException ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return false;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (UnauthorizedAccessException ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 // The caller does not have the required permission. 
                 return false;
@@ -573,15 +575,15 @@ namespace GenieClient
                     Directory.CreateDirectory(sourceDirectoryName);
                 }
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (IOException ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return false;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (UnauthorizedAccessException ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 // The caller does not have the required permission. 
                 return false;
@@ -618,7 +620,7 @@ namespace GenieClient
                 double d = double.Parse(sValue, new System.Globalization.CultureInfo("en-US"));
                 return d;
             }
-            catch 
+            catch
             {
                 return -1;
             }
@@ -643,7 +645,7 @@ namespace GenieClient
                     return -1;
                 }
             }
-            catch 
+            catch
             {
                 return -1;
             }
@@ -670,23 +672,25 @@ namespace GenieClient
         }
 
         /// <summary>
-    /// exception-safe retrieval of LastWriteTime for this assembly.
-    /// </summary>
-    /// <returns>File.GetLastWriteTime, or DateTime.MaxValue if exception was encountered.</returns>
+        /// exception-safe retrieval of LastWriteTime for this assembly.
+        /// </summary>
+        /// <returns>File.GetLastWriteTime, or DateTime.MaxValue if exception was encountered.</returns>
         private static DateTime AssemblyLastWriteTime(System.Reflection.Assembly a)
         {
             try
             {
                 return File.GetLastWriteTime(a.Location);
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return DateTime.MaxValue;
             }
         }
 
+        [Obsolete]
+        [Obsolete]
         public static DateTime AssemblyBuildDate(System.Reflection.Assembly a)
         {
             var AssemblyVersion = a.GetName().Version;
@@ -818,9 +822,9 @@ namespace GenieClient
                     sFile = FileSystem.Dir();
                 }
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
             }
         }
@@ -839,61 +843,61 @@ namespace GenieClient
             {
                 case "add":
                 case "+":
-                    {
-                        dValue = dValue + dNumber;
-                        break;
-                    }
+                {
+                    dValue = dValue + dNumber;
+                    break;
+                }
 
                 case "sub":
                 case "substract":
                 case "subtract":
                 case "-":
-                    {
-                        dValue = dValue - dNumber;
-                        break;
-                    }
+                {
+                    dValue = dValue - dNumber;
+                    break;
+                }
 
                 case "set":
                 case "=":
-                    {
-                        dValue = dNumber;
-                        break;
-                    }
+                {
+                    dValue = dNumber;
+                    break;
+                }
 
                 case "multiply":
                 case "*":
-                    {
-                        dValue = dValue * dNumber;
-                        break;
-                    }
+                {
+                    dValue = dValue * dNumber;
+                    break;
+                }
 
                 case "divide":
                 case "/":
-                    {
-                        dValue = dValue / dNumber;
-                        break;
-                    }
+                {
+                    dValue = dValue / dNumber;
+                    break;
+                }
 
                 case "mod":
                 case "modulus":
                 case "%":
+                {
+                    if (dValue != 0)
                     {
-                        if (dValue != 0)
-                        {
-                            dValue = dValue % dNumber;
-                        }
-                        else
-                        {
-                            dValue = 0;
-                        }
-
-                        break;
+                        dValue = dValue % dNumber;
                     }
+                    else
+                    {
+                        dValue = 0;
+                    }
+
+                    break;
+                }
 
                 default:
-                    {
-                        throw new Exception("Invalid #MATH expression: " + sExpression);
-                    }
+                {
+                    throw new Exception("Invalid #MATH expression: " + sExpression);
+                }
             }
 
             return dValue;

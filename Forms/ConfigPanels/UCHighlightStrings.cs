@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Drawing;
 using System.Linq;
@@ -394,32 +394,32 @@ namespace GenieClient
                 switch (switchExpr)
                 {
                     case "String":
-                        {
-                            RadioButtonString.Checked = true;
-                            RadioButtonString.Tag = "String";
-                            break;
-                        }
+                    {
+                        RadioButtonString.Checked = true;
+                        RadioButtonString.Tag = "String";
+                        break;
+                    }
 
                     case "Line":
-                        {
-                            RadioButtonLine.Checked = true;
-                            RadioButtonString.Tag = "Line";
-                            break;
-                        }
+                    {
+                        RadioButtonLine.Checked = true;
+                        RadioButtonString.Tag = "Line";
+                        break;
+                    }
 
                     case "BeginsWith":
-                        {
-                            RadioButtonBeginsWith.Checked = true;
-                            RadioButtonString.Tag = "BeginsWith";
-                            break;
-                        }
+                    {
+                        RadioButtonBeginsWith.Checked = true;
+                        RadioButtonString.Tag = "BeginsWith";
+                        break;
+                    }
 
                     case "RegExp":
-                        {
-                            RadioButtonRegExp.Checked = true;
-                            RadioButtonString.Tag = "RegExp";
-                            break;
-                        }
+                    {
+                        RadioButtonRegExp.Checked = true;
+                        RadioButtonString.Tag = "RegExp";
+                        break;
+                    }
                 }
 
                 CheckBoxCaseSensitive.Checked = StringToBoolean(ListViewBase.SelectedItems[0].SubItems[3].Text);
@@ -467,14 +467,14 @@ namespace GenieClient
                 case "true":
                 case "on":
                 case "1":
-                    {
-                        return true;
-                    }
+                {
+                    return true;
+                }
 
                 default:
-                    {
-                        return false;
-                    }
+                {
+                    return false;
+                }
             }
         }
 
@@ -570,23 +570,23 @@ namespace GenieClient
                         {
                             case "String":
                             case "Line":
-                                {
-                                    string argsKey = Conversions.ToString(li.Tag);
-                                    m_HighlightList.Remove(argsKey);
-                                    break;
-                                }
+                            {
+                                string argsKey = Conversions.ToString(li.Tag);
+                                m_HighlightList.Remove(argsKey);
+                                break;
+                            }
 
                             case "BeginsWith":
-                                {
-                                    m_HighlightLineBeginsWith.Remove(li.Tag);
-                                    break;
-                                }
+                            {
+                                m_HighlightLineBeginsWith.Remove(li.Tag);
+                                break;
+                            }
 
                             case "RegExp":
-                                {
-                                    m_HighlightRegExp.Remove(li.Tag);
-                                    break;
-                                }
+                            {
+                                m_HighlightRegExp.Remove(li.Tag);
+                                break;
+                            }
                         }
 
                         li.SubItems[1].Text = sNewHighlightType;
@@ -612,40 +612,40 @@ namespace GenieClient
                     switch (sNewHighlightType)
                     {
                         case "String":
-                            {
-                                string argsKey1 = li.Text;
-                                bool argbHighlightWholeRow = false;
-                                m_HighlightList.Add(argsKey1, argbHighlightWholeRow, TextBoxColor.Text, StringToBoolean(li.SubItems[3].Text), li.SubItems[4].Text, li.SubItems[5].Text, bIsActive);
-                                RadioButtonString.Tag = "String";
-                                break;
-                            }
+                        {
+                            string argsKey1 = li.Text;
+                            bool argbHighlightWholeRow = false;
+                            m_HighlightList.Add(argsKey1, argbHighlightWholeRow, TextBoxColor.Text, StringToBoolean(li.SubItems[3].Text), li.SubItems[4].Text, li.SubItems[5].Text, bIsActive);
+                            RadioButtonString.Tag = "String";
+                            break;
+                        }
 
                         case "Line":
-                            {
-                                string argsKey2 = li.Text;
-                                bool argbHighlightWholeRow1 = true;
-                                m_HighlightList.Add(argsKey2, argbHighlightWholeRow1, TextBoxColor.Text, StringToBoolean(li.SubItems[3].Text), li.SubItems[4].Text, li.SubItems[5].Text, bIsActive);
-                                RadioButtonString.Tag = "Line";
-                                break;
-                            }
+                        {
+                            string argsKey2 = li.Text;
+                            bool argbHighlightWholeRow1 = true;
+                            m_HighlightList.Add(argsKey2, argbHighlightWholeRow1, TextBoxColor.Text, StringToBoolean(li.SubItems[3].Text), li.SubItems[4].Text, li.SubItems[5].Text, bIsActive);
+                            RadioButtonString.Tag = "Line";
+                            break;
+                        }
 
                         case "BeginsWith":
-                            {
-                                string argsKey3 = li.Text;
-                                string argsColorName = TextBoxColor.Text;
-                                m_HighlightLineBeginsWith.Add(argsKey3, argsColorName, StringToBoolean(li.SubItems[3].Text), li.SubItems[4].Text, li.SubItems[5].Text, bIsActive);
-                                RadioButtonString.Tag = "BeginsWith";
-                                break;
-                            }
+                        {
+                            string argsKey3 = li.Text;
+                            string argsColorName = TextBoxColor.Text;
+                            m_HighlightLineBeginsWith.Add(argsKey3, argsColorName, StringToBoolean(li.SubItems[3].Text), li.SubItems[4].Text, li.SubItems[5].Text, bIsActive);
+                            RadioButtonString.Tag = "BeginsWith";
+                            break;
+                        }
 
                         case "RegExp":
-                            {
-                                string argsKey4 = li.Text;
-                                string argsColorName1 = TextBoxColor.Text;
-                                m_HighlightRegExp.Add(argsKey4, argsColorName1, StringToBoolean(li.SubItems[3].Text), li.SubItems[4].Text, li.SubItems[5].Text, bIsActive);
-                                RadioButtonString.Tag = "RegExp";
-                                break;
-                            }
+                        {
+                            string argsKey4 = li.Text;
+                            string argsColorName1 = TextBoxColor.Text;
+                            m_HighlightRegExp.Add(argsKey4, argsColorName1, StringToBoolean(li.SubItems[3].Text), li.SubItems[4].Text, li.SubItems[5].Text, bIsActive);
+                            RadioButtonString.Tag = "RegExp";
+                            break;
+                        }
                     }
 
                     li.SubItems[2].Text = TextBoxColor.Text;
@@ -692,36 +692,36 @@ namespace GenieClient
                 switch (switchExpr)
                 {
                     case "String":
-                        {
-                            string argsKey5 = TextBoxHighlight.Text;
-                            bool argbHighlightWholeRow2 = false;
-                            m_HighlightList.Add(argsKey5, argbHighlightWholeRow2, TextBoxColor.Text, CheckBoxCaseSensitive.Checked, TextBoxSound.Text, sClass, bIsActive);
-                            break;
-                        }
+                    {
+                        string argsKey5 = TextBoxHighlight.Text;
+                        bool argbHighlightWholeRow2 = false;
+                        m_HighlightList.Add(argsKey5, argbHighlightWholeRow2, TextBoxColor.Text, CheckBoxCaseSensitive.Checked, TextBoxSound.Text, sClass, bIsActive);
+                        break;
+                    }
 
                     case "Line":
-                        {
-                            string argsKey6 = TextBoxHighlight.Text;
-                            bool argbHighlightWholeRow3 = true;
-                            m_HighlightList.Add(argsKey6, argbHighlightWholeRow3, TextBoxColor.Text, CheckBoxCaseSensitive.Checked, TextBoxSound.Text, sClass, bIsActive);
-                            break;
-                        }
+                    {
+                        string argsKey6 = TextBoxHighlight.Text;
+                        bool argbHighlightWholeRow3 = true;
+                        m_HighlightList.Add(argsKey6, argbHighlightWholeRow3, TextBoxColor.Text, CheckBoxCaseSensitive.Checked, TextBoxSound.Text, sClass, bIsActive);
+                        break;
+                    }
 
                     case "BeginsWith":
-                        {
-                            string argsKey7 = TextBoxHighlight.Text;
-                            string argsColorName2 = TextBoxColor.Text;
-                            m_HighlightLineBeginsWith.Add(argsKey7, argsColorName2, CheckBoxCaseSensitive.Checked, TextBoxSound.Text, sClass, bIsActive);
-                            break;
-                        }
+                    {
+                        string argsKey7 = TextBoxHighlight.Text;
+                        string argsColorName2 = TextBoxColor.Text;
+                        m_HighlightLineBeginsWith.Add(argsKey7, argsColorName2, CheckBoxCaseSensitive.Checked, TextBoxSound.Text, sClass, bIsActive);
+                        break;
+                    }
 
                     case "RegExp":
-                        {
-                            string argsKey8 = TextBoxHighlight.Text;
-                            string argsColorName3 = TextBoxColor.Text;
-                            m_HighlightRegExp.Add(argsKey8, argsColorName3, CheckBoxCaseSensitive.Checked, TextBoxSound.Text, sClass, bIsActive);
-                            break;
-                        }
+                    {
+                        string argsKey8 = TextBoxHighlight.Text;
+                        string argsColorName3 = TextBoxColor.Text;
+                        m_HighlightRegExp.Add(argsKey8, argsColorName3, CheckBoxCaseSensitive.Checked, TextBoxSound.Text, sClass, bIsActive);
+                        break;
+                    }
                 }
 
                 var li = ListViewBase.Items.Add(TextBoxHighlight.Text);
@@ -758,24 +758,24 @@ namespace GenieClient
             {
                 case "String":
                 case "Line":
-                    {
-                        return m_HighlightList.ContainsKey(sKey);
-                    }
+                {
+                    return m_HighlightList.ContainsKey(sKey);
+                }
 
                 case "BeginsWith":
-                    {
-                        return m_HighlightLineBeginsWith.ContainsKey(sKey);
-                    }
+                {
+                    return m_HighlightLineBeginsWith.ContainsKey(sKey);
+                }
 
                 case "RegExp":
-                    {
-                        return m_HighlightRegExp.ContainsKey(sKey);
-                    }
+                {
+                    return m_HighlightRegExp.ContainsKey(sKey);
+                }
 
                 default:
-                    {
-                        return false;
-                    }
+                {
+                    return false;
+                }
             }
         }
 
@@ -828,23 +828,23 @@ namespace GenieClient
                 {
                     case "String":
                     case "Line":
-                        {
-                            string argsKey = li.Text;
-                            m_HighlightList.Remove(argsKey);
-                            break;
-                        }
+                    {
+                        string argsKey = li.Text;
+                        m_HighlightList.Remove(argsKey);
+                        break;
+                    }
 
                     case "BeginsWith":
-                        {
-                            m_HighlightLineBeginsWith.Remove(li.Text);
-                            break;
-                        }
+                    {
+                        m_HighlightLineBeginsWith.Remove(li.Text);
+                        break;
+                    }
 
                     case "RegExp":
-                        {
-                            m_HighlightRegExp.Remove(li.Text);
-                            break;
-                        }
+                    {
+                        m_HighlightRegExp.Remove(li.Text);
+                        break;
+                    }
                 }
 
                 li.Remove();

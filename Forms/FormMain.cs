@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -58,48 +58,48 @@ namespace GenieClient
                 {
                     case "-l":
                     case "-layout":
-                        {
-                            bCustomConfigFile = true;
-                            break;
-                        }
+                    {
+                        bCustomConfigFile = true;
+                        break;
+                    }
 
                     case "-n":
                     case "-noupdate":
-                        {
-                            m_bVersionUpdated = true;
-                            break;
-                        }
+                    {
+                        m_bVersionUpdated = true;
+                        break;
+                    }
 
                     case "-d":
                     case "-debug":
-                        {
-                            m_bDebugPlugin = true;
-                            break;
-                        }
+                    {
+                        m_bDebugPlugin = true;
+                        break;
+                    }
 
                     default:
+                    {
+                        if (bCustomConfigFile == true)
                         {
-                            if (bCustomConfigFile == true)
+                            if (m_sConfigFile.Length == 0)
                             {
-                                if (m_sConfigFile.Length == 0)
+                                m_sConfigFile = cmd;
+                                if (m_sConfigFile.ToLower().EndsWith(".layout") == false & m_sConfigFile.ToLower().EndsWith(".xml") == false)
                                 {
-                                    m_sConfigFile = cmd;
-                                    if (m_sConfigFile.ToLower().EndsWith(".layout") == false & m_sConfigFile.ToLower().EndsWith(".xml") == false)
-                                    {
-                                        m_sConfigFile += ".layout";
-                                    }
-
-                                    if (m_sConfigFile.Contains(@"\") == false)
-                                    {
-                                        m_sConfigFile = m_oGlobals.Config.ConfigDir + @"\Layout\" + m_sConfigFile;
-                                    }
-
-                                    bCustomConfigFile = false;
+                                    m_sConfigFile += ".layout";
                                 }
-                            }
 
-                            break;
+                                if (m_sConfigFile.Contains(@"\") == false)
+                                {
+                                    m_sConfigFile = m_oGlobals.Config.ConfigDir + @"\Layout\" + m_sConfigFile;
+                                }
+
+                                bCustomConfigFile = false;
+                            }
                         }
+
+                        break;
+                    }
                 }
             }
 
@@ -215,7 +215,8 @@ namespace GenieClient
                 }
                 foreach (string parameter in parameters)
                 {
-                    if (parameter.Length <= 1) continue;
+                    if (parameter.Length <= 1)
+                        continue;
 
                     string param = parameter[0].ToString();
                     string value = parameter.Substring(1);
@@ -272,8 +273,10 @@ namespace GenieClient
                 m_oGame.AccountCharacter = character;
                 m_oGame.AccountGame = game;
                 SafeLoadProfile(m_sCurrentProfileFile, false);
-                if (string.IsNullOrEmpty(key)) m_oGame.DirectConnect(character, game, host, port);
-                else m_oGame.DirectConnect(character, game, host, port, key);
+                if (string.IsNullOrEmpty(key))
+                    m_oGame.DirectConnect(character, game, host, port);
+                else
+                    m_oGame.DirectConnect(character, game, host, port, key);
             }
         }
 
@@ -3756,83 +3759,83 @@ namespace GenieClient
             {
                 case "inv":
                 case "inventory":
-                    {
-                        m_oOutputInv = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputInv = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
 
                 case "familiar":
-                    {
-                        m_oOutputFamiliar = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputFamiliar = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
 
                 case "thoughts":
-                    {
-                        m_oOutputThoughts = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputThoughts = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
 
                 case "logons":
                 case "arrivals":
-                    {
-                        m_oOutputLogons = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputLogons = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
 
                 case "deaths":
                 case "death":
-                    {
-                        m_oOutputDeath = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputDeath = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
 
                 case "room":
-                    {
-                        m_oOutputRoom = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputRoom = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
 
                 case "log":
-                    {
-                        m_oOutputLog = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputLog = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
 
                 case "debug":
-                    {
-                        m_oOutputDebug = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputDebug = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
                 case "percWindow":
                 case "percwindow":
-                    {
-                        m_oOutputActiveSpells = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputActiveSpells = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
 
                 case "combat":
-                    {
-                        m_oOutputCombat = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputCombat = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
 
                 case "portrait":
-                    {
-                        m_oOutputPortrait = oForm;
-                        oForm.UserForm = false;
-                        break;
-                    }
+                {
+                    m_oOutputPortrait = oForm;
+                    oForm.UserForm = false;
+                    break;
+                }
             }
 
             if (UpdateFormList)
@@ -4400,54 +4403,54 @@ namespace GenieClient
             switch (sVariableName)
             {
                 case "$health":
-                    {
-                        int barValue = Conversions.ToInteger(m_oGlobals.VariableList["health"]);
-                        string barText = m_oGlobals.VariableList["healthBarText"].ToString();
-                        var bar = ComponentBarsHealth;
-                        bar.BarText = barText;
-                        SetBarValue(barValue, bar);
-                        break;
-                    }
+                {
+                    int barValue = Conversions.ToInteger(m_oGlobals.VariableList["health"]);
+                    string barText = m_oGlobals.VariableList["healthBarText"].ToString();
+                    var bar = ComponentBarsHealth;
+                    bar.BarText = barText;
+                    SetBarValue(barValue, bar);
+                    break;
+                }
 
                 case "$mana":
-                    {
-                        int barValue = Conversions.ToInteger(m_oGlobals.VariableList["mana"]);
-                        string barText = m_oGlobals.VariableList["manaBarText"].ToString();
-                        var bar = ComponentBarsMana;
-                        bar.BarText = barText;
-                        SetBarValue(barValue, bar);
-                        break;
-                    }
+                {
+                    int barValue = Conversions.ToInteger(m_oGlobals.VariableList["mana"]);
+                    string barText = m_oGlobals.VariableList["manaBarText"].ToString();
+                    var bar = ComponentBarsMana;
+                    bar.BarText = barText;
+                    SetBarValue(barValue, bar);
+                    break;
+                }
 
                 case "$stamina":
-                    {
-                        int barValue = Conversions.ToInteger(m_oGlobals.VariableList["stamina"]);
-                        string barText = m_oGlobals.VariableList["staminaBarText"].ToString();
-                        var bar = ComponentBarsFatigue;
-                        bar.BarText = barText;
-                        SetBarValue(barValue, bar);
-                        break;
-                    }
+                {
+                    int barValue = Conversions.ToInteger(m_oGlobals.VariableList["stamina"]);
+                    string barText = m_oGlobals.VariableList["staminaBarText"].ToString();
+                    var bar = ComponentBarsFatigue;
+                    bar.BarText = barText;
+                    SetBarValue(barValue, bar);
+                    break;
+                }
 
                 case "$spirit":
-                    {
-                        int barValue = Conversions.ToInteger(m_oGlobals.VariableList["spirit"]);
-                        string barText = m_oGlobals.VariableList["spiritBarText"].ToString();
-                        var bar = ComponentBarsSpirit;
-                        bar.BarText = barText;
-                        SetBarValue(barValue, bar);
-                        break;
-                    }
+                {
+                    int barValue = Conversions.ToInteger(m_oGlobals.VariableList["spirit"]);
+                    string barText = m_oGlobals.VariableList["spiritBarText"].ToString();
+                    var bar = ComponentBarsSpirit;
+                    bar.BarText = barText;
+                    SetBarValue(barValue, bar);
+                    break;
+                }
 
                 case "$concentration":
-                    {
-                        int barValue = Conversions.ToInteger(m_oGlobals.VariableList["concentration"]);
-                        string barText = m_oGlobals.VariableList["concentrationBarText"].ToString();
-                        var bar = ComponentBarsConc;
-                        bar.BarText = barText;
-                        SetBarValue(barValue, bar);
-                        break;
-                    }
+                {
+                    int barValue = Conversions.ToInteger(m_oGlobals.VariableList["concentration"]);
+                    string barText = m_oGlobals.VariableList["concentrationBarText"].ToString();
+                    var bar = ComponentBarsConc;
+                    bar.BarText = barText;
+                    SetBarValue(barValue, bar);
+                    break;
+                }
 
                 case "compass":
                 case "$north":
@@ -4461,117 +4464,119 @@ namespace GenieClient
                 case "$up":
                 case "$down":
                 case "$out":
-                    {
-                        IconBar.PictureBoxCompass.Invalidate();
-                        return; // Block direction triggers (They clear before changing.)
-                    }
+                {
+                    IconBar.PictureBoxCompass.Invalidate();
+                    return; // Block direction triggers (They clear before changing.)
+                }
 
                 case "$dead":
                 case "$standing":
                 case "$kneeling":
                 case "$sitting":
                 case "$prone":
-                    {
-                        IconBar.UpdateStatusBox();
-                        break;
-                    }
+                {
+                    IconBar.UpdateStatusBox();
+                    break;
+                }
 
                 case "$stunned":
-                    {
-                        IconBar.UpdateStunned();
-                        break;
-                    }
+                {
+                    IconBar.UpdateStunned();
+                    break;
+                }
 
                 case "$bleeding":
-                    {
-                        IconBar.UpdateBleeding();
-                        break;
-                    }
+                {
+                    IconBar.UpdateBleeding();
+                    break;
+                }
 
                 case "$invisible":
-                    {
-                        IconBar.UpdateInvisible();
-                        break;
-                    }
+                {
+                    IconBar.UpdateInvisible();
+                    break;
+                }
 
                 case "$hidden":
-                    {
-                        IconBar.UpdateHidden();
-                        break;
-                    }
+                {
+                    IconBar.UpdateHidden();
+                    break;
+                }
 
                 case "$joined":
-                    {
-                        IconBar.UpdateJoined();
-                        break;
-                    }
+                {
+                    IconBar.UpdateJoined();
+                    break;
+                }
 
                 case "$webbed":
-                    {
-                        IconBar.UpdateWebbed();
-                        break;
-                    }
+                {
+                    IconBar.UpdateWebbed();
+                    break;
+                }
 
                 case "$connected":
+                {
+                    string argsValue = Conversions.ToString(m_oGlobals.VariableList["connected"]);
+                    bool bConnected = Utility.StringToBoolean(argsValue);
+                    ComponentBarsHealth.IsConnected = bConnected;
+                    ComponentBarsMana.IsConnected = bConnected;
+                    ComponentBarsFatigue.IsConnected = bConnected;
+                    ComponentBarsSpirit.IsConnected = bConnected;
+                    ComponentBarsConc.IsConnected = bConnected;
+                    IconBar.IsConnected = bConnected;
+                    oRTControl.IsConnected = bConnected;
+                    Castbar.IsConnected = bConnected;
+                    m_CommandSent = false;
+                    m_oGlobals.VariableList["charactername"] = m_oGame.AccountCharacter;
+                    m_oGlobals.VariableList["game"] = m_oGame.AccountGame;
+                    m_oGlobals.VariableList["gamename"] = m_oGame.AccountGame;
+                    m_oAutoMapper.CharacterName = m_oGame.AccountCharacter;
+                    m_sCurrentProfileName = m_oGame.AccountCharacter + m_oGame.AccountGame + ".xml";
+                    m_oGame.ResetIndicators();
+                    IconBar.UpdateStatusBox();
+                    IconBar.UpdateStunned();
+                    IconBar.UpdateBleeding();
+                    IconBar.UpdateInvisible();
+                    IconBar.UpdateHidden();
+                    IconBar.UpdateJoined();
+                    IconBar.UpdateWebbed();
+                    if (m_oGame.IsConnectedToGame)
                     {
-                        string argsValue = Conversions.ToString(m_oGlobals.VariableList["connected"]);
-                        bool bConnected = Utility.StringToBoolean(argsValue);
-                        ComponentBarsHealth.IsConnected = bConnected;
-                        ComponentBarsMana.IsConnected = bConnected;
-                        ComponentBarsFatigue.IsConnected = bConnected;
-                        ComponentBarsSpirit.IsConnected = bConnected;
-                        ComponentBarsConc.IsConnected = bConnected;
-                        IconBar.IsConnected = bConnected;
-                        oRTControl.IsConnected = bConnected;
-                        Castbar.IsConnected = bConnected;
-                        m_CommandSent = false;
-                        m_oGlobals.VariableList["charactername"] = m_oGame.AccountCharacter;
-                        m_oGlobals.VariableList["game"] = m_oGame.AccountGame;
-                        m_oGlobals.VariableList["gamename"] = m_oGame.AccountGame;
-                        m_oAutoMapper.CharacterName = m_oGame.AccountCharacter;
-                        m_sCurrentProfileName = m_oGame.AccountCharacter + m_oGame.AccountGame + ".xml";
-                        m_oGame.ResetIndicators();
-                        IconBar.UpdateStatusBox();
-                        IconBar.UpdateStunned();
-                        IconBar.UpdateBleeding();
-                        IconBar.UpdateInvisible();
-                        IconBar.UpdateHidden();
-                        IconBar.UpdateJoined();
-                        IconBar.UpdateWebbed();
-                        if (m_oGame.IsConnectedToGame)
-                        {
-                            if (!string.IsNullOrWhiteSpace(m_oGlobals.Config.ConnectScript)) ClassCommand_SendText(m_oGlobals.Config.ScriptChar + m_oGlobals.Config.ConnectScript, false, "Connected");
-                            if (m_oGlobals.VariableList.ContainsKey("connectscript")) ClassCommand_SendText(m_oGlobals.Config.ScriptChar + m_oGlobals.Config.ConnectScript, false, "Connected");
-                        }
-                        SafeUpdateMainWindowTitle();
-                        break;
+                        if (!string.IsNullOrWhiteSpace(m_oGlobals.Config.ConnectScript))
+                            ClassCommand_SendText(m_oGlobals.Config.ScriptChar + m_oGlobals.Config.ConnectScript, false, "Connected");
+                        if (m_oGlobals.VariableList.ContainsKey("connectscript"))
+                            ClassCommand_SendText(m_oGlobals.Config.ScriptChar + m_oGlobals.Config.ConnectScript, false, "Connected");
                     }
+                    SafeUpdateMainWindowTitle();
+                    break;
+                }
 
                 case "$prompt": // Safety
-                    {
-                        IconBar.UpdateBleeding();
-                        break;
-                    }
+                {
+                    IconBar.UpdateBleeding();
+                    break;
+                }
 
                 case "$charactername":
+                {
+                    SafeUpdateMainWindowTitle();
+                    m_oAutoMapper.CharacterName = m_oGlobals.VariableList["charactername"].ToString();
+                    m_oGame.AccountCharacter = m_oGlobals.VariableList["charactername"].ToString();
+                    if (m_oGlobals.VariableList["charactername"].ToString().Length > 0)
                     {
-                        SafeUpdateMainWindowTitle();
-                        m_oAutoMapper.CharacterName = m_oGlobals.VariableList["charactername"].ToString();
-                        m_oGame.AccountCharacter = m_oGlobals.VariableList["charactername"].ToString();
-                        if (m_oGlobals.VariableList["charactername"].ToString().Length > 0)
-                        {
-                            m_sCurrentProfileName = m_oGame.AccountCharacter + m_oGame.AccountGame + ".xml";
-                        }
-
-                        break;
+                        m_sCurrentProfileName = m_oGame.AccountCharacter + m_oGame.AccountGame + ".xml";
                     }
+
+                    break;
+                }
                 /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
                 case "$gamename":
-                    {
-                        // SafeLoadProfile(oGlobals.VariableList("charactername").ToString & oGlobals.VariableList("gamename").ToString & ".xml", False)
-                        SafeUpdateMainWindowTitle();
-                        break;
-                    }
+                {
+                    // SafeLoadProfile(oGlobals.VariableList("charactername").ToString & oGlobals.VariableList("gamename").ToString & ".xml", False)
+                    SafeUpdateMainWindowTitle();
+                    break;
+                }
             }
 
             if (m_bTriggersEnabled == true)
@@ -4802,79 +4807,79 @@ namespace GenieClient
                 switch (oTargetWindow)
                 {
                     case Genie.Game.WindowTarget.Death:
-                        {
-                            oFormTarget = m_oOutputDeath;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputDeath;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Familiar:
-                        {
-                            oFormTarget = m_oOutputFamiliar;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputFamiliar;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Inv:
-                        {
-                            if (!Information.IsNothing(m_oOutputInv) && m_oOutputInv.Visible == true)
-                                oFormTarget = m_oOutputInv;
-                            break;
-                        }
+                    {
+                        if (!Information.IsNothing(m_oOutputInv) && m_oOutputInv.Visible == true)
+                            oFormTarget = m_oOutputInv;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Log:
-                        {
-                            oFormTarget = m_oOutputLog;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputLog;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Logons:
-                        {
-                            oFormTarget = m_oOutputLogons;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputLogons;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Room:
-                        {
-                            if (!Information.IsNothing(m_oOutputRoom) && m_oOutputRoom.Visible == true)
-                                oFormTarget = m_oOutputRoom;
-                            break;
-                        }
+                    {
+                        if (!Information.IsNothing(m_oOutputRoom) && m_oOutputRoom.Visible == true)
+                            oFormTarget = m_oOutputRoom;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Thoughts:
-                        {
-                            oFormTarget = m_oOutputThoughts;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputThoughts;
+                        break;
+                    }
                     case Genie.Game.WindowTarget.Combat:
-                        {
-                            oFormTarget = m_oOutputCombat;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputCombat;
+                        break;
+                    }
                     case Genie.Game.WindowTarget.Portrait:
-                        {
-                            oFormTarget = m_oOutputPortrait;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputPortrait;
+                        break;
+                    }
                     case Genie.Game.WindowTarget.ActiveSpells:
-                        {
-                            oFormTarget = m_oOutputActiveSpells;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputActiveSpells;
+                        break;
+                    }
                     case Genie.Game.WindowTarget.Debug:
-                        {
-                            oFormTarget = m_oOutputDebug;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputDebug;
+                        break;
+                    }
                     case Genie.Game.WindowTarget.Other:
-                        {
-                            oFormTarget = FindSkinFormByName(sTargetWindow);
-                            break;
-                        }
+                    {
+                        oFormTarget = FindSkinFormByName(sTargetWindow);
+                        break;
+                    }
 
                     default:
-                        {
-                            oFormTarget = m_oOutputMain;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputMain;
+                        break;
+                    }
                 }
 
                 if (Information.IsNothing(oFormTarget))
@@ -4937,79 +4942,79 @@ namespace GenieClient
                 switch (oTargetWindow)
                 {
                     case Genie.Game.WindowTarget.Portrait:
-                        {
-                            oFormTarget = m_oOutputPortrait;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputPortrait;
+                        break;
+                    }
                     case Genie.Game.WindowTarget.Death:
-                        {
-                            oFormTarget = m_oOutputDeath;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputDeath;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Familiar:
-                        {
-                            oFormTarget = m_oOutputFamiliar;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputFamiliar;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Inv:
-                        {
-                            if (!Information.IsNothing(m_oOutputInv) && m_oOutputInv.Visible == true)
-                                oFormTarget = m_oOutputInv;
-                            break;
-                        }
+                    {
+                        if (!Information.IsNothing(m_oOutputInv) && m_oOutputInv.Visible == true)
+                            oFormTarget = m_oOutputInv;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Log:
-                        {
-                            oFormTarget = m_oOutputLog;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputLog;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Logons:
-                        {
-                            oFormTarget = m_oOutputLogons;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputLogons;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Room:
-                        {
-                            if (!Information.IsNothing(m_oOutputRoom) && m_oOutputRoom.Visible == true)
-                                oFormTarget = m_oOutputRoom;
-                            break;
-                        }
+                    {
+                        if (!Information.IsNothing(m_oOutputRoom) && m_oOutputRoom.Visible == true)
+                            oFormTarget = m_oOutputRoom;
+                        break;
+                    }
 
                     case Genie.Game.WindowTarget.Thoughts:
-                        {
-                            oFormTarget = m_oOutputThoughts;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputThoughts;
+                        break;
+                    }
                     case Genie.Game.WindowTarget.Combat:
-                        {
-                            oFormTarget = m_oOutputCombat;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputCombat;
+                        break;
+                    }
                     case Genie.Game.WindowTarget.ActiveSpells:
-                        {
-                            oFormTarget = m_oOutputActiveSpells;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputActiveSpells;
+                        break;
+                    }
                     case Genie.Game.WindowTarget.Debug:
-                        {
-                            oFormTarget = m_oOutputDebug;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputDebug;
+                        break;
+                    }
                     case Genie.Game.WindowTarget.Other:
-                        {
-                            oFormTarget = FindSkinFormByName(sTargetWindow);
-                            break;
-                        }
+                    {
+                        oFormTarget = FindSkinFormByName(sTargetWindow);
+                        break;
+                    }
 
                     default:
-                        {
-                            oFormTarget = m_oOutputMain;
-                            break;
-                        }
+                    {
+                        oFormTarget = m_oOutputMain;
+                        break;
+                    }
                 }
 
                 if (Information.IsNothing(oFormTarget))
@@ -5072,7 +5077,8 @@ namespace GenieClient
             if (!Information.IsNothing(oTargetWindow))
             {
                 Image image = await FileHandler.GetImage(Path.Combine(m_oGlobals.Config.ArtDir, sImageFilePath), width, height);
-                if (oTargetWindow == m_oOutputPortrait) m_oOutputPortrait.ClearWindow();
+                if (oTargetWindow == m_oOutputPortrait)
+                    m_oOutputPortrait.ClearWindow();
                 oTargetWindow.RichTextBoxOutput.AddImage(image);
             }
         }
@@ -5788,70 +5794,70 @@ namespace GenieClient
                 switch (iIndex)
                 {
                     case 1:
-                        {
-                            oLabel = ToolStripStatusLabel1;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel1;
+                        break;
+                    }
 
                     case 2:
-                        {
-                            oLabel = ToolStripStatusLabel2;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel2;
+                        break;
+                    }
 
                     case 3:
-                        {
-                            oLabel = ToolStripStatusLabel3;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel3;
+                        break;
+                    }
 
                     case 4:
-                        {
-                            oLabel = ToolStripStatusLabel4;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel4;
+                        break;
+                    }
 
                     case 5:
-                        {
-                            oLabel = ToolStripStatusLabel5;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel5;
+                        break;
+                    }
 
                     case 6:
-                        {
-                            oLabel = ToolStripStatusLabel6;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel6;
+                        break;
+                    }
 
                     case 7:
-                        {
-                            oLabel = ToolStripStatusLabel7;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel7;
+                        break;
+                    }
 
                     case 8:
-                        {
-                            oLabel = ToolStripStatusLabel8;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel8;
+                        break;
+                    }
 
                     case 9:
-                        {
-                            oLabel = ToolStripStatusLabel9;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel9;
+                        break;
+                    }
 
                     case 10:
-                        {
-                            oLabel = ToolStripStatusLabel10;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel10;
+                        break;
+                    }
 
                     default:
-                        {
-                            oLabel = ToolStripStatusLabel1;
-                            break;
-                        }
+                    {
+                        oLabel = ToolStripStatusLabel1;
+                        break;
+                    }
                 }
 
                 SafeSetStatusBar(sText, oLabel);
@@ -6532,40 +6538,40 @@ namespace GenieClient
             switch (switchExpr)
             {
                 case Keys.Back:
-                    {
-                        sKeyString = "{BACKSPACE}";
-                        break;
-                    }
+                {
+                    sKeyString = "{BACKSPACE}";
+                    break;
+                }
 
                 case Keys.Delete:
-                    {
-                        sKeyString = "{DELETE}";
-                        break;
-                    }
+                {
+                    sKeyString = "{DELETE}";
+                    break;
+                }
 
                 case Keys.Up:
-                    {
-                        sKeyString = "{UP}";
-                        break;
-                    }
+                {
+                    sKeyString = "{UP}";
+                    break;
+                }
 
                 case Keys.Down:
-                    {
-                        sKeyString = "{DOWN}";
-                        break;
-                    }
+                {
+                    sKeyString = "{DOWN}";
+                    break;
+                }
 
                 case Keys.Left:
-                    {
-                        sKeyString = "{LEFT}";
-                        break;
-                    }
+                {
+                    sKeyString = "{LEFT}";
+                    break;
+                }
 
                 case Keys.Right:
-                    {
-                        sKeyString = "{RIGHT}";
-                        break;
-                    }
+                {
+                    sKeyString = "{RIGHT}";
+                    break;
+                }
             }
 
             if (sKeyString.Length > 0)
@@ -6942,91 +6948,91 @@ namespace GenieClient
             switch (oField)
             {
                 case Genie.Config.ConfigFieldUpdated.MonoFont:
-                    {
-                        SafeUpdateMonoFont();
-                        break;
-                    }
+                {
+                    SafeUpdateMonoFont();
+                    break;
+                }
 
                 case Genie.Config.ConfigFieldUpdated.InputFont:
-                    {
-                        SafeUpdateInputFont();
-                        break;
-                    }
+                {
+                    SafeUpdateInputFont();
+                    break;
+                }
 
                 case Genie.Config.ConfigFieldUpdated.Autolog:
-                    {
-                        AutoLogToolStripMenuItem.Checked = m_oGlobals.Config.bAutoLog;
-                        break;
-                    }
+                {
+                    AutoLogToolStripMenuItem.Checked = m_oGlobals.Config.bAutoLog;
+                    break;
+                }
                 case Genie.Config.ConfigFieldUpdated.ClassicConnect:
-                    {
-                        ClassicConnectToolStripMenuItem.Checked = m_oGlobals.Config.bClassicConnect;
-                        break;
-                    }
+                {
+                    ClassicConnectToolStripMenuItem.Checked = m_oGlobals.Config.bClassicConnect;
+                    break;
+                }
 
                 case Genie.Config.ConfigFieldUpdated.Reconnect:
-                    {
-                        AutoReconnectToolStripMenuItem.Checked = m_oGlobals.Config.bReconnect;
-                        break;
-                    }
+                {
+                    AutoReconnectToolStripMenuItem.Checked = m_oGlobals.Config.bReconnect;
+                    break;
+                }
 
                 case Genie.Config.ConfigFieldUpdated.KeepInput:
-                    {
-                        TextBoxInput.KeepInput = m_oGlobals.Config.bKeepInput;
-                        break;
-                    }
+                {
+                    TextBoxInput.KeepInput = m_oGlobals.Config.bKeepInput;
+                    break;
+                }
 
                 case Genie.Config.ConfigFieldUpdated.Muted:
-                    {
-                        MuteSoundsToolStripMenuItem.Checked = !m_oGlobals.Config.bPlaySounds;
-                        break;
-                    }
+                {
+                    MuteSoundsToolStripMenuItem.Checked = !m_oGlobals.Config.bPlaySounds;
+                    break;
+                }
 
                 case Genie.Config.ConfigFieldUpdated.AutoMapper:
-                    {
-                        AutoMapperEnabledToolStripMenuItem.Checked = m_oGlobals.Config.bAutoMapper;
-                        m_oAutoMapper.UpdatePanelBackgroundColor();
-                        break;
-                    }
+                {
+                    AutoMapperEnabledToolStripMenuItem.Checked = m_oGlobals.Config.bAutoMapper;
+                    m_oAutoMapper.UpdatePanelBackgroundColor();
+                    break;
+                }
 
                 case Genie.Config.ConfigFieldUpdated.LogDir:
-                    {
-                        m_oGlobals.Log.LogDirectory = m_oGlobals.Config.sLogDir;
-                        break;
-                    }
+                {
+                    m_oGlobals.Log.LogDirectory = m_oGlobals.Config.sLogDir;
+                    break;
+                }
 
                 case Genie.Config.ConfigFieldUpdated.CheckForUpdates:
-                    {
-                        checkUpdatesOnStartupToolStripMenuItem.Checked = m_oGlobals.Config.CheckForUpdates;
-                        break;
-                    }
+                {
+                    checkUpdatesOnStartupToolStripMenuItem.Checked = m_oGlobals.Config.CheckForUpdates;
+                    break;
+                }
 
                 case Genie.Config.ConfigFieldUpdated.AutoUpdate:
-                    {
-                        autoUpdateToolStripMenuItem.Checked = m_oGlobals.Config.AutoUpdate;
-                        break;
-                    }
+                {
+                    autoUpdateToolStripMenuItem.Checked = m_oGlobals.Config.AutoUpdate;
+                    break;
+                }
                 case Genie.Config.ConfigFieldUpdated.ImagesEnabled:
-                    {
-                        _ImagesEnabledToolStripMenuItem.Checked = m_oGlobals.Config.bShowImages;
-                        break;
-                    }
+                {
+                    _ImagesEnabledToolStripMenuItem.Checked = m_oGlobals.Config.bShowImages;
+                    break;
+                }
                 case Genie.Config.ConfigFieldUpdated.SizeInputToGame:
-                    {
-                        alignInputToGameWindowToolStripMenuItem.Checked = m_oGlobals.Config.SizeInputToGame;
-                        break;
-                    }
+                {
+                    alignInputToGameWindowToolStripMenuItem.Checked = m_oGlobals.Config.SizeInputToGame;
+                    break;
+                }
 
                 case Genie.Config.ConfigFieldUpdated.UpdateMapperScripts:
-                    {
-                        updateScriptsWithMapsToolStripMenuItem.Checked = m_oGlobals.Config.UpdateMapperScripts;
-                        break;
-                    }
+                {
+                    updateScriptsWithMapsToolStripMenuItem.Checked = m_oGlobals.Config.UpdateMapperScripts;
+                    break;
+                }
                 case Genie.Config.ConfigFieldUpdated.AlwaysOnTop:
-                    {
-                        alwaysOnTopToolStripMenuItem.Checked = m_oGlobals.Config.AlwaysOnTop;
-                        break;
-                    }
+                {
+                    alwaysOnTopToolStripMenuItem.Checked = m_oGlobals.Config.AlwaysOnTop;
+                    break;
+                }
             }
         }
 
@@ -7221,110 +7227,112 @@ namespace GenieClient
             {
                 if (!Information.IsNothing(m_oGlobals.PresetList))
                 {
-                    if (sPreset.StartsWith("automapper")) { sPreset = "automapper"; }
-                    if (sPreset.StartsWith("ui")) { sPreset = "ui"; }
+                    if (sPreset.StartsWith("automapper"))
+                    { sPreset = "automapper"; }
+                    if (sPreset.StartsWith("ui"))
+                    { sPreset = "ui"; }
                     switch (sPreset)
                     {
                         case "roundtime":
-                            {
-                                oRTControl.ForegroundColor = m_oGlobals.PresetList["roundtime"].FgColor;
-                                oRTControl.BackgroundColorRT = m_oGlobals.PresetList["roundtime"].BgColor;
-                                oRTControl.Refresh();
-                                break;
-                            }
+                        {
+                            oRTControl.ForegroundColor = m_oGlobals.PresetList["roundtime"].FgColor;
+                            oRTControl.BackgroundColorRT = m_oGlobals.PresetList["roundtime"].BgColor;
+                            oRTControl.Refresh();
+                            break;
+                        }
 
                         case "castbar":
-                            {
-                                Castbar.ForegroundColor = m_oGlobals.PresetList["castbar"].FgColor;
-                                Castbar.BackgroundColorRT = m_oGlobals.PresetList["castbar"].BgColor;
-                                Castbar.Refresh();
-                                break;
-                            }
+                        {
+                            Castbar.ForegroundColor = m_oGlobals.PresetList["castbar"].FgColor;
+                            Castbar.BackgroundColorRT = m_oGlobals.PresetList["castbar"].BgColor;
+                            Castbar.Refresh();
+                            break;
+                        }
                         case "automapper":
-                            {
-                                m_oAutoMapper.UpdatePanelBackgroundColor();
-                                break;
-                            }
+                        {
+                            m_oAutoMapper.UpdatePanelBackgroundColor();
+                            break;
+                        }
                         case "ui":
-                            {
-                                RecolorUI();
-                                break;
-                            }
+                        {
+                            RecolorUI();
+                            break;
+                        }
                         case "health":
-                            {
-                                ComponentBarsHealth.ForegroundColor = m_oGlobals.PresetList["health"].FgColor;
-                                ComponentBarsHealth.BackgroundColor = m_oGlobals.PresetList["health"].BgColor;
-                                ComponentBarsHealth.BorderColor = m_oGlobals.PresetList["health"].BgColor;
-                                ComponentBarsHealth.Refresh();
-                                break;
-                            }
+                        {
+                            ComponentBarsHealth.ForegroundColor = m_oGlobals.PresetList["health"].FgColor;
+                            ComponentBarsHealth.BackgroundColor = m_oGlobals.PresetList["health"].BgColor;
+                            ComponentBarsHealth.BorderColor = m_oGlobals.PresetList["health"].BgColor;
+                            ComponentBarsHealth.Refresh();
+                            break;
+                        }
 
                         case "mana":
-                            {
-                                ComponentBarsMana.ForegroundColor = m_oGlobals.PresetList["mana"].FgColor;
-                                ComponentBarsMana.BackgroundColor = m_oGlobals.PresetList["mana"].BgColor;
-                                ComponentBarsMana.BorderColor = m_oGlobals.PresetList["mana"].BgColor;
-                                ComponentBarsMana.Refresh();
-                                break;
-                            }
+                        {
+                            ComponentBarsMana.ForegroundColor = m_oGlobals.PresetList["mana"].FgColor;
+                            ComponentBarsMana.BackgroundColor = m_oGlobals.PresetList["mana"].BgColor;
+                            ComponentBarsMana.BorderColor = m_oGlobals.PresetList["mana"].BgColor;
+                            ComponentBarsMana.Refresh();
+                            break;
+                        }
 
                         case "stamina":
-                            {
-                                ComponentBarsFatigue.ForegroundColor = m_oGlobals.PresetList["stamina"].FgColor;
-                                ComponentBarsFatigue.BackgroundColor = m_oGlobals.PresetList["stamina"].BgColor;
-                                ComponentBarsFatigue.BorderColor = m_oGlobals.PresetList["stamina"].BgColor;
-                                ComponentBarsFatigue.Refresh();
-                                break;
-                            }
+                        {
+                            ComponentBarsFatigue.ForegroundColor = m_oGlobals.PresetList["stamina"].FgColor;
+                            ComponentBarsFatigue.BackgroundColor = m_oGlobals.PresetList["stamina"].BgColor;
+                            ComponentBarsFatigue.BorderColor = m_oGlobals.PresetList["stamina"].BgColor;
+                            ComponentBarsFatigue.Refresh();
+                            break;
+                        }
 
                         case "spirit":
-                            {
-                                ComponentBarsSpirit.ForegroundColor = m_oGlobals.PresetList["spirit"].FgColor;
-                                ComponentBarsSpirit.BackgroundColor = m_oGlobals.PresetList["spirit"].BgColor;
-                                ComponentBarsSpirit.BorderColor = m_oGlobals.PresetList["spirit"].BgColor;
-                                ComponentBarsSpirit.Refresh();
-                                break;
-                            }
+                        {
+                            ComponentBarsSpirit.ForegroundColor = m_oGlobals.PresetList["spirit"].FgColor;
+                            ComponentBarsSpirit.BackgroundColor = m_oGlobals.PresetList["spirit"].BgColor;
+                            ComponentBarsSpirit.BorderColor = m_oGlobals.PresetList["spirit"].BgColor;
+                            ComponentBarsSpirit.Refresh();
+                            break;
+                        }
 
                         case "concentration":
-                            {
-                                ComponentBarsConc.ForegroundColor = m_oGlobals.PresetList["concentration"].FgColor;
-                                ComponentBarsConc.BackgroundColor = m_oGlobals.PresetList["concentration"].BgColor;
-                                ComponentBarsConc.BorderColor = m_oGlobals.PresetList["concentration"].BgColor;
-                                ComponentBarsConc.Refresh();
-                                break;
-                            }
+                        {
+                            ComponentBarsConc.ForegroundColor = m_oGlobals.PresetList["concentration"].FgColor;
+                            ComponentBarsConc.BackgroundColor = m_oGlobals.PresetList["concentration"].BgColor;
+                            ComponentBarsConc.BorderColor = m_oGlobals.PresetList["concentration"].BgColor;
+                            ComponentBarsConc.Refresh();
+                            break;
+                        }
 
                         case "all":
-                            {
-                                oRTControl.ForegroundColor = m_oGlobals.PresetList["roundtime"].FgColor;
-                                oRTControl.BackgroundColorRT = m_oGlobals.PresetList["roundtime"].BgColor;
-                                oRTControl.Refresh();
-                                Castbar.ForegroundColor = m_oGlobals.PresetList["castbar"].FgColor;
-                                Castbar.BackgroundColorRT = m_oGlobals.PresetList["castbar"].BgColor;
-                                Castbar.Refresh();
-                                ComponentBarsHealth.ForegroundColor = m_oGlobals.PresetList["health"].FgColor;
-                                ComponentBarsHealth.BackgroundColor = m_oGlobals.PresetList["health"].BgColor;
-                                ComponentBarsHealth.BorderColor = m_oGlobals.PresetList["health"].BgColor;
-                                ComponentBarsHealth.Refresh();
-                                ComponentBarsMana.ForegroundColor = m_oGlobals.PresetList["mana"].FgColor;
-                                ComponentBarsMana.BackgroundColor = m_oGlobals.PresetList["mana"].BgColor;
-                                ComponentBarsMana.BorderColor = m_oGlobals.PresetList["mana"].BgColor;
-                                ComponentBarsMana.Refresh();
-                                ComponentBarsFatigue.ForegroundColor = m_oGlobals.PresetList["stamina"].FgColor;
-                                ComponentBarsFatigue.BackgroundColor = m_oGlobals.PresetList["stamina"].BgColor;
-                                ComponentBarsFatigue.BorderColor = m_oGlobals.PresetList["stamina"].BgColor;
-                                ComponentBarsFatigue.Refresh();
-                                ComponentBarsSpirit.ForegroundColor = m_oGlobals.PresetList["spirit"].FgColor;
-                                ComponentBarsSpirit.BackgroundColor = m_oGlobals.PresetList["spirit"].BgColor;
-                                ComponentBarsSpirit.BorderColor = m_oGlobals.PresetList["spirit"].BgColor;
-                                ComponentBarsSpirit.Refresh();
-                                ComponentBarsConc.ForegroundColor = m_oGlobals.PresetList["concentration"].FgColor;
-                                ComponentBarsConc.BackgroundColor = m_oGlobals.PresetList["concentration"].BgColor;
-                                ComponentBarsConc.BorderColor = m_oGlobals.PresetList["concentration"].BgColor;
-                                ComponentBarsConc.Refresh();
-                                break;
-                            }
+                        {
+                            oRTControl.ForegroundColor = m_oGlobals.PresetList["roundtime"].FgColor;
+                            oRTControl.BackgroundColorRT = m_oGlobals.PresetList["roundtime"].BgColor;
+                            oRTControl.Refresh();
+                            Castbar.ForegroundColor = m_oGlobals.PresetList["castbar"].FgColor;
+                            Castbar.BackgroundColorRT = m_oGlobals.PresetList["castbar"].BgColor;
+                            Castbar.Refresh();
+                            ComponentBarsHealth.ForegroundColor = m_oGlobals.PresetList["health"].FgColor;
+                            ComponentBarsHealth.BackgroundColor = m_oGlobals.PresetList["health"].BgColor;
+                            ComponentBarsHealth.BorderColor = m_oGlobals.PresetList["health"].BgColor;
+                            ComponentBarsHealth.Refresh();
+                            ComponentBarsMana.ForegroundColor = m_oGlobals.PresetList["mana"].FgColor;
+                            ComponentBarsMana.BackgroundColor = m_oGlobals.PresetList["mana"].BgColor;
+                            ComponentBarsMana.BorderColor = m_oGlobals.PresetList["mana"].BgColor;
+                            ComponentBarsMana.Refresh();
+                            ComponentBarsFatigue.ForegroundColor = m_oGlobals.PresetList["stamina"].FgColor;
+                            ComponentBarsFatigue.BackgroundColor = m_oGlobals.PresetList["stamina"].BgColor;
+                            ComponentBarsFatigue.BorderColor = m_oGlobals.PresetList["stamina"].BgColor;
+                            ComponentBarsFatigue.Refresh();
+                            ComponentBarsSpirit.ForegroundColor = m_oGlobals.PresetList["spirit"].FgColor;
+                            ComponentBarsSpirit.BackgroundColor = m_oGlobals.PresetList["spirit"].BgColor;
+                            ComponentBarsSpirit.BorderColor = m_oGlobals.PresetList["spirit"].BgColor;
+                            ComponentBarsSpirit.Refresh();
+                            ComponentBarsConc.ForegroundColor = m_oGlobals.PresetList["concentration"].FgColor;
+                            ComponentBarsConc.BackgroundColor = m_oGlobals.PresetList["concentration"].BgColor;
+                            ComponentBarsConc.BorderColor = m_oGlobals.PresetList["concentration"].BgColor;
+                            ComponentBarsConc.Refresh();
+                            break;
+                        }
                     }
                 }
             }
@@ -7628,18 +7636,26 @@ namespace GenieClient
                 {
                     if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(((FormSkin)oEnumerator.Current).ID, sName.ToLower(), false)))
                     {
-                        if (!sWidth.HasValue) { sWidth = ((FormSkin)oEnumerator.Current).Width; }
-                        if (!sHeight.HasValue) { sHeight = ((FormSkin)oEnumerator.Current).Height; }
-                        if (!sTop.HasValue) { sTop = ((FormSkin)oEnumerator.Current).Top; }
-                        if (!sLeft.HasValue) { sLeft = ((FormSkin)oEnumerator.Current).Left; }
+                        if (!sWidth.HasValue)
+                        { sWidth = ((FormSkin)oEnumerator.Current).Width; }
+                        if (!sHeight.HasValue)
+                        { sHeight = ((FormSkin)oEnumerator.Current).Height; }
+                        if (!sTop.HasValue)
+                        { sTop = ((FormSkin)oEnumerator.Current).Top; }
+                        if (!sLeft.HasValue)
+                        { sLeft = ((FormSkin)oEnumerator.Current).Left; }
 
                         ((FormSkin)oEnumerator.Current).Hide();
                     }
                 }
-                if (!sWidth.HasValue) { sWidth = 0; }
-                if (!sHeight.HasValue) { sHeight = 0; }
-                if (!sTop.HasValue) { sTop = 0; }
-                if (!sLeft.HasValue) { sLeft = 0; }
+                if (!sWidth.HasValue)
+                { sWidth = 0; }
+                if (!sHeight.HasValue)
+                { sHeight = 0; }
+                if (!sTop.HasValue)
+                { sTop = 0; }
+                if (!sLeft.HasValue)
+                { sLeft = 0; }
 
                 var fo = SafeCreateOutputForm(Conversions.ToString(sName.ToLower()), Conversions.ToString(sName), null, sWidth.Value, sHeight.Value, sTop.Value, sLeft.Value, true, null, "", true);
                 if (!Information.IsNothing(fo))
@@ -7654,21 +7670,27 @@ namespace GenieClient
 
             if (sName == "Main") // This is the Genie client window
             {
-                if (!sWidth.HasValue) { sWidth = Width; }
+                if (!sWidth.HasValue)
+                { sWidth = Width; }
                 I = sWidth.Value;
-                if (I < MinimumSize.Width) { I = MinimumSize.Width; }
+                if (I < MinimumSize.Width)
+                { I = MinimumSize.Width; }
                 Width = I;
 
-                if (!sHeight.HasValue) { sHeight = Height; }
+                if (!sHeight.HasValue)
+                { sHeight = Height; }
                 I = sHeight.Value;
-                if (I < MinimumSize.Height) { I = MinimumSize.Height; }
+                if (I < MinimumSize.Height)
+                { I = MinimumSize.Height; }
                 Height = I;
 
-                if (!sTop.HasValue) { sTop = Top; }
+                if (!sTop.HasValue)
+                { sTop = Top; }
                 I = sTop.Value;
                 Top = I;
 
-                if (!sLeft.HasValue) { sLeft = Left; }
+                if (!sLeft.HasValue)
+                { sLeft = Left; }
                 I = sLeft.Value;
                 Left = I;
                 m_IsChangingLayout = false;
@@ -7677,24 +7699,32 @@ namespace GenieClient
             if (sName == "Game") // This is the Main text output window
             {
                 m_oOutputMain.Hide();
-                if (!sWidth.HasValue) { sWidth = m_oOutputMain.Width; }
+                if (!sWidth.HasValue)
+                { sWidth = m_oOutputMain.Width; }
                 I = sWidth.Value;
-                if (I < m_oOutputMain.MinimumSize.Width) { I = m_oOutputMain.MinimumSize.Width; }
+                if (I < m_oOutputMain.MinimumSize.Width)
+                { I = m_oOutputMain.MinimumSize.Width; }
                 m_oOutputMain.Width = I;
 
-                if (!sHeight.HasValue) { sHeight = m_oOutputMain.Height; }
+                if (!sHeight.HasValue)
+                { sHeight = m_oOutputMain.Height; }
                 I = sHeight.Value;
-                if (I < m_oOutputMain.MinimumSize.Height) { I = m_oOutputMain.MinimumSize.Height; }
+                if (I < m_oOutputMain.MinimumSize.Height)
+                { I = m_oOutputMain.MinimumSize.Height; }
                 m_oOutputMain.Height = I;
 
-                if (!sTop.HasValue) { sTop = m_oOutputMain.Top; }
+                if (!sTop.HasValue)
+                { sTop = m_oOutputMain.Top; }
                 I = sTop.Value;
-                if (I < 0) { I = 0; }
+                if (I < 0)
+                { I = 0; }
                 m_oOutputMain.Top = I;
 
-                if (!sLeft.HasValue) { sLeft = m_oOutputMain.Left; }
+                if (!sLeft.HasValue)
+                { sLeft = m_oOutputMain.Left; }
                 I = sLeft.Value;
-                if (I < 0) { I = 0; }
+                if (I < 0)
+                { I = 0; }
                 m_oOutputMain.Left = I;
 
                 m_oOutputMain.Show();

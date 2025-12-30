@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using Microsoft.VisualBasic.CompilerServices;
 
 namespace GenieClient.Genie

@@ -8,12 +8,12 @@ Public Interface IHost
 
     ReadOnly Property ParentForm() As System.Windows.Forms.Form
 
-	ReadOnly Property IsVerified(ByVal key As String) As Boolean
+    ReadOnly Property IsVerified(ByVal key As String) As Boolean
 
-	ReadOnly Property IsPremium(ByVal key As String) As Boolean
+    ReadOnly Property IsPremium(ByVal key As String) As Boolean
 
-	ReadOnly Property InterfaceVersion() As Integer
+    ReadOnly Property InterfaceVersion() As Integer
 
-	Property PluginKey() As String
+    Property PluginKey() As String
 
 End Interface

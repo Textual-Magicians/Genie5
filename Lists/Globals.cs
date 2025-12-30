@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,7 +18,7 @@ namespace GenieClient.Genie
     public class Globals
     {
         private Config _Config = new Config();
-       
+
 
         public Config Config
         {
@@ -50,7 +50,7 @@ namespace GenieClient.Genie
 
         public delegate void ConfigChangedEventHandler(Config.ConfigFieldUpdated oField);
 
-    public Events Events = new Events();
+        public Events Events = new Events();
         public CommandQueue CommandQueue = new CommandQueue();
         public Aliases AliasList = new Aliases();
         public Macros MacroList = new Macros();
@@ -73,7 +73,7 @@ namespace GenieClient.Genie
         private Log _Log = new Log();
 
         public Log Log
-        {            
+        {
             [MethodImpl(MethodImplOptions.Synchronized)]
             get
             {
@@ -110,9 +110,9 @@ namespace GenieClient.Genie
             }
             else
             {
-            //    Config.ConfigChanged(oField);
+                //    Config.ConfigChanged(oField);
                 ConfigChanged?.Invoke(oField);
-            //    Config.ConfigChanged?.Invoke(oField);
+                //    Config.ConfigChanged?.Invoke(oField);
             }
         }
 
@@ -172,14 +172,14 @@ namespace GenieClient.Genie
                             switch (switchExpr)
                             {
                                 case var @case when @case == "$":
+                                {
+                                    if (p <= 0 || Conversions.ToBoolean(!Operators.ConditionalCompareObjectEqual(sText.Substring(p - 1, 1), @"\", false)))
                                     {
-                                        if (p <= 0 || Conversions.ToBoolean(!Operators.ConditionalCompareObjectEqual(sText.Substring(p - 1, 1), @"\", false)))
-                                        {
-                                            sText = sText.Substring(0, p) + ParseVariable(Conversions.ToString(sText.Substring(p)));
-                                        }
-
-                                        break;
+                                        sText = sText.Substring(0, p) + ParseVariable(Conversions.ToString(sText.Substring(p)));
                                     }
+
+                                    break;
+                                }
                             }
 
                             p -= 1;
@@ -223,7 +223,7 @@ namespace GenieClient.Genie
                 sText = sText.Replace("@spelltime@", "0");
                 sText = sText.Replace("@casttimeremaining@", "0");
             }
-            
+
             sText = sText.Replace("@time@", DateTime.Now.ToString("hh:mm:ss tt").Trim());
             sText = sText.Replace("@time24@", DateTime.Now.ToString("HH:mm:ss tt").Trim());
             sText = sText.Replace("@date@", DateTime.Now.ToString("M/d/yyyy").Trim());
@@ -236,8 +236,8 @@ namespace GenieClient.Genie
             sText = sText.Replace("@month@", DateTime.Now.ToString("mm").Trim());
             sText = sText.Replace("@dayofmonth@", DateTime.Now.ToString("dd").Trim());
             sText = sText.Replace("@dayofyear@", DateTime.Now.DayOfYear.ToString().Trim());
-            
-            
+
+
 
             return sText;
         }
@@ -459,9 +459,9 @@ namespace GenieClient.Genie
                         return false;
                     }
                 }
-                #pragma warning disable CS0168
+#pragma warning disable CS0168
                 catch (Exception Err)
-                #pragma warning restore CS0168
+#pragma warning restore CS0168
                 {
                     return false;
                 }
@@ -517,9 +517,9 @@ namespace GenieClient.Genie
 
                     return true;
                 }
-                #pragma warning disable CS0168
+#pragma warning disable CS0168
                 catch (Exception ex)
-                #pragma warning restore CS0168
+#pragma warning restore CS0168
                 {
                     return false;
                 }
@@ -776,9 +776,9 @@ namespace GenieClient.Genie
                         return false;
                     }
                 }
-                #pragma warning disable CS0168
+#pragma warning disable CS0168
                 catch (Exception Err)
-                #pragma warning restore CS0168
+#pragma warning restore CS0168
                 {
                     return false;
                 }
@@ -841,9 +841,9 @@ namespace GenieClient.Genie
 
                     return true;
                 }
-                #pragma warning disable CS0168
+#pragma warning disable CS0168
                 catch (Exception ex)
-                #pragma warning restore CS0168
+#pragma warning restore CS0168
                 {
                     return false;
                 }
@@ -862,7 +862,7 @@ namespace GenieClient.Genie
                 Add("up", "0", VariableType.Reserved);
                 Add("down", "0", VariableType.Reserved);
                 Add("out", "0", VariableType.Reserved);
-                
+
                 Add("roomname", "", VariableType.Reserved);
                 Add("roomdesc", "", VariableType.Reserved);
                 Add("roomobjs", "", VariableType.Reserved);
@@ -876,7 +876,7 @@ namespace GenieClient.Genie
                 Add("mana", "100", VariableType.Reserved);
                 Add("spirit", "100", VariableType.Reserved);
                 Add("stamina", "100", VariableType.Reserved);
-                
+
                 Add("charactername", "", VariableType.Reserved);
                 Add("account", "", VariableType.Reserved);
                 Add("gamename", "", VariableType.Reserved);
@@ -902,7 +902,7 @@ namespace GenieClient.Genie
                 Add("righthandnoun", "", VariableType.Reserved);
 
                 Add("gametime", "0", VariableType.Reserved);
-                               
+
 
                 Add("poisoned", "0", VariableType.Reserved);
                 Add("diseased", "0", VariableType.Reserved);
@@ -1122,9 +1122,9 @@ namespace GenieClient.Genie
                         return false;
                     }
                 }
-                #pragma warning disable CS0168
+#pragma warning disable CS0168
                 catch (Exception ex)
-                #pragma warning restore CS0168
+#pragma warning restore CS0168
                 {
                     return false;
                 }
@@ -1199,9 +1199,9 @@ namespace GenieClient.Genie
 
                     return true;
                 }
-                #pragma warning disable CS0168
+#pragma warning disable CS0168
                 catch (Exception ex)
-                #pragma warning restore CS0168
+#pragma warning restore CS0168
                 {
                     return false;
                 }
@@ -1645,9 +1645,9 @@ namespace GenieClient.Genie
                         return false;
                     }
                 }
-                #pragma warning disable CS0168
+#pragma warning disable CS0168
                 catch (Exception Err)
-                #pragma warning restore CS0168
+#pragma warning restore CS0168
                 {
                     return false;
                 }
@@ -1721,9 +1721,9 @@ namespace GenieClient.Genie
 
                     return true;
                 }
-                #pragma warning disable CS0168
+#pragma warning disable CS0168
                 catch (Exception ex)
-                #pragma warning restore CS0168
+#pragma warning restore CS0168
                 {
                     return false;
                 }
@@ -1873,9 +1873,9 @@ namespace GenieClient.Genie
                         return false;
                     }
                 }
-                #pragma warning disable CS0168
+#pragma warning disable CS0168
                 catch (Exception Err)
-                #pragma warning restore CS0168
+#pragma warning restore CS0168
                 {
                     return false;
                 }
@@ -1950,9 +1950,9 @@ namespace GenieClient.Genie
 
                     return true;
                 }
-                #pragma warning disable CS0168
+#pragma warning disable CS0168
                 catch (Exception ex)
-                #pragma warning restore CS0168
+#pragma warning restore CS0168
                 {
                     return false;
                 }
@@ -2099,9 +2099,9 @@ namespace GenieClient.Genie
                     return false;
                 }
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception Err)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return false;
             }
@@ -2135,74 +2135,74 @@ namespace GenieClient.Genie
                     {
                         case "highlight":
                         case "highlights":
+                        {
+                            var switchExpr1 = oArgs[1].ToString().ToLower();
+                            switch (switchExpr1)
                             {
-                                var switchExpr1 = oArgs[1].ToString().ToLower();
-                                switch (switchExpr1)
+                                case "line":
+                                case "lines":
                                 {
-                                    case "line":
-                                    case "lines":
-                                        {
-                                            if (oArgs.Count > 3)
-                                            {
-                                                bool argbHighlightWholeRow = true;
-                                                var arg1 = oArgs[1].ToString();
-                                                var arg2 = oArgs[2].ToString();
-                                                var arg3 = oArgs[3].ToString();
-                                                HighlightList.Add(arg3, argbHighlightWholeRow, arg2, true, sSound, sClass);
-                                            }
+                                    if (oArgs.Count > 3)
+                                    {
+                                        bool argbHighlightWholeRow = true;
+                                        var arg1 = oArgs[1].ToString();
+                                        var arg2 = oArgs[2].ToString();
+                                        var arg3 = oArgs[3].ToString();
+                                        HighlightList.Add(arg3, argbHighlightWholeRow, arg2, true, sSound, sClass);
+                                    }
 
-                                            break;
-                                        }
-
-                                    case "string":
-                                    case "strings":
-                                        {
-                                            if (oArgs.Count > 3)
-                                            {
-                                                bool argbHighlightWholeRow1 = false;
-                                                var arg1 = oArgs[1].ToString();
-                                                var arg2 = oArgs[2].ToString();
-                                                var arg3 = oArgs[3].ToString();
-                                                HighlightList.Add(arg3, argbHighlightWholeRow1, arg2, true, sSound, sClass);
-                                            }
-
-                                            break;
-                                        }
-
-                                    case "beginswith":
-                                        {
-                                            if (oArgs.Count > 3)
-                                            {
-                                                var arg1 = oArgs[1].ToString();
-                                                var arg2 = oArgs[2].ToString();
-                                                var arg3 = oArgs[3].ToString();
-                                                HighlightBeginsWithList.Add(arg3, arg2, true, sSound, sClass);
-                                            }
-
-                                            break;
-                                        }
-
-                                    case "regexp":
-                                    case "regex":
-                                        {
-                                            if (oArgs.Count > 3)
-                                            {
-                                                string argsRegExp = ParseGlobalVars(oArgs[3].ToString());
-                                                if (Utility.ValidateRegExp(argsRegExp) == true)
-                                                {
-                                                    var arg1 = oArgs[1].ToString();
-                                                    var arg2 = oArgs[2].ToString();
-                                                    var arg3 = oArgs[3].ToString();
-                                                    HighlightRegExpList.Add(arg3, arg2, true, sSound, sClass);
-                                                }
-                                            }
-
-                                            break;
-                                        }
+                                    break;
                                 }
 
-                                break;
+                                case "string":
+                                case "strings":
+                                {
+                                    if (oArgs.Count > 3)
+                                    {
+                                        bool argbHighlightWholeRow1 = false;
+                                        var arg1 = oArgs[1].ToString();
+                                        var arg2 = oArgs[2].ToString();
+                                        var arg3 = oArgs[3].ToString();
+                                        HighlightList.Add(arg3, argbHighlightWholeRow1, arg2, true, sSound, sClass);
+                                    }
+
+                                    break;
+                                }
+
+                                case "beginswith":
+                                {
+                                    if (oArgs.Count > 3)
+                                    {
+                                        var arg1 = oArgs[1].ToString();
+                                        var arg2 = oArgs[2].ToString();
+                                        var arg3 = oArgs[3].ToString();
+                                        HighlightBeginsWithList.Add(arg3, arg2, true, sSound, sClass);
+                                    }
+
+                                    break;
+                                }
+
+                                case "regexp":
+                                case "regex":
+                                {
+                                    if (oArgs.Count > 3)
+                                    {
+                                        string argsRegExp = ParseGlobalVars(oArgs[3].ToString());
+                                        if (Utility.ValidateRegExp(argsRegExp) == true)
+                                        {
+                                            var arg1 = oArgs[1].ToString();
+                                            var arg2 = oArgs[2].ToString();
+                                            var arg3 = oArgs[3].ToString();
+                                            HighlightRegExpList.Add(arg3, arg2, true, sSound, sClass);
+                                        }
+                                    }
+
+                                    break;
+                                }
                             }
+
+                            break;
+                        }
                     }
                 }
             }

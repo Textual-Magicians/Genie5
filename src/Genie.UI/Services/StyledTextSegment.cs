@@ -7,8 +7,8 @@ namespace GenieClient.UI.Services;
 /// Represents a segment of text with styling information.
 /// </summary>
 public record StyledTextSegment(
-    string Text, 
-    GenieColor ForegroundColor, 
+    string Text,
+    GenieColor ForegroundColor,
     GenieColor BackgroundColor,
     bool IsBold = false,
     string? SoundFile = null);
@@ -19,12 +19,12 @@ public record StyledTextSegment(
 public class StyledTextLine
 {
     public List<StyledTextSegment> Segments { get; } = new();
-    
+
     public void Add(string text, GenieColor fg, GenieColor bg, bool bold = false, string? sound = null)
     {
         Segments.Add(new StyledTextSegment(text, fg, bg, bold, sound));
     }
-    
+
     public void Add(StyledTextSegment segment)
     {
         Segments.Add(segment);

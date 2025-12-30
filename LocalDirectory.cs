@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 
@@ -53,7 +53,8 @@ namespace GenieClient
         {
             try
             {
-                if (!System.IO.Path.IsPathRooted(path)) path = System.IO.Path.Combine(Path, path);
+                if (!System.IO.Path.IsPathRooted(path))
+                    path = System.IO.Path.Combine(Path, path);
                 DirectoryInfo directory = new DirectoryInfo(path);
                 if (!directory.Exists)
                 {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows.Forms;
 using Microsoft.VisualBasic;
@@ -240,7 +240,8 @@ namespace GenieClient
             if (My.MyProject.Forms.DialogScriptName.ShowDialog(Parent) == DialogResult.OK)
             {
                 string scriptName = My.MyProject.Forms.DialogScriptName.ScriptName;
-                if (!Path.HasExtension(scriptName)) scriptName += $".{m_oGlobals.Config.ScriptExtension}";
+                if (!Path.HasExtension(scriptName))
+                    scriptName += $".{m_oGlobals.Config.ScriptExtension}";
                 var tnFile = new TreeNode(scriptName, 2, 2);
                 tnFile.Tag = "File";
                 // Add the new child node to the parent node

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -576,194 +576,194 @@ namespace GenieClient.Genie
                 switch (c)
                 {
                     case '<':
-                        {
-                            iInsideXML += 1;
-                            hasXML = true;
-                            oXMLBuffer.Append(c);
-                            break;
-                        }
+                    {
+                        iInsideXML += 1;
+                        hasXML = true;
+                        oXMLBuffer.Append(c);
+                        break;
+                    }
 
                     case '>':
+                    {
+                        if (Conversions.ToString(cPreviousChar) == "/") // End tag in same statement
                         {
-                            if (Conversions.ToString(cPreviousChar) == "/")	// End tag in same statement
-                            {
-                                iInsideXML -= 1;
-                            }
-                            else if (bEndTagFound == true)	// Jump two steps back if we found end tag
-                            {
-                                iInsideXML -= 2;
-                                bEndTagFound = false;
-                            }
-
-                            oXMLBuffer.Append(c);
-                            if (iInsideXML == 0)
-                            {
-                                m_oXMLBuffer.Append(oXMLBuffer);
-                                string buffer = m_oXMLBuffer.ToString();
-                                string sTmp = ProcessXML(buffer);
-                                if (buffer.EndsWith("</preset>"))
-                                {
-                                    XmlDocument presetXML = new XmlDocument();
-                                    presetXML.LoadXml(buffer);
-
-                                    string presetLabel = GetAttributeData(presetXML.FirstChild, "id").ToLower();
-                                    switch(presetLabel)
-                                    {
-                                        case "whisper":
-                                            presetLabel = "whispers";
-                                            break;
-
-                                        case "thought":
-                                            presetLabel = "thoughts";
-                                            break;
-
-                                        default:
-                                            break;
-                                    }
-                                    m_oGlobals.VolatileHighlights.Add(new VolatileHighlight(sTmp, presetLabel, sTextBuffer.Length));
-                                    if(presetLabel == "roomdesc")
-                                    {
-                                        PrintTextWithParse(sTmp, bIsPrompt: false, oWindowTarget: 0);
-                                        sTmp = string.Empty;
-                                    }
-                                }
-                                if (buffer.EndsWith(@"<pushBold/>"))
-                                {
-                                    sBoldBuffer = string.Empty;
-                                    iBoldIndex = sTextBuffer.Length; //do not subtract 1 because our start index isn't added yet
-                                }
-                                if (buffer.EndsWith(@"<popBold/>"))
-                                {
-                                    if (!string.IsNullOrWhiteSpace(sBoldBuffer))
-                                    {
-                                        sBoldBuffer = ParseSubstitutions(sBoldBuffer);
-                                        m_oGlobals.VolatileHighlights.Add(new VolatileHighlight(sBoldBuffer, "creatures", iBoldIndex));
-                                    }
-                                }
-                                if (m_bBold & !m_oGlobals.Config.Condensed)
-                                {
-                                    if (sTextBuffer.StartsWith("< ") | sTextBuffer.StartsWith("> ") | sTextBuffer.StartsWith("* "))
-                                    {
-                                        m_bBold = false;
-                                        string argsText = sTextBuffer + System.Environment.NewLine;
-                                        bool argbIsPrompt = false;
-                                        WindowTarget argoWindowTarget = 0;
-                                        PrintTextWithParse(argsText, bIsPrompt: argbIsPrompt, oWindowTarget: argoWindowTarget);
-                                        m_bBold = true;
-                                        sTextBuffer = string.Empty;
-                                        iBoldIndex = sTextBuffer.Length;
-                                        bCombatRow = true;
-                                    }
-                                }
-
-                                sTextBuffer += sTmp;
-
-                                m_oXMLBuffer.Clear();
-                                oXMLBuffer.Clear();
-                            }
-
-                            break;
+                            iInsideXML -= 1;
+                        }
+                        else if (bEndTagFound == true)  // Jump two steps back if we found end tag
+                        {
+                            iInsideXML -= 2;
+                            bEndTagFound = false;
                         }
 
-                    case '/':
+                        oXMLBuffer.Append(c);
+                        if (iInsideXML == 0)
                         {
-                            if (Conversions.ToString(cPreviousChar) == "<")	// End tag found
+                            m_oXMLBuffer.Append(oXMLBuffer);
+                            string buffer = m_oXMLBuffer.ToString();
+                            string sTmp = ProcessXML(buffer);
+                            if (buffer.EndsWith("</preset>"))
                             {
-                                bEndTagFound = true;
+                                XmlDocument presetXML = new XmlDocument();
+                                presetXML.LoadXml(buffer);
+
+                                string presetLabel = GetAttributeData(presetXML.FirstChild, "id").ToLower();
+                                switch (presetLabel)
+                                {
+                                    case "whisper":
+                                        presetLabel = "whispers";
+                                        break;
+
+                                    case "thought":
+                                        presetLabel = "thoughts";
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                                m_oGlobals.VolatileHighlights.Add(new VolatileHighlight(sTmp, presetLabel, sTextBuffer.Length));
+                                if (presetLabel == "roomdesc")
+                                {
+                                    PrintTextWithParse(sTmp, bIsPrompt: false, oWindowTarget: 0);
+                                    sTmp = string.Empty;
+                                }
+                            }
+                            if (buffer.EndsWith(@"<pushBold/>"))
+                            {
+                                sBoldBuffer = string.Empty;
+                                iBoldIndex = sTextBuffer.Length; //do not subtract 1 because our start index isn't added yet
+                            }
+                            if (buffer.EndsWith(@"<popBold/>"))
+                            {
+                                if (!string.IsNullOrWhiteSpace(sBoldBuffer))
+                                {
+                                    sBoldBuffer = ParseSubstitutions(sBoldBuffer);
+                                    m_oGlobals.VolatileHighlights.Add(new VolatileHighlight(sBoldBuffer, "creatures", iBoldIndex));
+                                }
+                            }
+                            if (m_bBold & !m_oGlobals.Config.Condensed)
+                            {
+                                if (sTextBuffer.StartsWith("< ") | sTextBuffer.StartsWith("> ") | sTextBuffer.StartsWith("* "))
+                                {
+                                    m_bBold = false;
+                                    string argsText = sTextBuffer + System.Environment.NewLine;
+                                    bool argbIsPrompt = false;
+                                    WindowTarget argoWindowTarget = 0;
+                                    PrintTextWithParse(argsText, bIsPrompt: argbIsPrompt, oWindowTarget: argoWindowTarget);
+                                    m_bBold = true;
+                                    sTextBuffer = string.Empty;
+                                    iBoldIndex = sTextBuffer.Length;
+                                    bCombatRow = true;
+                                }
                             }
 
+                            sTextBuffer += sTmp;
+
+                            m_oXMLBuffer.Clear();
+                            oXMLBuffer.Clear();
+                        }
+
+                        break;
+                    }
+
+                    case '/':
+                    {
+                        if (Conversions.ToString(cPreviousChar) == "<") // End tag found
+                        {
+                            bEndTagFound = true;
+                        }
+
+                        if (iInsideXML > 0)
+                        {
+                            oXMLBuffer.Append(c);
+                        }
+                        else
+                        {
+                            sTextBuffer += Conversions.ToString(c);
+                            if (m_bBold)
+                            {
+                                sBoldBuffer += c;
+                            }
+                        }
+
+                        break;
+                    }
+
+                    case '&':
+                    {
+                        bInsideHTMLTag = true;
+                        sHTMLBuffer += Conversions.ToString(c);
+                        break;
+                    }
+
+                    case ';':
+                    {
+                        if (bInsideHTMLTag == true)
+                        {
+                            sHTMLBuffer += Conversions.ToString(c);
                             if (iInsideXML > 0)
                             {
-                                oXMLBuffer.Append(c);
+                                oXMLBuffer.Append(sHTMLBuffer);
                             }
                             else
                             {
-                                sTextBuffer += Conversions.ToString(c);
                                 if (m_bBold)
                                 {
                                     sBoldBuffer += c;
                                 }
+                                sTextBuffer += Utility.TranslateHTMLChar(sHTMLBuffer);
                             }
 
-                            break;
+                            sHTMLBuffer = string.Empty;
+                            bInsideHTMLTag = false;
                         }
 
-                    case '&':
+                        break;
+                    }
+
+                    case (char)28: // GSL. Skip rest of line.
+                    {
+                        break;
+                    }
+
+                    default:
+                    {
+                        if (bInsideHTMLTag == true)
                         {
-                            bInsideHTMLTag = true;
                             sHTMLBuffer += Conversions.ToString(c);
-                            break;
-                        }
-
-                    case ';':
-                        {
-                            if (bInsideHTMLTag == true)
+                            if (sHTMLBuffer.Length > 6) // Abort
                             {
-                                sHTMLBuffer += Conversions.ToString(c);
                                 if (iInsideXML > 0)
                                 {
-                                    oXMLBuffer.Append(sHTMLBuffer);
+                                    oXMLBuffer.Append(sHTMLBuffer.Replace("&", "&amp;"));
                                 }
                                 else
                                 {
                                     if (m_bBold)
                                     {
-                                        sBoldBuffer += c;
+                                        sBoldBuffer += sHTMLBuffer;
                                     }
-                                    sTextBuffer += Utility.TranslateHTMLChar(sHTMLBuffer);
+                                    sTextBuffer += sHTMLBuffer;
                                 }
 
                                 sHTMLBuffer = string.Empty;
                                 bInsideHTMLTag = false;
                             }
-
-                            break;
                         }
-
-                    case (char)28: // GSL. Skip rest of line.
+                        else if (iInsideXML > 0)
                         {
-                            break;
+                            oXMLBuffer.Append(c);
                         }
-
-                    default:
+                        else
                         {
-                            if (bInsideHTMLTag == true)
+                            if (m_bBold)
                             {
-                                sHTMLBuffer += Conversions.ToString(c);
-                                if (sHTMLBuffer.Length > 6) // Abort
-                                {
-                                    if (iInsideXML > 0)
-                                    {
-                                        oXMLBuffer.Append(sHTMLBuffer.Replace("&", "&amp;"));
-                                    }
-                                    else
-                                    {
-                                        if (m_bBold)
-                                        {
-                                            sBoldBuffer += sHTMLBuffer;
-                                        }
-                                        sTextBuffer += sHTMLBuffer;
-                                    }
-
-                                    sHTMLBuffer = string.Empty;
-                                    bInsideHTMLTag = false;
-                                }
+                                sBoldBuffer += c;
                             }
-                            else if (iInsideXML > 0)
-                            {
-                                oXMLBuffer.Append(c);
-                            }
-                            else
-                            {
-                                if (m_bBold)
-                                {
-                                    sBoldBuffer += c;
-                                }
-                                sTextBuffer += Conversions.ToString(c);
-                            }
-
-                            break;
+                            sTextBuffer += Conversions.ToString(c);
                         }
+
+                        break;
+                    }
                 }
 
                 cPreviousChar = c;
@@ -787,14 +787,15 @@ namespace GenieClient.Genie
 
             if (sTextBuffer.Length > 0)
             {
-                
+
                 if (bCombatRow == true)
                 {
                     m_bBold = true;
                 }
                 else if (!string.IsNullOrWhiteSpace(sBoldBuffer))
                 {
-                    if (sBoldBuffer.EndsWith("\r\n")) sBoldBuffer = sBoldBuffer.Substring(0, sBoldBuffer.Length - "\r\n".Length);
+                    if (sBoldBuffer.EndsWith("\r\n"))
+                        sBoldBuffer = sBoldBuffer.Substring(0, sBoldBuffer.Length - "\r\n".Length);
                     sBoldBuffer = ParseSubstitutions(sBoldBuffer);
                     m_oGlobals.VolatileHighlights.Add(new VolatileHighlight(sBoldBuffer, "creatures", iBoldIndex)); //trim because excessive whitespace seems to be breaking this
                     sBoldBuffer = string.Empty;
@@ -836,12 +837,12 @@ namespace GenieClient.Genie
                         // The popBold handler checks !string.IsNullOrWhiteSpace(sBoldBuffer) before creating
                         sBoldBuffer = string.Empty;
                     }
-                    
+
                     bool isRoomOutput = sText.Contains(@"<preset id='roomDesc'>");
                     PrintTextWithParse(sTextBuffer, default, default, default, default, isRoomOutput);
                 }
-                
-                
+
+
                 if (bCombatRow == true)
                 {
                     m_bBold = false;
@@ -1029,24 +1030,24 @@ namespace GenieClient.Genie
             switch (switchExpr)
             {
                 case ConnectStates.ConnectedKey:
-                    {
-                        ParseKeyRow(sText);
-                        break;
-                    }
+                {
+                    ParseKeyRow(sText);
+                    break;
+                }
 
                 case ConnectStates.ConnectedGame:
-                    {
-                        ParseGameRow(sText);
-                        break;
-                    }
+                {
+                    ParseGameRow(sText);
+                    break;
+                }
 
                 case ConnectStates.ConnectedGameHandshake:
-                    {
-                        m_oConnectState = ConnectStates.ConnectedGame;
-                        await Task.Delay(1000);
-                        m_oSocket.Send(Constants.vbLf + Constants.vbLf);
-                        break;
-                    }
+                {
+                    m_oConnectState = ConnectStates.ConnectedGame;
+                    await Task.Delay(1000);
+                    m_oSocket.Send(Constants.vbLf + Constants.vbLf);
+                    break;
+                }
             }
         }
 
@@ -1073,14 +1074,14 @@ namespace GenieClient.Genie
             else
             {
                 var oData = new ArrayList();
-            foreach (string strLine in sText.Split(Conversions.ToChar(Constants.vbTab)))
-                oData.Add(strLine);
-            if (oData.Count > 0)
-            {
-                var switchExpr = oData[0];
-                switch (switchExpr)
+                foreach (string strLine in sText.Split(Conversions.ToChar(Constants.vbTab)))
+                    oData.Add(strLine);
+                if (oData.Count > 0)
                 {
-                    case "?":
+                    var switchExpr = oData[0];
+                    switch (switchExpr)
+                    {
+                        case "?":
                         {
                             string argtext = "Unable to get login key.";
                             PrintError(argtext);
@@ -1088,54 +1089,54 @@ namespace GenieClient.Genie
                             break;
                         }
 
-                    case "A":
+                        case "A":
                         {
                             var switchExpr1 = oData[2];
                             switch (switchExpr1)
                             {
                                 case "KEY":
-                                    {
-                                        m_sLoginKey = Conversions.ToString(oData[3]);
-                                        m_sAccountOwner = Conversions.ToString(oData[4]);
-                                        m_oSocket.Send("G" + Constants.vbTab + m_sAccountGame.ToUpper() + System.Environment.NewLine);
-                                        break;
-                                    }
+                                {
+                                    m_sLoginKey = Conversions.ToString(oData[3]);
+                                    m_sAccountOwner = Conversions.ToString(oData[4]);
+                                    m_oSocket.Send("G" + Constants.vbTab + m_sAccountGame.ToUpper() + System.Environment.NewLine);
+                                    break;
+                                }
 
                                 case "NORECORD":
-                                    {
-                                        string argtext1 = "Account does not exist.";
-                                        PrintError(argtext1);
-                                        m_oSocket.Disconnect();
-                                        break;
-                                    }
+                                {
+                                    string argtext1 = "Account does not exist.";
+                                    PrintError(argtext1);
+                                    m_oSocket.Disconnect();
+                                    break;
+                                }
 
                                 case "PASSWORD":
-                                    {
-                                        string argtext2 = "Invalid password.";
-                                        PrintError(argtext2);
-                                        m_oSocket.Disconnect();
-                                        break;
-                                    }
+                                {
+                                    string argtext2 = "Invalid password.";
+                                    PrintError(argtext2);
+                                    m_oSocket.Disconnect();
+                                    break;
+                                }
 
                                 case "REJECT":
-                                    {
-                                        string argtext3 = "Access rejected.";
-                                        PrintError(argtext3);
-                                        m_oSocket.Disconnect();
-                                        break;
-                                    }
+                                {
+                                    string argtext3 = "Access rejected.";
+                                    PrintError(argtext3);
+                                    m_oSocket.Disconnect();
+                                    break;
+                                }
                             }
 
                             break;
                         }
 
-                    case "G":
+                        case "G":
                         {
                             m_oSocket.Send("C" + System.Environment.NewLine);
                             break;
                         }
 
-                    case "C":
+                        case "C":
                         {
                             if (m_sAccountCharacter.Trim().Length == 0)
                             {
@@ -1217,10 +1218,10 @@ namespace GenieClient.Genie
 
                             break;
                         }
-                    case "E": //Indicates an Error Message
+                        case "E": //Indicates an Error Message
                         {
                             string[] errorStrings = sText.Split("\t");
-                            for(int i = 1;i < errorStrings.Length;i++)
+                            for (int i = 1; i < errorStrings.Length; i++)
                             {
                                 PrintError(errorStrings[i]);
                             }
@@ -1228,7 +1229,7 @@ namespace GenieClient.Genie
                             break;
                         }
 
-                    case "L":
+                        case "L":
                         {
                             if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(oData[1], "OK", false)))
                             {
@@ -1236,13 +1237,13 @@ namespace GenieClient.Genie
                                 {
                                     if (strRow.IndexOf("GAMEHOST=") > -1)
                                     {
-                                            m_sConnectHost = IsLich ? m_oGlobals.Config.LichServer : strRow.Substring(9);
+                                        m_sConnectHost = IsLich ? m_oGlobals.Config.LichServer : strRow.Substring(9);
 
-                                        }
+                                    }
                                     else if (strRow.IndexOf("GAMEPORT=") > -1)
                                     {
-                                            m_sConnectPort = IsLich ? m_oGlobals.Config.LichPort : int.Parse(strRow.Substring(9));
-                                        }
+                                        m_sConnectPort = IsLich ? m_oGlobals.Config.LichPort : int.Parse(strRow.Substring(9));
+                                    }
                                     else if (strRow.IndexOf("KEY=") > -1)
                                     {
                                         m_sConnectKey = strRow.Substring(4).TrimEnd('\0');
@@ -1265,9 +1266,9 @@ namespace GenieClient.Genie
 
                             break;
                         }
+                    }
                 }
             }
-        }
         }
 
         private bool m_bMonoOutput = false;
@@ -1279,987 +1280,911 @@ namespace GenieClient.Genie
         private string ProcessXMLNodeElement(XmlNode oXmlNode)
         {
             string sReturn = string.Empty;
-           // Debug.WriteLine(oXmlNode.Name);
+            // Debug.WriteLine(oXmlNode.Name);
             if (oXmlNode.NodeType == XmlNodeType.Element)
             {
                 var switchExpr = oXmlNode.Name;
                 switch (switchExpr)
                 {
                     case "a":
-                        {
-                            // Dim sText As String = "{{" & GetTextFromXML(oXmlNode) & "}}"
-                            // Dim sNoun As String = GetAttributeData(oXmlNode, "noun")
-                            // If sNoun.Length > 0 Then
-                            // sText = sText.Replace(sNoun, "[[" & sNoun & "]]")
-                            // End If
-                            // sReturn &= sText
+                    {
+                        // Dim sText As String = "{{" & GetTextFromXML(oXmlNode) & "}}"
+                        // Dim sNoun As String = GetAttributeData(oXmlNode, "noun")
+                        // If sNoun.Length > 0 Then
+                        // sText = sText.Replace(sNoun, "[[" & sNoun & "]]")
+                        // End If
+                        // sReturn &= sText
 
-                            sReturn += GetTextFromXML(oXmlNode);
-                            break;
-                        }
+                        sReturn += GetTextFromXML(oXmlNode);
+                        break;
+                    }
 
                     case "d":
+                    {
+                        if ((oXmlNode.ParentNode.Name ?? "") != "component")
                         {
-                            if ((oXmlNode.ParentNode.Name ?? "") != "component")
+                            string sText = GetTextFromXML(oXmlNode);
+                            if (m_oGlobals.Config.bShowLinks)
                             {
-                                string sText = GetTextFromXML(oXmlNode);
-                                if (m_oGlobals.Config.bShowLinks)
-                                {
-                                    string argstrAttributeName = "cmd";
-                                    string sCmd = GetAttributeData(oXmlNode, argstrAttributeName);
-                                    if (sCmd.Length == 0)
-                                        sCmd = sText;
-                                    sReturn += "{" + sText + ":" + sCmd + "}";
-                                }
-                                else
-                                {
-                                    sReturn += sText;
-                                }
+                                string argstrAttributeName = "cmd";
+                                string sCmd = GetAttributeData(oXmlNode, argstrAttributeName);
+                                if (sCmd.Length == 0)
+                                    sCmd = sText;
+                                sReturn += "{" + sText + ":" + sCmd + "}";
                             }
-
-                            break;
+                            else
+                            {
+                                sReturn += sText;
+                            }
                         }
+
+                        break;
+                    }
 
                     case "k":
+                    {
+                        if ((oXmlNode.ParentNode.Name ?? "") == "vars")
                         {
-                            if ((oXmlNode.ParentNode.Name ?? "") == "vars")
+                            string argstrAttributeName1 = "name";
+                            string sName = GetAttributeData(oXmlNode, argstrAttributeName1);
+                            string argstrAttributeName2 = "value";
+                            string sVal = GetAttributeData(oXmlNode, argstrAttributeName2);
+                            if (sName.Length > 0)
                             {
-                                string argstrAttributeName1 = "name";
-                                string sName = GetAttributeData(oXmlNode, argstrAttributeName1);
-                                string argstrAttributeName2 = "value";
-                                string sVal = GetAttributeData(oXmlNode, argstrAttributeName2);
-                                if (sName.Length > 0)
-                                {
-                                    m_oGlobals.VariableList.Add(sName, sVal, Globals.Variables.VariableType.Server);
-                                    string argsVariable = "$" + sName;
-                                    VariableChanged(argsVariable);
-                                    /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
-                                }
+                                m_oGlobals.VariableList.Add(sName, sVal, Globals.Variables.VariableType.Server);
+                                string argsVariable = "$" + sName;
+                                VariableChanged(argsVariable);
+                                /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
                             }
-
-                            break;
                         }
+
+                        break;
+                    }
 
                     case "output":
+                    {
+                        string argstrAttributeName3 = "class";
+                        var switchExpr1 = GetAttributeData(oXmlNode, argstrAttributeName3);
+                        switch (switchExpr1)
                         {
-                            string argstrAttributeName3 = "class";
-                            var switchExpr1 = GetAttributeData(oXmlNode, argstrAttributeName3);
-                            switch (switchExpr1)
+                            case "mono":
                             {
-                                case "mono":
-                                    {
-                                        m_bMonoOutput = true;
-                                        break;
-                                    }
-
-                                default:
-                                    {
-                                        m_bMonoOutput = false;
-                                        break;
-                                    }
+                                m_bMonoOutput = true;
+                                break;
                             }
 
-                            break;
+                            default:
+                            {
+                                m_bMonoOutput = false;
+                                break;
+                            }
                         }
+
+                        break;
+                    }
                     case "resource":
-                        {
-                            if (!m_oGlobals.Config.bShowImages) break;
-                            var attribute = GetAttributeData(oXmlNode, "picture");
-                            if (!string.IsNullOrEmpty(attribute) && attribute != "0") 
-                            {
-                                attribute += ".jpg";
-                                string gamecode = "DR"; //default DR
-                                if (AccountGame.StartsWith("GS")) gamecode = "GS";
-                                if (FileHandler.FetchImage(attribute, m_oGlobals.Config.ArtDir, gamecode).Result) AddImage(Path.Combine(gamecode, attribute), "portrait");
-                            }
+                    {
+                        if (!m_oGlobals.Config.bShowImages)
                             break;
-                        }
-                    case "streamWindow":	// Window Names
+                        var attribute = GetAttributeData(oXmlNode, "picture");
+                        if (!string.IsNullOrEmpty(attribute) && attribute != "0")
                         {
-                            string argstrAttributeName5 = "id";
-                            var switchExpr2 = GetAttributeData(oXmlNode, argstrAttributeName5);
-                            switch (switchExpr2)
+                            attribute += ".jpg";
+                            string gamecode = "DR"; //default DR
+                            if (AccountGame.StartsWith("GS"))
+                                gamecode = "GS";
+                            if (FileHandler.FetchImage(attribute, m_oGlobals.Config.ArtDir, gamecode).Result)
+                                AddImage(Path.Combine(gamecode, attribute), "portrait");
+                        }
+                        break;
+                    }
+                    case "streamWindow":    // Window Names
+                    {
+                        string argstrAttributeName5 = "id";
+                        var switchExpr2 = GetAttributeData(oXmlNode, argstrAttributeName5);
+                        switch (switchExpr2)
+                        {
+                            case "main":
                             {
-                                case "main":
-                                    {
-                                        break;
-                                    }
-
-                                case "inv":
-                                    {
-                                        break;
-                                    }
-
-                                case "familiar":
-                                    {
-                                        break;
-                                    }
-
-                                case "thoughts":
-                                    {
-                                        break;
-                                    }
-
-                                case "logons":
-                                    {
-                                        break;
-                                    }
-
-                                case "death":
-                                    {
-                                        break;
-                                    }
-
-                                case "whispers":
-                                    {
-                                        break;
-                                    }
-
-                                case "assess":
-                                    {
-                                        break;
-                                    }
-
-                                case "room":
-                                    {
-                                        string argstrAttributeName4 = "subtitle";
-                                        m_sRoomTitle = GetAttributeData(oXmlNode, argstrAttributeName4);
-                                        if (m_sRoomTitle.StartsWith(" - "))
-                                        {
-                                            m_sRoomTitle = m_sRoomTitle.Substring(3);
-                                        }
-
-                                        // Strip room ID suffix if present: (21101) or (**)
-                                        m_sRoomTitle = Regex.Replace(m_sRoomTitle, @"\s*\((\d+|\*\*)\)$", "");
-
-                                        if (m_sRoomTitle.StartsWith("["))
-                                        {
-                                            m_sRoomTitle = m_sRoomTitle.Substring(1, m_sRoomTitle.Length - 2);
-                                        }
-
-                                        m_sRoomTitle = m_sRoomTitle.Trim();
-                                        string argkey = "roomname";
-                                        m_oGlobals.VariableList.Add(argkey, m_sRoomTitle, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable1 = "$roomname";
-                                        VariableChanged(argsVariable1);
-                                        m_bUpdatingRoom = true;
-                                        break;
-                                    }
-
-                                default:
-                                    {
-                                        break;
-                                    }
-                                    /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
+                                break;
                             }
 
-                            string argstrAttributeName10 = "target";
-                            if (!HasAttribute(oXmlNode, argstrAttributeName10))
+                            case "inv":
                             {
-                                string argstrAttributeName6 = "id";
-                                string sID = GetAttributeData(oXmlNode, argstrAttributeName6);
-                                string argstrAttributeName7 = "title";
-                                string sTitle = GetAttributeData(oXmlNode, argstrAttributeName7);
-                                // ifClosed = '' means ignore
-                                // no ifClosed means send to main
-                                string sIfClosed = null;
-                                string argstrAttributeName9 = "ifClosed";
-                                if (HasAttribute(oXmlNode, argstrAttributeName9))
+                                break;
+                            }
+
+                            case "familiar":
+                            {
+                                break;
+                            }
+
+                            case "thoughts":
+                            {
+                                break;
+                            }
+
+                            case "logons":
+                            {
+                                break;
+                            }
+
+                            case "death":
+                            {
+                                break;
+                            }
+
+                            case "whispers":
+                            {
+                                break;
+                            }
+
+                            case "assess":
+                            {
+                                break;
+                            }
+
+                            case "room":
+                            {
+                                string argstrAttributeName4 = "subtitle";
+                                m_sRoomTitle = GetAttributeData(oXmlNode, argstrAttributeName4);
+                                if (m_sRoomTitle.StartsWith(" - "))
                                 {
-                                    string argstrAttributeName8 = "ifClosed";
-                                    sIfClosed = GetAttributeData(oXmlNode, argstrAttributeName8);
+                                    m_sRoomTitle = m_sRoomTitle.Substring(3);
                                 }
 
-                                EventStreamWindow?.Invoke(sID, sTitle, sIfClosed);
+                                // Strip room ID suffix if present: (21101) or (**)
+                                m_sRoomTitle = Regex.Replace(m_sRoomTitle, @"\s*\((\d+|\*\*)\)$", "");
+
+                                if (m_sRoomTitle.StartsWith("["))
+                                {
+                                    m_sRoomTitle = m_sRoomTitle.Substring(1, m_sRoomTitle.Length - 2);
+                                }
+
+                                m_sRoomTitle = m_sRoomTitle.Trim();
+                                string argkey = "roomname";
+                                m_oGlobals.VariableList.Add(argkey, m_sRoomTitle, Globals.Variables.VariableType.Reserved);
+                                string argsVariable1 = "$roomname";
+                                VariableChanged(argsVariable1);
+                                m_bUpdatingRoom = true;
+                                break;
                             }
 
-                            break;
+                            default:
+                            {
+                                break;
+                            }
+                            /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
                         }
+
+                        string argstrAttributeName10 = "target";
+                        if (!HasAttribute(oXmlNode, argstrAttributeName10))
+                        {
+                            string argstrAttributeName6 = "id";
+                            string sID = GetAttributeData(oXmlNode, argstrAttributeName6);
+                            string argstrAttributeName7 = "title";
+                            string sTitle = GetAttributeData(oXmlNode, argstrAttributeName7);
+                            // ifClosed = '' means ignore
+                            // no ifClosed means send to main
+                            string sIfClosed = null;
+                            string argstrAttributeName9 = "ifClosed";
+                            if (HasAttribute(oXmlNode, argstrAttributeName9))
+                            {
+                                string argstrAttributeName8 = "ifClosed";
+                                sIfClosed = GetAttributeData(oXmlNode, argstrAttributeName8);
+                            }
+
+                            EventStreamWindow?.Invoke(sID, sTitle, sIfClosed);
+                        }
+
+                        break;
+                    }
 
                     case "clearStream": // Clear Window
-                        {
-                            string argstrAttributeName11 = "id";
-                            string sWindow = GetAttributeData(oXmlNode, argstrAttributeName11);
-                            ClearWindow(sWindow);
-                            break;
-                        }
+                    {
+                        string argstrAttributeName11 = "id";
+                        string sWindow = GetAttributeData(oXmlNode, argstrAttributeName11);
+                        ClearWindow(sWindow);
+                        break;
+                    }
 
                     case "pushStream": // Output to Window
+                    {
+                        m_sTargetWindow = string.Empty;
+                        string argstrAttributeName13 = "id";
+                        var switchExpr3 = GetAttributeData(oXmlNode, argstrAttributeName13);
+                        switch (switchExpr3)
                         {
-                            m_sTargetWindow = string.Empty;
-                            string argstrAttributeName13 = "id";
-                            var switchExpr3 = GetAttributeData(oXmlNode, argstrAttributeName13);
-                            switch (switchExpr3)
+                            case "combat":
                             {
-                                case "combat":
-                                    {
-                                        m_oTargetWindow = WindowTarget.Combat;
-                                        break;
-                                    }
-                                case "main":
-                                    {
-                                        m_oTargetWindow = WindowTarget.Main;
-                                        break;
-                                    }
-
-                                case "inv":
-                                    {
-                                        m_oTargetWindow = WindowTarget.Inv;
-                                        break;
-                                    }
-
-                                case "familiar":
-                                    {
-                                        m_oTargetWindow = WindowTarget.Familiar;
-                                        m_bFamiliarLineParse = true;
-                                        break;
-                                    }
-
-                                case "thoughts":
-                                    {
-                                        m_oTargetWindow = WindowTarget.Thoughts;
-                                        break;
-                                    }
-
-                                case "logons":
-                                    {
-                                        m_oTargetWindow = WindowTarget.Logons;
-                                        break;
-                                    }
-
-                                case "death":
-                                    {
-                                        m_oTargetWindow = WindowTarget.Death;
-                                        break;
-                                    }
-
-                                case "room":
-                                    {
-                                        m_oTargetWindow = WindowTarget.Room;
-                                        break;
-                                    }
-                                case "debug":
-                                    {
-                                        m_oTargetWindow = WindowTarget.Debug;
-                                        break;
-                                    }
-
-                                case "percWindow":
-                                    {
-                                        m_oTargetWindow = WindowTarget.ActiveSpells;
-                                        break;
-                                    }
-
-                                default:
-                                    {
-                                        m_oTargetWindow = WindowTarget.Other;
-                                        string argstrAttributeName12 = "id";
-                                        m_sTargetWindow = GetAttributeData(oXmlNode, argstrAttributeName12);
-                                        break;
-                                    }
+                                m_oTargetWindow = WindowTarget.Combat;
+                                break;
+                            }
+                            case "main":
+                            {
+                                m_oTargetWindow = WindowTarget.Main;
+                                break;
                             }
 
-                            break;
+                            case "inv":
+                            {
+                                m_oTargetWindow = WindowTarget.Inv;
+                                break;
+                            }
+
+                            case "familiar":
+                            {
+                                m_oTargetWindow = WindowTarget.Familiar;
+                                m_bFamiliarLineParse = true;
+                                break;
+                            }
+
+                            case "thoughts":
+                            {
+                                m_oTargetWindow = WindowTarget.Thoughts;
+                                break;
+                            }
+
+                            case "logons":
+                            {
+                                m_oTargetWindow = WindowTarget.Logons;
+                                break;
+                            }
+
+                            case "death":
+                            {
+                                m_oTargetWindow = WindowTarget.Death;
+                                break;
+                            }
+
+                            case "room":
+                            {
+                                m_oTargetWindow = WindowTarget.Room;
+                                break;
+                            }
+                            case "debug":
+                            {
+                                m_oTargetWindow = WindowTarget.Debug;
+                                break;
+                            }
+
+                            case "percWindow":
+                            {
+                                m_oTargetWindow = WindowTarget.ActiveSpells;
+                                break;
+                            }
+
+                            default:
+                            {
+                                m_oTargetWindow = WindowTarget.Other;
+                                string argstrAttributeName12 = "id";
+                                m_sTargetWindow = GetAttributeData(oXmlNode, argstrAttributeName12);
+                                break;
+                            }
                         }
+
+                        break;
+                    }
 
                     case "popStream": // Output to Default Window
+                    {
+                        if (m_oTargetWindow == WindowTarget.Inv)
                         {
-                            if (m_oTargetWindow == WindowTarget.Inv)
-                            {
-                                PrintTextToWindow("@resume@", default, default, WindowTarget.Inv);
-                            }
-
-                            m_oTargetWindow = WindowTarget.Main;
-                            break;
+                            PrintTextToWindow("@resume@", default, default, WindowTarget.Inv);
                         }
+
+                        m_oTargetWindow = WindowTarget.Main;
+                        break;
+                    }
 
                     case "stream":
+                    {
+                        string argstrAttributeName14 = "id";
+                        var switchExpr4 = GetAttributeData(oXmlNode, argstrAttributeName14);
+                        switch (switchExpr4)
                         {
-                            string argstrAttributeName14 = "id";
-                            var switchExpr4 = GetAttributeData(oXmlNode, argstrAttributeName14);
-                            switch (switchExpr4)
+                            case "main":
                             {
-                                case "main":
-                                    {
-                                        break;
-                                    }
-
-                                case "inv":
-                                    {
-                                        break;
-                                    }
-
-                                case "familiar":
-                                    {
-                                        break;
-                                    }
-
-                                case "thoughts":
-                                    {
-                                        // MsgBox(GetTextFromXML(oXmlNode))
-                                        // Exception - Thoughts reset back to Main window after one line send.
-                                        // m_oTargetWindow = WindowTarget.Thoughts
-                                        // sReturn &= Parse(oXmlNode)
-                                        string argsText = GetTextFromXML(oXmlNode) + System.Environment.NewLine;
-                                        bool argbIsRoomOutput = false;
-                                        WindowTarget windowTarget = WindowTarget.Thoughts;
-                                        PrintTextWithParse(argsText, m_oGlobals.PresetList["thoughts"].Foreground, m_oGlobals.PresetList["thoughts"].Background, false, windowTarget, bIsRoomOutput: argbIsRoomOutput);
-                                        break;
-                                    }
-
-                                case "logons":
-                                    {
-                                        break;
-                                    }
-
-                                case "death":
-                                    {
-                                        break;
-                                    }
-
-                                case "debug":
-                                    {
-                                        break;
-                                    }
-
-                                case "room":
-                                    {
-                                        break;
-                                    }
-
-                                default:
-                                    {
-                                        break;
-                                    }
-                                    /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
+                                break;
                             }
 
-                            break;
+                            case "inv":
+                            {
+                                break;
+                            }
+
+                            case "familiar":
+                            {
+                                break;
+                            }
+
+                            case "thoughts":
+                            {
+                                // MsgBox(GetTextFromXML(oXmlNode))
+                                // Exception - Thoughts reset back to Main window after one line send.
+                                // m_oTargetWindow = WindowTarget.Thoughts
+                                // sReturn &= Parse(oXmlNode)
+                                string argsText = GetTextFromXML(oXmlNode) + System.Environment.NewLine;
+                                bool argbIsRoomOutput = false;
+                                WindowTarget windowTarget = WindowTarget.Thoughts;
+                                PrintTextWithParse(argsText, m_oGlobals.PresetList["thoughts"].Foreground, m_oGlobals.PresetList["thoughts"].Background, false, windowTarget, bIsRoomOutput: argbIsRoomOutput);
+                                break;
+                            }
+
+                            case "logons":
+                            {
+                                break;
+                            }
+
+                            case "death":
+                            {
+                                break;
+                            }
+
+                            case "debug":
+                            {
+                                break;
+                            }
+
+                            case "room":
+                            {
+                                break;
+                            }
+
+                            default:
+                            {
+                                break;
+                            }
+                            /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
                         }
+
+                        break;
+                    }
 
                     case "preset":
+                    {
+                        string argstrAttributeName16 = "id";
+                        var switchExpr5 = GetAttributeData(oXmlNode, argstrAttributeName16);
+                        switch (switchExpr5)
                         {
-                            string argstrAttributeName16 = "id";
-                            var switchExpr5 = GetAttributeData(oXmlNode, argstrAttributeName16);
-                            switch (switchExpr5)
+                            case "speech":
                             {
-                                case "speech":
-                                    {
-                                        m_bPresetSpeechOutput = true;
-                                        sReturn += GetTextFromXML(oXmlNode);
-                                        break;
-                                    }
-
-                                case "whisper":
-                                    {
-                                        m_bPresetWhisperOutput = true;
-                                        sReturn += GetTextFromXML(oXmlNode);
-                                        break;
-                                    }
-
-                                case "thought":
-                                    {
-                                        m_bPresetThoughtOutput = true;
-                                        sReturn += GetTextFromXML(oXmlNode);
-                                        break;
-                                    }
-
-                                default:
-                                    {
-                                        string argstrAttributeName15 = "id";
-                                        m_sStyle = GetAttributeData(oXmlNode, argstrAttributeName15);
-                                        sReturn += GetTextFromXML(oXmlNode);
-                                        break;
-                                    }
+                                m_bPresetSpeechOutput = true;
+                                sReturn += GetTextFromXML(oXmlNode);
+                                break;
                             }
 
-                            break;
+                            case "whisper":
+                            {
+                                m_bPresetWhisperOutput = true;
+                                sReturn += GetTextFromXML(oXmlNode);
+                                break;
+                            }
+
+                            case "thought":
+                            {
+                                m_bPresetThoughtOutput = true;
+                                sReturn += GetTextFromXML(oXmlNode);
+                                break;
+                            }
+
+                            default:
+                            {
+                                string argstrAttributeName15 = "id";
+                                m_sStyle = GetAttributeData(oXmlNode, argstrAttributeName15);
+                                sReturn += GetTextFromXML(oXmlNode);
+                                break;
+                            }
                         }
+
+                        break;
+                    }
 
                     case "compDef":
                     case "component":
+                    {
+                        string argstrAttributeName17 = "id";
+                        var switchExpr6 = GetAttributeData(oXmlNode, argstrAttributeName17);
+                        switch (switchExpr6)
                         {
-                            string argstrAttributeName17 = "id";
-                            var switchExpr6 = GetAttributeData(oXmlNode, argstrAttributeName17);
-                            switch (switchExpr6)
+                            case "room desc":
                             {
-                                case "room desc":
-                                    {
-                                        EventTriggerMove?.Invoke();
-                                        m_sRoomDesc = GetTextFromXML(oXmlNode);
-                                        string argkey1 = "roomdesc";
-                                        string argvalue = m_sRoomDesc.Replace(Conversions.ToString('"'), "");
-                                        m_oGlobals.VariableList.Add(argkey1, argvalue, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable2 = "$roomdesc";
-                                        VariableChanged(argsVariable2);
-                                        string argkey2 = "roomobjs";
-                                        string argvalue1 = "";
-                                        m_oGlobals.VariableList.Add(argkey2, argvalue1, Globals.Variables.VariableType.Reserved);
-                                        string argkey3 = "roomplayers";
-                                        string argvalue2 = "";
-                                        m_oGlobals.VariableList.Add(argkey3, argvalue2, Globals.Variables.VariableType.Reserved);
-                                        string argkey4 = "roomexits";
-                                        string argvalue3 = "";
-                                        m_oGlobals.VariableList.Add(argkey4, argvalue3, Globals.Variables.VariableType.Reserved);
-                                        UpdateRoom();
-                                        break;
-                                    }
-
-                                case "room objs":
-                                    {
-                                        m_sRoomObjs = GetTextFromXML(oXmlNode).TrimStart();
-                                        SetRoomObjects(oXmlNode);
-                                        string argkey5 = "monstercount";
-                                        string argvalue4 = CountMonsters(oXmlNode).ToString();
-                                        m_oGlobals.VariableList.Add(argkey5, argvalue4, Globals.Variables.VariableType.Reserved); // $monstercount
-                                        string argsVariable3 = "$monstercount";
-                                        VariableChanged(argsVariable3);
-                                        string argkey6 = "roomobjs";
-                                        var roomobjs = m_sRoomObjs.Replace(Conversions.ToString('"'), "").TrimStart();
-                                        m_oGlobals.VariableList.Add(argkey6, roomobjs, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable4 = "$roomobjs";
-                                        VariableChanged(argsVariable4);
-                                        UpdateRoom();
-                                        break;
-                                    }
-
-                                case "room players":
-                                    {
-                                        m_sRoomPlayers = GetTextFromXML(oXmlNode);
-                                        string argkey7 = "roomplayers";
-                                        string argvalue5 = m_sRoomPlayers.Replace(Conversions.ToString('"'), "");
-                                        m_oGlobals.VariableList.Add(argkey7, argvalue5, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable5 = "$roomplayers";
-                                        VariableChanged(argsVariable5);
-                                        UpdateRoom();
-                                        break;
-                                    }
-
-                                case "room exits":
-                                    {
-                                        m_sRoomExits = GetTextFromXML(oXmlNode);
-                                        string argkey8 = "roomexits";
-                                        string argvalue6 = m_sRoomExits.Replace(Conversions.ToString('"'), "");
-                                        m_oGlobals.VariableList.Add(argkey8, argvalue6, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable6 = "$roomexits";
-                                        VariableChanged(argsVariable6);
-                                        UpdateRoom();
-                                        break;
-                                    }
-
-                                default:
-                                    {
-                                        m_bIgnoreXMLDepth = true; // Skip any elements inside an unknown component or compDef
-                                        break;
-                                    }
-                                    /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
+                                EventTriggerMove?.Invoke();
+                                m_sRoomDesc = GetTextFromXML(oXmlNode);
+                                string argkey1 = "roomdesc";
+                                string argvalue = m_sRoomDesc.Replace(Conversions.ToString('"'), "");
+                                m_oGlobals.VariableList.Add(argkey1, argvalue, Globals.Variables.VariableType.Reserved);
+                                string argsVariable2 = "$roomdesc";
+                                VariableChanged(argsVariable2);
+                                string argkey2 = "roomobjs";
+                                string argvalue1 = "";
+                                m_oGlobals.VariableList.Add(argkey2, argvalue1, Globals.Variables.VariableType.Reserved);
+                                string argkey3 = "roomplayers";
+                                string argvalue2 = "";
+                                m_oGlobals.VariableList.Add(argkey3, argvalue2, Globals.Variables.VariableType.Reserved);
+                                string argkey4 = "roomexits";
+                                string argvalue3 = "";
+                                m_oGlobals.VariableList.Add(argkey4, argvalue3, Globals.Variables.VariableType.Reserved);
+                                UpdateRoom();
+                                break;
                             }
 
-                            break;
+                            case "room objs":
+                            {
+                                m_sRoomObjs = GetTextFromXML(oXmlNode).TrimStart();
+                                SetRoomObjects(oXmlNode);
+                                string argkey5 = "monstercount";
+                                string argvalue4 = CountMonsters(oXmlNode).ToString();
+                                m_oGlobals.VariableList.Add(argkey5, argvalue4, Globals.Variables.VariableType.Reserved); // $monstercount
+                                string argsVariable3 = "$monstercount";
+                                VariableChanged(argsVariable3);
+                                string argkey6 = "roomobjs";
+                                var roomobjs = m_sRoomObjs.Replace(Conversions.ToString('"'), "").TrimStart();
+                                m_oGlobals.VariableList.Add(argkey6, roomobjs, Globals.Variables.VariableType.Reserved);
+                                string argsVariable4 = "$roomobjs";
+                                VariableChanged(argsVariable4);
+                                UpdateRoom();
+                                break;
+                            }
+
+                            case "room players":
+                            {
+                                m_sRoomPlayers = GetTextFromXML(oXmlNode);
+                                string argkey7 = "roomplayers";
+                                string argvalue5 = m_sRoomPlayers.Replace(Conversions.ToString('"'), "");
+                                m_oGlobals.VariableList.Add(argkey7, argvalue5, Globals.Variables.VariableType.Reserved);
+                                string argsVariable5 = "$roomplayers";
+                                VariableChanged(argsVariable5);
+                                UpdateRoom();
+                                break;
+                            }
+
+                            case "room exits":
+                            {
+                                m_sRoomExits = GetTextFromXML(oXmlNode);
+                                string argkey8 = "roomexits";
+                                string argvalue6 = m_sRoomExits.Replace(Conversions.ToString('"'), "");
+                                m_oGlobals.VariableList.Add(argkey8, argvalue6, Globals.Variables.VariableType.Reserved);
+                                string argsVariable6 = "$roomexits";
+                                VariableChanged(argsVariable6);
+                                UpdateRoom();
+                                break;
+                            }
+
+                            default:
+                            {
+                                m_bIgnoreXMLDepth = true; // Skip any elements inside an unknown component or compDef
+                                break;
+                            }
+                            /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
                         }
+
+                        break;
+                    }
 
                     case "progressBar":
+                    {
+                        int barValue = int.Parse(GetAttributeData(oXmlNode, "value"));
+                        string barName = GetAttributeData(oXmlNode, "id");
+                        string barTextBase = GetAttributeData(oXmlNode, "text");
+                        string barText = string.Empty;
+                        char previousCharacter = ' ';
+                        for (int i = 0; i < barTextBase.Length; i++)
                         {
-                            int barValue = int.Parse(GetAttributeData(oXmlNode, "value"));
-                            string barName = GetAttributeData(oXmlNode, "id");
-                            string barTextBase = GetAttributeData(oXmlNode, "text");
-                            string barText = string.Empty;
-                            char previousCharacter = ' ';
-                            for (int i = 0; i < barTextBase.Length; i++)
-                            {
-                                barText += previousCharacter == ' ' ? barTextBase[i].ToString().ToUpper() : barTextBase[i];
-                                previousCharacter = barTextBase[i];
-                            }
-                            switch (barName)
-                            {
-                                case "health":
-                                    {
-                                        m_oGlobals.VariableList.Add("health", barValue.ToString(), Globals.Variables.VariableType.Reserved);
-                                        m_oGlobals.VariableList.Add("healthBarText", barText, Globals.Variables.VariableType.Reserved);
-                                        VariableChanged("$health");
-                                        break;
-                                    }
-
-                                case "mana":
-                                    {
-                                        m_oGlobals.VariableList.Add("mana", barValue.ToString(), Globals.Variables.VariableType.Reserved);
-                                        m_oGlobals.VariableList.Add("manaBarText", barText, Globals.Variables.VariableType.Reserved);
-                                        VariableChanged("$mana");
-                                        break;
-                                    }
-
-                                case "spirit":
-                                    {
-                                        m_oGlobals.VariableList.Add("spirit", barValue.ToString(), Globals.Variables.VariableType.Reserved);
-                                        m_oGlobals.VariableList.Add("spiritBarText", barText, Globals.Variables.VariableType.Reserved);
-                                        VariableChanged("$spirit");
-                                        break;
-                                    }
-
-                                case "stamina":
-                                    {
-                                        m_oGlobals.VariableList.Add("stamina", barValue.ToString(), Globals.Variables.VariableType.Reserved);
-                                        m_oGlobals.VariableList.Add("staminaBarText", barText, Globals.Variables.VariableType.Reserved);
-                                        VariableChanged("$stamina");
-                                        break;
-                                    }
-
-                                case "conclevel":
-                                case "concentration":
-                                    {
-                                        m_oGlobals.VariableList.Add("concentration", barValue.ToString(), Globals.Variables.VariableType.Reserved);
-                                        m_oGlobals.VariableList.Add("concentrationBarText", barText, Globals.Variables.VariableType.Reserved);
-                                        VariableChanged("$concentration");
-                                        break;
-                                    }
-
-                                case "encumlevel":
-                                case "encumblevel":
-                                case "encumbrance":
-                                    {
-                                        m_iEncumbrance = barValue;
-                                        string argkey14 = "encumbrance";
-                                        var encumbVar = m_iEncumbrance.ToString();
-                                        m_oGlobals.VariableList.Add(argkey14, encumbVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable12 = "$encumbrance";
-                                        VariableChanged(argsVariable12);
-                                        break;
-                                    }
-
-                                default:
-                                    {
-                                        break;
-                                    }
-                                    /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
-                            }
-
-                            break;
+                            barText += previousCharacter == ' ' ? barTextBase[i].ToString().ToUpper() : barTextBase[i];
+                            previousCharacter = barTextBase[i];
                         }
+                        switch (barName)
+                        {
+                            case "health":
+                            {
+                                m_oGlobals.VariableList.Add("health", barValue.ToString(), Globals.Variables.VariableType.Reserved);
+                                m_oGlobals.VariableList.Add("healthBarText", barText, Globals.Variables.VariableType.Reserved);
+                                VariableChanged("$health");
+                                break;
+                            }
+
+                            case "mana":
+                            {
+                                m_oGlobals.VariableList.Add("mana", barValue.ToString(), Globals.Variables.VariableType.Reserved);
+                                m_oGlobals.VariableList.Add("manaBarText", barText, Globals.Variables.VariableType.Reserved);
+                                VariableChanged("$mana");
+                                break;
+                            }
+
+                            case "spirit":
+                            {
+                                m_oGlobals.VariableList.Add("spirit", barValue.ToString(), Globals.Variables.VariableType.Reserved);
+                                m_oGlobals.VariableList.Add("spiritBarText", barText, Globals.Variables.VariableType.Reserved);
+                                VariableChanged("$spirit");
+                                break;
+                            }
+
+                            case "stamina":
+                            {
+                                m_oGlobals.VariableList.Add("stamina", barValue.ToString(), Globals.Variables.VariableType.Reserved);
+                                m_oGlobals.VariableList.Add("staminaBarText", barText, Globals.Variables.VariableType.Reserved);
+                                VariableChanged("$stamina");
+                                break;
+                            }
+
+                            case "conclevel":
+                            case "concentration":
+                            {
+                                m_oGlobals.VariableList.Add("concentration", barValue.ToString(), Globals.Variables.VariableType.Reserved);
+                                m_oGlobals.VariableList.Add("concentrationBarText", barText, Globals.Variables.VariableType.Reserved);
+                                VariableChanged("$concentration");
+                                break;
+                            }
+
+                            case "encumlevel":
+                            case "encumblevel":
+                            case "encumbrance":
+                            {
+                                m_iEncumbrance = barValue;
+                                string argkey14 = "encumbrance";
+                                var encumbVar = m_iEncumbrance.ToString();
+                                m_oGlobals.VariableList.Add(argkey14, encumbVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable12 = "$encumbrance";
+                                VariableChanged(argsVariable12);
+                                break;
+                            }
+
+                            default:
+                            {
+                                break;
+                            }
+                            /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
+                        }
+
+                        break;
+                    }
 
                     case "spell":
+                    {
+                        string sSpellName = GetTextFromXML(oXmlNode);
+                        if ((sSpellName ?? "") == "ScriptNumber")
                         {
-                            string sSpellName = GetTextFromXML(oXmlNode);
-                            if ((sSpellName ?? "") == "ScriptNumber")
-                            {
-                                sSpellName = "Unknown";
-                            }
-
-                            if ((sSpellName ?? "") == "None")
-                            {
-                                ClearSpellTime();
-                            }
-                            else
-                            {
-                                SetSpellTime();
-                            }
-
-                            string argkey15 = "preparedspell";
-                            m_oGlobals.VariableList.Add(argkey15, sSpellName, Globals.Variables.VariableType.Reserved);
-                            string argsVariable13 = "$preparedspell";
-                            VariableChanged(argsVariable13);
-                            StatusBarUpdate();
-                            break;
+                            sSpellName = "Unknown";
                         }
+
+                        if ((sSpellName ?? "") == "None")
+                        {
+                            ClearSpellTime();
+                        }
+                        else
+                        {
+                            SetSpellTime();
+                        }
+
+                        string argkey15 = "preparedspell";
+                        m_oGlobals.VariableList.Add(argkey15, sSpellName, Globals.Variables.VariableType.Reserved);
+                        string argsVariable13 = "$preparedspell";
+                        VariableChanged(argsVariable13);
+                        StatusBarUpdate();
+                        break;
+                    }
 
                     case "left":
-                        {
-                            string argkey16 = "lefthand";
-                            string argvalue7 = GetTextFromXML(oXmlNode);
-                            m_oGlobals.VariableList.Add(argkey16, argvalue7, Globals.Variables.VariableType.Reserved);
-                            string lefthandnoun = GetAttributeData(oXmlNode, "noun");
-                            string lefthandkey = "lefthandnoun";
-                            m_oGlobals.VariableList.Add(lefthandkey, lefthandnoun, Globals.Variables.VariableType.Reserved);
-                            string lefthandid = GetAttributeData(oXmlNode, "exist");
-                            string lefthandidkey = "lefthandid";
-                            m_oGlobals.VariableList.Add(lefthandidkey, lefthandid, Globals.Variables.VariableType.Reserved);
-                            string argsVariable14 = "$lefthand";
-                            VariableChanged(argsVariable14);
-                            string argsVariable15 = "$lefthandnoun";
-                            VariableChanged(argsVariable15);
-                            string argsVariable16 = "$lefthandid";
-                            VariableChanged(argsVariable16);
-                            StatusBarUpdate();
-                            break;
-                        }
+                    {
+                        string argkey16 = "lefthand";
+                        string argvalue7 = GetTextFromXML(oXmlNode);
+                        m_oGlobals.VariableList.Add(argkey16, argvalue7, Globals.Variables.VariableType.Reserved);
+                        string lefthandnoun = GetAttributeData(oXmlNode, "noun");
+                        string lefthandkey = "lefthandnoun";
+                        m_oGlobals.VariableList.Add(lefthandkey, lefthandnoun, Globals.Variables.VariableType.Reserved);
+                        string lefthandid = GetAttributeData(oXmlNode, "exist");
+                        string lefthandidkey = "lefthandid";
+                        m_oGlobals.VariableList.Add(lefthandidkey, lefthandid, Globals.Variables.VariableType.Reserved);
+                        string argsVariable14 = "$lefthand";
+                        VariableChanged(argsVariable14);
+                        string argsVariable15 = "$lefthandnoun";
+                        VariableChanged(argsVariable15);
+                        string argsVariable16 = "$lefthandid";
+                        VariableChanged(argsVariable16);
+                        StatusBarUpdate();
+                        break;
+                    }
 
                     case "right":
-                        {
-                            string argkey19 = "righthand";
-                            string argvalue10 = GetTextFromXML(oXmlNode);
-                            m_oGlobals.VariableList.Add(argkey19, argvalue10, Globals.Variables.VariableType.Reserved);
-                            string righthandnoun = GetAttributeData(oXmlNode, "noun");
-                            string righthandkey = "righthandnoun";
-                            m_oGlobals.VariableList.Add(righthandkey, righthandnoun, Globals.Variables.VariableType.Reserved);
-                            string righthandid = GetAttributeData(oXmlNode, "exist");
-                            string righthandidkey = "righthandid";
-                            m_oGlobals.VariableList.Add(righthandidkey, righthandid, Globals.Variables.VariableType.Reserved);
+                    {
+                        string argkey19 = "righthand";
+                        string argvalue10 = GetTextFromXML(oXmlNode);
+                        m_oGlobals.VariableList.Add(argkey19, argvalue10, Globals.Variables.VariableType.Reserved);
+                        string righthandnoun = GetAttributeData(oXmlNode, "noun");
+                        string righthandkey = "righthandnoun";
+                        m_oGlobals.VariableList.Add(righthandkey, righthandnoun, Globals.Variables.VariableType.Reserved);
+                        string righthandid = GetAttributeData(oXmlNode, "exist");
+                        string righthandidkey = "righthandid";
+                        m_oGlobals.VariableList.Add(righthandidkey, righthandid, Globals.Variables.VariableType.Reserved);
 
-                            string argsVariable17 = "$righthand";
-                            VariableChanged(argsVariable17);
-                            string argsVariable18 = "$righthandnoun";
-                            VariableChanged(argsVariable18);
-                            string argsVariable19 = "$righthandid";
-                            VariableChanged(argsVariable19);
-                            StatusBarUpdate();
-                            break;
-                        }
+                        string argsVariable17 = "$righthand";
+                        VariableChanged(argsVariable17);
+                        string argsVariable18 = "$righthandnoun";
+                        VariableChanged(argsVariable18);
+                        string argsVariable19 = "$righthandid";
+                        VariableChanged(argsVariable19);
+                        StatusBarUpdate();
+                        break;
+                    }
 
                     case "app":
+                    {
+                        string argstrAttributeName20 = "char";
+                        string sTemp = GetAttributeData(oXmlNode, argstrAttributeName20);
+                        if (sTemp.Length > 0)
                         {
-                            string argstrAttributeName20 = "char";
-                            string sTemp = GetAttributeData(oXmlNode, argstrAttributeName20);
-                            if (sTemp.Length > 0)
+                            m_sCharacterName = sTemp;
+                            string argkey22 = "charactername";
+                            m_oGlobals.VariableList.Add(argkey22, m_sCharacterName, Globals.Variables.VariableType.Reserved);
+                            string argsVariable20 = "$charactername";
+                            VariableChanged(argsVariable20);
+                            if (m_oBanned.ContainsKey(Utility.GenerateHashSHA256(m_sCharacterName)))
                             {
-                                m_sCharacterName = sTemp;
-                                string argkey22 = "charactername";
-                                m_oGlobals.VariableList.Add(argkey22, m_sCharacterName, Globals.Variables.VariableType.Reserved);
-                                string argsVariable20 = "$charactername";
-                                VariableChanged(argsVariable20);
-                                if (m_oBanned.ContainsKey(Utility.GenerateHashSHA256(m_sCharacterName)))
-                                {
-                                    m_oSocket.Disconnect();
-                                    m_bManualDisconnect = true;
-                                }
-
-                                string argstrAttributeName21 = "game";
-                                m_sGameName = GetAttributeData(oXmlNode, argstrAttributeName21);
-                                m_sGameName = m_sGameName.Replace(":", "").Replace(" ", "");
-                                string argkey23 = "gamename";
-                                m_oGlobals.VariableList.Add(argkey23, m_sGameName, Globals.Variables.VariableType.Reserved);
-                                string argsVariable21 = "$gamename";
-                                VariableChanged(argsVariable21);
+                                m_oSocket.Disconnect();
+                                m_bManualDisconnect = true;
                             }
 
-                            break;
+                            string argstrAttributeName21 = "game";
+                            m_sGameName = GetAttributeData(oXmlNode, argstrAttributeName21);
+                            m_sGameName = m_sGameName.Replace(":", "").Replace(" ", "");
+                            string argkey23 = "gamename";
+                            m_oGlobals.VariableList.Add(argkey23, m_sGameName, Globals.Variables.VariableType.Reserved);
+                            string argsVariable21 = "$gamename";
+                            VariableChanged(argsVariable21);
                         }
+
+                        break;
+                    }
 
                     case "indicator":
+                    {
+                        bool blnActive = false;
+                        string argstrAttributeName22 = "visible";
+                        if ((GetAttributeData(oXmlNode, argstrAttributeName22) ?? "") == "y")
                         {
-                            bool blnActive = false;
-                            string argstrAttributeName22 = "visible";
-                            if ((GetAttributeData(oXmlNode, argstrAttributeName22) ?? "") == "y")
-                            {
-                                blnActive = true;
-                            }
-
-                            string argstrAttributeName23 = "id";
-                            var switchExpr8 = GetAttributeData(oXmlNode, argstrAttributeName23);
-                            switch (switchExpr8)
-                            {
-                                case "IconKNEELING":
-                                    {
-                                        m_oIndicatorHash[Indicator.Kneeling] = blnActive;
-                                        string argkey24 = "kneeling";
-                                        var kneelingVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey24, kneelingVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable22 = "$kneeling";
-                                        VariableChanged(argsVariable22);
-                                        break;
-                                    }
-
-                                case "IconPRONE":
-                                    {
-                                        m_oIndicatorHash[Indicator.Prone] = blnActive;
-                                        string argkey25 = "prone";
-                                        var proneVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey25, proneVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable23 = "$prone";
-                                        VariableChanged(argsVariable23);
-                                        break;
-                                    }
-
-                                case "IconSITTING":
-                                    {
-                                        m_oIndicatorHash[Indicator.Sitting] = blnActive;
-                                        string argkey26 = "sitting";
-                                        var sittingVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey26, sittingVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable24 = "$sitting";
-                                        VariableChanged(argsVariable24);
-                                        break;
-                                    }
-
-                                case "IconSTANDING":
-                                    {
-                                        m_oIndicatorHash[Indicator.Standing] = blnActive;
-                                        string argkey27 = "standing";
-                                        var standingVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey27, standingVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable25 = "$standing";
-                                        VariableChanged(argsVariable25);
-                                        break;
-                                    }
-
-                                case "IconSTUNNED":
-                                    {
-                                        m_oIndicatorHash[Indicator.Stunned] = blnActive;
-                                        string argkey28 = "stunned";
-                                        var stunnedVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey28, stunnedVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable26 = "$stunned";
-                                        VariableChanged(argsVariable26);
-                                        break;
-                                    }
-
-                                case "IconHIDDEN":
-                                    {
-                                        m_oIndicatorHash[Indicator.Hidden] = blnActive;
-                                        string argkey29 = "hidden";
-                                        var hiddenVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey29, hiddenVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable27 = "$hidden";
-                                        VariableChanged(argsVariable27);
-                                        break;
-                                    }
-
-                                case "IconINVISIBLE":
-                                    {
-                                        m_oIndicatorHash[Indicator.Invisible] = blnActive;
-                                        string argkey30 = "invisible";
-                                        var invisibleVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey30, invisibleVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable28 = "$invisible";
-                                        VariableChanged(argsVariable28);
-                                        break;
-                                    }
-
-                                case "IconDEAD":
-                                    {
-                                        m_oIndicatorHash[Indicator.Dead] = blnActive;
-                                        string argkey31 = "dead";
-                                        var deadVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey31, deadVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable29 = "$dead";
-                                        VariableChanged(argsVariable29);
-                                        break;
-                                    }
-
-                                case "IconWEBBED":
-                                    {
-                                        m_oIndicatorHash[Indicator.Webbed] = blnActive;
-                                        string argkey32 = "webbed";
-                                        var webbedVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey32, webbedVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable30 = "$webbed";
-                                        VariableChanged(argsVariable30);
-                                        break;
-                                    }
-
-                                case "IconJOINED":
-                                    {
-                                        m_oIndicatorHash[Indicator.Joined] = blnActive;
-                                        string argkey33 = "joined";
-                                        var joinedVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey33, joinedVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable31 = "$joined";
-                                        VariableChanged(argsVariable31);
-                                        break;
-                                    }
-
-                                case "IconBLEEDING":
-                                    {
-                                        m_oIndicatorHash[Indicator.Bleeding] = blnActive;
-                                        string argkey34 = "bleeding";
-                                        var bleedingVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey34, bleedingVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable32 = "$bleeding";
-                                        VariableChanged(argsVariable32);
-                                        break;
-                                    }
-
-                                case "IconPOISONED":
-                                    {
-                                        string argkey35 = "poisoned";
-                                        var poisonedVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey35, poisonedVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable33 = "$poisoned";
-                                        VariableChanged(argsVariable33);
-                                        break;
-                                    }
-
-                                case "IconDISEASED":
-                                    {
-                                        string argkey36 = "diseased";
-                                        var diseasedVar = Utility.BooleanToInteger(blnActive).ToString();
-                                        m_oGlobals.VariableList.Add(argkey36, diseasedVar, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable34 = "$diseased";
-                                        VariableChanged(argsVariable34);
-                                        break;
-                                    }
-
-                                default:
-                                    {
-                                        break;
-                                    }
-                                    /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
-                            }
-
-                            break;
+                            blnActive = true;
                         }
+
+                        string argstrAttributeName23 = "id";
+                        var switchExpr8 = GetAttributeData(oXmlNode, argstrAttributeName23);
+                        switch (switchExpr8)
+                        {
+                            case "IconKNEELING":
+                            {
+                                m_oIndicatorHash[Indicator.Kneeling] = blnActive;
+                                string argkey24 = "kneeling";
+                                var kneelingVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey24, kneelingVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable22 = "$kneeling";
+                                VariableChanged(argsVariable22);
+                                break;
+                            }
+
+                            case "IconPRONE":
+                            {
+                                m_oIndicatorHash[Indicator.Prone] = blnActive;
+                                string argkey25 = "prone";
+                                var proneVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey25, proneVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable23 = "$prone";
+                                VariableChanged(argsVariable23);
+                                break;
+                            }
+
+                            case "IconSITTING":
+                            {
+                                m_oIndicatorHash[Indicator.Sitting] = blnActive;
+                                string argkey26 = "sitting";
+                                var sittingVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey26, sittingVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable24 = "$sitting";
+                                VariableChanged(argsVariable24);
+                                break;
+                            }
+
+                            case "IconSTANDING":
+                            {
+                                m_oIndicatorHash[Indicator.Standing] = blnActive;
+                                string argkey27 = "standing";
+                                var standingVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey27, standingVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable25 = "$standing";
+                                VariableChanged(argsVariable25);
+                                break;
+                            }
+
+                            case "IconSTUNNED":
+                            {
+                                m_oIndicatorHash[Indicator.Stunned] = blnActive;
+                                string argkey28 = "stunned";
+                                var stunnedVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey28, stunnedVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable26 = "$stunned";
+                                VariableChanged(argsVariable26);
+                                break;
+                            }
+
+                            case "IconHIDDEN":
+                            {
+                                m_oIndicatorHash[Indicator.Hidden] = blnActive;
+                                string argkey29 = "hidden";
+                                var hiddenVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey29, hiddenVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable27 = "$hidden";
+                                VariableChanged(argsVariable27);
+                                break;
+                            }
+
+                            case "IconINVISIBLE":
+                            {
+                                m_oIndicatorHash[Indicator.Invisible] = blnActive;
+                                string argkey30 = "invisible";
+                                var invisibleVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey30, invisibleVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable28 = "$invisible";
+                                VariableChanged(argsVariable28);
+                                break;
+                            }
+
+                            case "IconDEAD":
+                            {
+                                m_oIndicatorHash[Indicator.Dead] = blnActive;
+                                string argkey31 = "dead";
+                                var deadVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey31, deadVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable29 = "$dead";
+                                VariableChanged(argsVariable29);
+                                break;
+                            }
+
+                            case "IconWEBBED":
+                            {
+                                m_oIndicatorHash[Indicator.Webbed] = blnActive;
+                                string argkey32 = "webbed";
+                                var webbedVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey32, webbedVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable30 = "$webbed";
+                                VariableChanged(argsVariable30);
+                                break;
+                            }
+
+                            case "IconJOINED":
+                            {
+                                m_oIndicatorHash[Indicator.Joined] = blnActive;
+                                string argkey33 = "joined";
+                                var joinedVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey33, joinedVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable31 = "$joined";
+                                VariableChanged(argsVariable31);
+                                break;
+                            }
+
+                            case "IconBLEEDING":
+                            {
+                                m_oIndicatorHash[Indicator.Bleeding] = blnActive;
+                                string argkey34 = "bleeding";
+                                var bleedingVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey34, bleedingVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable32 = "$bleeding";
+                                VariableChanged(argsVariable32);
+                                break;
+                            }
+
+                            case "IconPOISONED":
+                            {
+                                string argkey35 = "poisoned";
+                                var poisonedVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey35, poisonedVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable33 = "$poisoned";
+                                VariableChanged(argsVariable33);
+                                break;
+                            }
+
+                            case "IconDISEASED":
+                            {
+                                string argkey36 = "diseased";
+                                var diseasedVar = Utility.BooleanToInteger(blnActive).ToString();
+                                m_oGlobals.VariableList.Add(argkey36, diseasedVar, Globals.Variables.VariableType.Reserved);
+                                string argsVariable34 = "$diseased";
+                                VariableChanged(argsVariable34);
+                                break;
+                            }
+
+                            default:
+                            {
+                                break;
+                            }
+                            /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
+                        }
+
+                        break;
+                    }
 
                     case var @case when @case == "spell":
-                        {
-                            break;
-                        }
+                    {
+                        break;
+                    }
 
                     case var case1 when case1 == "left":
-                        {
-                            break;
-                        }
+                    {
+                        break;
+                    }
 
                     case var case2 when case2 == "right":
-                        {
-                            break;
-                        }
+                    {
+                        break;
+                    }
 
                     case "roundTime":
-                        {
-                            string argstrAttributeName24 = "value";
-                            m_iRoundTime = int.Parse(GetAttributeData(oXmlNode, argstrAttributeName24));
-                            break;
-                        }
+                    {
+                        string argstrAttributeName24 = "value";
+                        m_iRoundTime = int.Parse(GetAttributeData(oXmlNode, argstrAttributeName24));
+                        break;
+                    }
 
                     case "castTime":
+                    {
+                        if (m_oGlobals.VariableList.Contains("casttime"))
                         {
-                            if (m_oGlobals.VariableList.Contains("casttime"))
-                            {
-                                m_oGlobals.VariableList["casttime"] = GetAttributeData(oXmlNode, "value");
-                            }
-                            else
-                            {
-                                m_oGlobals.VariableList.Add("casttime", GetAttributeData(oXmlNode, "value"));
-                            }
-                            VariableChanged("$casttime");
-                            m_iCastTime = int.Parse(GetAttributeData(oXmlNode, "value"));
-                            break;
+                            m_oGlobals.VariableList["casttime"] = GetAttributeData(oXmlNode, "value");
                         }
+                        else
+                        {
+                            m_oGlobals.VariableList.Add("casttime", GetAttributeData(oXmlNode, "value"));
+                        }
+                        VariableChanged("$casttime");
+                        m_iCastTime = int.Parse(GetAttributeData(oXmlNode, "value"));
+                        break;
+                    }
                     case "spelltime":
+                    {
+                        if (m_oGlobals.VariableList["preparedspell"].ToString() == "None")
                         {
-                            if(m_oGlobals.VariableList["preparedspell"].ToString() == "None")
+                            if (m_oGlobals.VariableList.Contains("spellstarttime"))
                             {
-                                if (m_oGlobals.VariableList.Contains("spellstarttime"))
-                                {
-                                    m_oGlobals.VariableList["spellstarttime"] = "0";
-                                }
-                                else
-                                {
-                                    m_oGlobals.VariableList.Add("spellstarttime", "0");
-
-                                }
+                                m_oGlobals.VariableList["spellstarttime"] = "0";
                             }
                             else
                             {
-                                if (m_oGlobals.VariableList.Contains("spellstarttime"))
-                                {
-                                    m_oGlobals.VariableList["spellstarttime"] = GetAttributeData(oXmlNode, "value");
-                                }
-                                else
-                                {
-                                    m_oGlobals.VariableList.Add("spellstarttime", GetAttributeData(oXmlNode, "value"));
+                                m_oGlobals.VariableList.Add("spellstarttime", "0");
 
-                                }
                             }
-                            VariableChanged("$spellstarttime");
-                            break;
                         }
-                    case "prompt":
+                        else
                         {
-                            string strBuffer = GetTextFromXML(oXmlNode);
-                            if (m_bStatusPromptEnabled == false)
+                            if (m_oGlobals.VariableList.Contains("spellstarttime"))
                             {
-                                if ((strBuffer ?? "") != ">")
-                                {
-                                    m_bStatusPromptEnabled = true;
-
-                                    // Fix for Joined and Bleeding
-                                    if (strBuffer.Contains("J") == false)
-                                    {
-                                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oGlobals.VariableList["joined"], "1", false)))
-                                        {
-                                            string argkey37 = "joined";
-                                            string argvalue13 = "0";
-                                            m_oGlobals.VariableList.Add(argkey37, argvalue13, Globals.Variables.VariableType.Reserved);
-                                            string argsVariable35 = "$joined";
-                                            VariableChanged(argsVariable35);
-                                        }
-                                    }
-
-                                    if (strBuffer.Contains("!") == false)
-                                    {
-                                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oGlobals.VariableList["bleeding"], "1", false)))
-                                        {
-                                            string argkey38 = "bleeding";
-                                            string argvalue14 = "0";
-                                            m_oGlobals.VariableList.Add(argkey38, argvalue14, Globals.Variables.VariableType.Reserved);
-                                            string argsVariable36 = "$bleeding";
-                                            VariableChanged(argsVariable36);
-                                        }
-                                    }
-                                }
-                                else if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Dead], true, false)))
-                                {
-                                    strBuffer += "DEAD";
-                                }
-                                else if (m_oGlobals.Config.PromptForce == true)
-                                {
-                                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Kneeling], true, false)))
-                                    {
-                                        strBuffer += "K";
-                                    }
-
-                                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Sitting], true, false)))
-                                    {
-                                        strBuffer += "s";
-                                    }
-
-                                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Prone], true, false)))
-                                    {
-                                        strBuffer += "P";
-                                    }
-
-                                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Stunned], true, false)))
-                                    {
-                                        strBuffer += "S";
-                                    }
-
-                                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Hidden], true, false)))
-                                    {
-                                        strBuffer += "H";
-                                    }
-
-                                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Invisible], true, false)))
-                                    {
-                                        strBuffer += "I";
-                                    }
-
-                                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Webbed], true, false)))
-                                    {
-                                        strBuffer += "W";
-                                    }
-
-                                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Bleeding], true, false)))
-                                    {
-                                        strBuffer += "!";
-                                    }
-
-                                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Joined], true, false)))
-                                    {
-                                        strBuffer += "J";
-                                    }
-                                }
+                                m_oGlobals.VariableList["spellstarttime"] = GetAttributeData(oXmlNode, "value");
                             }
                             else
                             {
+                                m_oGlobals.VariableList.Add("spellstarttime", GetAttributeData(oXmlNode, "value"));
+
+                            }
+                        }
+                        VariableChanged("$spellstarttime");
+                        break;
+                    }
+                    case "prompt":
+                    {
+                        string strBuffer = GetTextFromXML(oXmlNode);
+                        if (m_bStatusPromptEnabled == false)
+                        {
+                            if ((strBuffer ?? "") != ">")
+                            {
+                                m_bStatusPromptEnabled = true;
+
                                 // Fix for Joined and Bleeding
                                 if (strBuffer.Contains("J") == false)
                                 {
                                     if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oGlobals.VariableList["joined"], "1", false)))
                                     {
-                                        string argkey39 = "joined";
-                                        string argvalue15 = "0";
-                                        m_oGlobals.VariableList.Add(argkey39, argvalue15, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable37 = "$joined";
-                                        VariableChanged(argsVariable37);
+                                        string argkey37 = "joined";
+                                        string argvalue13 = "0";
+                                        m_oGlobals.VariableList.Add(argkey37, argvalue13, Globals.Variables.VariableType.Reserved);
+                                        string argsVariable35 = "$joined";
+                                        VariableChanged(argsVariable35);
                                     }
                                 }
 
@@ -2267,288 +2192,367 @@ namespace GenieClient.Genie
                                 {
                                     if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oGlobals.VariableList["bleeding"], "1", false)))
                                     {
-                                        string argkey40 = "bleeding";
-                                        string argvalue16 = "0";
-                                        m_oGlobals.VariableList.Add(argkey40, argvalue16, Globals.Variables.VariableType.Reserved);
-                                        string argsVariable38 = "$bleeding";
-                                        VariableChanged(argsVariable38);
+                                        string argkey38 = "bleeding";
+                                        string argvalue14 = "0";
+                                        m_oGlobals.VariableList.Add(argkey38, argvalue14, Globals.Variables.VariableType.Reserved);
+                                        string argsVariable36 = "$bleeding";
+                                        VariableChanged(argsVariable36);
                                     }
                                 }
                             }
-
-                            // Dim strBuffer As String = String.Empty
-
-                            string argstrAttributeName25 = "time";
-                            if (int.TryParse(GetAttributeData(oXmlNode, argstrAttributeName25), out m_iGameTime))
+                            else if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Dead], true, false)))
                             {
-                                string argkey41 = "gametime";
-                                string argvalue17 = m_iGameTime.ToString();
-                                m_oGlobals.VariableList.Add(argkey41, argvalue17, Globals.Variables.VariableType.Reserved);
-                                string argsVariable39 = "$gametime";
-                                VariableChanged(argsVariable39);
-                                int rt = m_iRoundTime - m_iGameTime;
-                                if (rt > 0)
+                                strBuffer += "DEAD";
+                            }
+                            else if (m_oGlobals.Config.PromptForce == true)
+                            {
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Kneeling], true, false)))
                                 {
-                                    SetRoundTime(rt);
-                                    if (m_bStatusPromptEnabled == false && (m_oGlobals.Config.PromptForce == true))
-                                        strBuffer += "R";
-                                    rt += Convert.ToInt32(m_oGlobals.Config.dRTOffset);
-                                    var rtString = rt.ToString();
-                                    string argkey42 = "roundtime";
-                                    m_oGlobals.VariableList.Add(argkey42, rtString, Globals.Variables.VariableType.Reserved);
-                                    m_iRoundTime = 0;
-                                }
-                                else
-                                {
-                                    string argkey43 = "roundtime";
-                                    string argvalue18 = "0";
-                                    m_oGlobals.VariableList.Add(argkey43, argvalue18, Globals.Variables.VariableType.Reserved);
-                                }
-                                string argsVariable40 = "$roundtime";
-                                VariableChanged(argsVariable40);
-
-                                if (m_iCastTime > 0)
-                                {
-                                    EventCastTime?.Invoke();
-                                    m_iCastTime = 0;
+                                    strBuffer += "K";
                                 }
 
-                                if (m_oGlobals.Config.sPrompt.Length > 0 && !m_bLastRowWasPrompt)
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Sitting], true, false)))
                                 {
-                                    strBuffer = strBuffer.Replace(m_oGlobals.Config.sPrompt.Trim(), "");
-                                    strBuffer += m_oGlobals.Config.sPrompt;
-                                    bool argbIsPrompt = true;
-                                    WindowTarget argoWindowTarget = 0;
-                                    //Status prompt set from the XML printing to main/game 
-                                    PrintTextWithParse(strBuffer, argbIsPrompt, oWindowTarget: argoWindowTarget);
+                                    strBuffer += "s";
                                 }
 
-                                string argkey44 = "prompt";
-                                m_oGlobals.VariableList.Add(argkey44, strBuffer, Globals.Variables.VariableType.Reserved);
-                                string argsVariable41 = "$prompt";
-                                VariableChanged(argsVariable41);
-                                EventTriggerPrompt?.Invoke();
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Prone], true, false)))
+                                {
+                                    strBuffer += "P";
+                                }
+
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Stunned], true, false)))
+                                {
+                                    strBuffer += "S";
+                                }
+
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Hidden], true, false)))
+                                {
+                                    strBuffer += "H";
+                                }
+
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Invisible], true, false)))
+                                {
+                                    strBuffer += "I";
+                                }
+
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Webbed], true, false)))
+                                {
+                                    strBuffer += "W";
+                                }
+
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Bleeding], true, false)))
+                                {
+                                    strBuffer += "!";
+                                }
+
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oIndicatorHash[Indicator.Joined], true, false)))
+                                {
+                                    strBuffer += "J";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Fix for Joined and Bleeding
+                            if (strBuffer.Contains("J") == false)
+                            {
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oGlobals.VariableList["joined"], "1", false)))
+                                {
+                                    string argkey39 = "joined";
+                                    string argvalue15 = "0";
+                                    m_oGlobals.VariableList.Add(argkey39, argvalue15, Globals.Variables.VariableType.Reserved);
+                                    string argsVariable37 = "$joined";
+                                    VariableChanged(argsVariable37);
+                                }
                             }
 
-                            break;
+                            if (strBuffer.Contains("!") == false)
+                            {
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_oGlobals.VariableList["bleeding"], "1", false)))
+                                {
+                                    string argkey40 = "bleeding";
+                                    string argvalue16 = "0";
+                                    m_oGlobals.VariableList.Add(argkey40, argvalue16, Globals.Variables.VariableType.Reserved);
+                                    string argsVariable38 = "$bleeding";
+                                    VariableChanged(argsVariable38);
+                                }
+                            }
                         }
+
+                        // Dim strBuffer As String = String.Empty
+
+                        string argstrAttributeName25 = "time";
+                        if (int.TryParse(GetAttributeData(oXmlNode, argstrAttributeName25), out m_iGameTime))
+                        {
+                            string argkey41 = "gametime";
+                            string argvalue17 = m_iGameTime.ToString();
+                            m_oGlobals.VariableList.Add(argkey41, argvalue17, Globals.Variables.VariableType.Reserved);
+                            string argsVariable39 = "$gametime";
+                            VariableChanged(argsVariable39);
+                            int rt = m_iRoundTime - m_iGameTime;
+                            if (rt > 0)
+                            {
+                                SetRoundTime(rt);
+                                if (m_bStatusPromptEnabled == false && (m_oGlobals.Config.PromptForce == true))
+                                    strBuffer += "R";
+                                rt += Convert.ToInt32(m_oGlobals.Config.dRTOffset);
+                                var rtString = rt.ToString();
+                                string argkey42 = "roundtime";
+                                m_oGlobals.VariableList.Add(argkey42, rtString, Globals.Variables.VariableType.Reserved);
+                                m_iRoundTime = 0;
+                            }
+                            else
+                            {
+                                string argkey43 = "roundtime";
+                                string argvalue18 = "0";
+                                m_oGlobals.VariableList.Add(argkey43, argvalue18, Globals.Variables.VariableType.Reserved);
+                            }
+                            string argsVariable40 = "$roundtime";
+                            VariableChanged(argsVariable40);
+
+                            if (m_iCastTime > 0)
+                            {
+                                EventCastTime?.Invoke();
+                                m_iCastTime = 0;
+                            }
+
+                            if (m_oGlobals.Config.sPrompt.Length > 0 && !m_bLastRowWasPrompt)
+                            {
+                                strBuffer = strBuffer.Replace(m_oGlobals.Config.sPrompt.Trim(), "");
+                                strBuffer += m_oGlobals.Config.sPrompt;
+                                bool argbIsPrompt = true;
+                                WindowTarget argoWindowTarget = 0;
+                                //Status prompt set from the XML printing to main/game 
+                                PrintTextWithParse(strBuffer, argbIsPrompt, oWindowTarget: argoWindowTarget);
+                            }
+
+                            string argkey44 = "prompt";
+                            m_oGlobals.VariableList.Add(argkey44, strBuffer, Globals.Variables.VariableType.Reserved);
+                            string argsVariable41 = "$prompt";
+                            VariableChanged(argsVariable41);
+                            EventTriggerPrompt?.Invoke();
+                        }
+
+                        break;
+                    }
 
                     case "style":
-                        {
-                            string argstrAttributeName26 = "id";
-                            string tmpString = GetAttributeData(oXmlNode, argstrAttributeName26);
-                            m_sStyle = tmpString;
-                            break;
-                        }
+                    {
+                        string argstrAttributeName26 = "id";
+                        string tmpString = GetAttributeData(oXmlNode, argstrAttributeName26);
+                        m_sStyle = tmpString;
+                        break;
+                    }
 
                     case "compass":
-                        {
-                            m_oCompassHash[Direction.North] = false;
-                            m_oCompassHash[Direction.NorthEast] = false;
-                            m_oCompassHash[Direction.East] = false;
-                            m_oCompassHash[Direction.SouthEast] = false;
-                            m_oCompassHash[Direction.South] = false;
-                            m_oCompassHash[Direction.SouthWest] = false;
-                            m_oCompassHash[Direction.West] = false;
-                            m_oCompassHash[Direction.NorthWest] = false;
-                            m_oCompassHash[Direction.Up] = false;
-                            m_oCompassHash[Direction.Down] = false;
-                            m_oCompassHash[Direction.Out] = false;
-                            string argkey45 = "north";
-                            string argvalue19 = "0";
-                            m_oGlobals.VariableList.Add(argkey45, argvalue19, Globals.Variables.VariableType.Reserved);
-                            string argkey46 = "northeast";
-                            string argvalue20 = "0";
-                            m_oGlobals.VariableList.Add(argkey46, argvalue20, Globals.Variables.VariableType.Reserved);
-                            string argkey47 = "east";
-                            string argvalue21 = "0";
-                            m_oGlobals.VariableList.Add(argkey47, argvalue21, Globals.Variables.VariableType.Reserved);
-                            string argkey48 = "southeast";
-                            string argvalue22 = "0";
-                            m_oGlobals.VariableList.Add(argkey48, argvalue22, Globals.Variables.VariableType.Reserved);
-                            string argkey49 = "south";
-                            string argvalue23 = "0";
-                            m_oGlobals.VariableList.Add(argkey49, argvalue23, Globals.Variables.VariableType.Reserved);
-                            string argkey50 = "southwest";
-                            string argvalue24 = "0";
-                            m_oGlobals.VariableList.Add(argkey50, argvalue24, Globals.Variables.VariableType.Reserved);
-                            string argkey51 = "west";
-                            string argvalue25 = "0";
-                            m_oGlobals.VariableList.Add(argkey51, argvalue25, Globals.Variables.VariableType.Reserved);
-                            string argkey52 = "northwest";
-                            string argvalue26 = "0";
-                            m_oGlobals.VariableList.Add(argkey52, argvalue26, Globals.Variables.VariableType.Reserved);
-                            string argkey53 = "up";
-                            string argvalue27 = "0";
-                            m_oGlobals.VariableList.Add(argkey53, argvalue27, Globals.Variables.VariableType.Reserved);
-                            string argkey54 = "down";
-                            string argvalue28 = "0";
-                            m_oGlobals.VariableList.Add(argkey54, argvalue28, Globals.Variables.VariableType.Reserved);
-                            string argkey55 = "out";
-                            string argvalue29 = "0";
-                            m_oGlobals.VariableList.Add(argkey55, argvalue29, Globals.Variables.VariableType.Reserved);
-                            string argsVariable42 = "compass";
-                            VariableChanged(argsVariable42);
-                            break;
-                        }
+                    {
+                        m_oCompassHash[Direction.North] = false;
+                        m_oCompassHash[Direction.NorthEast] = false;
+                        m_oCompassHash[Direction.East] = false;
+                        m_oCompassHash[Direction.SouthEast] = false;
+                        m_oCompassHash[Direction.South] = false;
+                        m_oCompassHash[Direction.SouthWest] = false;
+                        m_oCompassHash[Direction.West] = false;
+                        m_oCompassHash[Direction.NorthWest] = false;
+                        m_oCompassHash[Direction.Up] = false;
+                        m_oCompassHash[Direction.Down] = false;
+                        m_oCompassHash[Direction.Out] = false;
+                        string argkey45 = "north";
+                        string argvalue19 = "0";
+                        m_oGlobals.VariableList.Add(argkey45, argvalue19, Globals.Variables.VariableType.Reserved);
+                        string argkey46 = "northeast";
+                        string argvalue20 = "0";
+                        m_oGlobals.VariableList.Add(argkey46, argvalue20, Globals.Variables.VariableType.Reserved);
+                        string argkey47 = "east";
+                        string argvalue21 = "0";
+                        m_oGlobals.VariableList.Add(argkey47, argvalue21, Globals.Variables.VariableType.Reserved);
+                        string argkey48 = "southeast";
+                        string argvalue22 = "0";
+                        m_oGlobals.VariableList.Add(argkey48, argvalue22, Globals.Variables.VariableType.Reserved);
+                        string argkey49 = "south";
+                        string argvalue23 = "0";
+                        m_oGlobals.VariableList.Add(argkey49, argvalue23, Globals.Variables.VariableType.Reserved);
+                        string argkey50 = "southwest";
+                        string argvalue24 = "0";
+                        m_oGlobals.VariableList.Add(argkey50, argvalue24, Globals.Variables.VariableType.Reserved);
+                        string argkey51 = "west";
+                        string argvalue25 = "0";
+                        m_oGlobals.VariableList.Add(argkey51, argvalue25, Globals.Variables.VariableType.Reserved);
+                        string argkey52 = "northwest";
+                        string argvalue26 = "0";
+                        m_oGlobals.VariableList.Add(argkey52, argvalue26, Globals.Variables.VariableType.Reserved);
+                        string argkey53 = "up";
+                        string argvalue27 = "0";
+                        m_oGlobals.VariableList.Add(argkey53, argvalue27, Globals.Variables.VariableType.Reserved);
+                        string argkey54 = "down";
+                        string argvalue28 = "0";
+                        m_oGlobals.VariableList.Add(argkey54, argvalue28, Globals.Variables.VariableType.Reserved);
+                        string argkey55 = "out";
+                        string argvalue29 = "0";
+                        m_oGlobals.VariableList.Add(argkey55, argvalue29, Globals.Variables.VariableType.Reserved);
+                        string argsVariable42 = "compass";
+                        VariableChanged(argsVariable42);
+                        break;
+                    }
 
                     case "dir":
+                    {
+                        if ((oXmlNode.ParentNode.Name ?? "") == "compass")
                         {
-                            if ((oXmlNode.ParentNode.Name ?? "") == "compass")
+                            string argstrAttributeName27 = "value";
+                            var switchExpr9 = GetAttributeData(oXmlNode, argstrAttributeName27);
+                            switch (switchExpr9)
                             {
-                                string argstrAttributeName27 = "value";
-                                var switchExpr9 = GetAttributeData(oXmlNode, argstrAttributeName27);
-                                switch (switchExpr9)
+                                case "n":
                                 {
-                                    case "n":
-                                        {
-                                            m_oCompassHash[Direction.North] = true;
-                                            string argkey56 = "north";
-                                            string argvalue30 = "1";
-                                            m_oGlobals.VariableList.Add(argkey56, argvalue30, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    case "ne":
-                                        {
-                                            m_oCompassHash[Direction.NorthEast] = true;
-                                            string argkey57 = "northeast";
-                                            string argvalue31 = "1";
-                                            m_oGlobals.VariableList.Add(argkey57, argvalue31, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    case "e":
-                                        {
-                                            m_oCompassHash[Direction.East] = true;
-                                            string argkey58 = "east";
-                                            string argvalue32 = "1";
-                                            m_oGlobals.VariableList.Add(argkey58, argvalue32, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    case "se":
-                                        {
-                                            m_oCompassHash[Direction.SouthEast] = true;
-                                            string argkey59 = "southeast";
-                                            string argvalue33 = "1";
-                                            m_oGlobals.VariableList.Add(argkey59, argvalue33, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    case "s":
-                                        {
-                                            m_oCompassHash[Direction.South] = true;
-                                            string argkey60 = "south";
-                                            string argvalue34 = "1";
-                                            m_oGlobals.VariableList.Add(argkey60, argvalue34, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    case "sw":
-                                        {
-                                            m_oCompassHash[Direction.SouthWest] = true;
-                                            string argkey61 = "southwest";
-                                            string argvalue35 = "1";
-                                            m_oGlobals.VariableList.Add(argkey61, argvalue35, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    case "w":
-                                        {
-                                            m_oCompassHash[Direction.West] = true;
-                                            string argkey62 = "west";
-                                            string argvalue36 = "1";
-                                            m_oGlobals.VariableList.Add(argkey62, argvalue36, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    case "nw":
-                                        {
-                                            m_oCompassHash[Direction.NorthWest] = true;
-                                            string argkey63 = "northwest";
-                                            string argvalue37 = "1";
-                                            m_oGlobals.VariableList.Add(argkey63, argvalue37, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    case "up":
-                                        {
-                                            m_oCompassHash[Direction.Up] = true;
-                                            string argkey64 = "up";
-                                            string argvalue38 = "1";
-                                            m_oGlobals.VariableList.Add(argkey64, argvalue38, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    case "down":
-                                        {
-                                            m_oCompassHash[Direction.Down] = true;
-                                            string argkey65 = "down";
-                                            string argvalue39 = "1";
-                                            m_oGlobals.VariableList.Add(argkey65, argvalue39, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    case "out":
-                                        {
-                                            m_oCompassHash[Direction.Out] = true;
-                                            string argkey66 = "out";
-                                            string argvalue40 = "1";
-                                            m_oGlobals.VariableList.Add(argkey66, argvalue40, Globals.Variables.VariableType.Reserved);
-                                            break;
-                                        }
-
-                                    default:
-                                        {
-                                            break;
-                                        }
-                                        /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
+                                    m_oCompassHash[Direction.North] = true;
+                                    string argkey56 = "north";
+                                    string argvalue30 = "1";
+                                    m_oGlobals.VariableList.Add(argkey56, argvalue30, Globals.Variables.VariableType.Reserved);
+                                    break;
                                 }
 
-                                string argsVariable43 = "compass";
-                                VariableChanged(argsVariable43);
+                                case "ne":
+                                {
+                                    m_oCompassHash[Direction.NorthEast] = true;
+                                    string argkey57 = "northeast";
+                                    string argvalue31 = "1";
+                                    m_oGlobals.VariableList.Add(argkey57, argvalue31, Globals.Variables.VariableType.Reserved);
+                                    break;
+                                }
+
+                                case "e":
+                                {
+                                    m_oCompassHash[Direction.East] = true;
+                                    string argkey58 = "east";
+                                    string argvalue32 = "1";
+                                    m_oGlobals.VariableList.Add(argkey58, argvalue32, Globals.Variables.VariableType.Reserved);
+                                    break;
+                                }
+
+                                case "se":
+                                {
+                                    m_oCompassHash[Direction.SouthEast] = true;
+                                    string argkey59 = "southeast";
+                                    string argvalue33 = "1";
+                                    m_oGlobals.VariableList.Add(argkey59, argvalue33, Globals.Variables.VariableType.Reserved);
+                                    break;
+                                }
+
+                                case "s":
+                                {
+                                    m_oCompassHash[Direction.South] = true;
+                                    string argkey60 = "south";
+                                    string argvalue34 = "1";
+                                    m_oGlobals.VariableList.Add(argkey60, argvalue34, Globals.Variables.VariableType.Reserved);
+                                    break;
+                                }
+
+                                case "sw":
+                                {
+                                    m_oCompassHash[Direction.SouthWest] = true;
+                                    string argkey61 = "southwest";
+                                    string argvalue35 = "1";
+                                    m_oGlobals.VariableList.Add(argkey61, argvalue35, Globals.Variables.VariableType.Reserved);
+                                    break;
+                                }
+
+                                case "w":
+                                {
+                                    m_oCompassHash[Direction.West] = true;
+                                    string argkey62 = "west";
+                                    string argvalue36 = "1";
+                                    m_oGlobals.VariableList.Add(argkey62, argvalue36, Globals.Variables.VariableType.Reserved);
+                                    break;
+                                }
+
+                                case "nw":
+                                {
+                                    m_oCompassHash[Direction.NorthWest] = true;
+                                    string argkey63 = "northwest";
+                                    string argvalue37 = "1";
+                                    m_oGlobals.VariableList.Add(argkey63, argvalue37, Globals.Variables.VariableType.Reserved);
+                                    break;
+                                }
+
+                                case "up":
+                                {
+                                    m_oCompassHash[Direction.Up] = true;
+                                    string argkey64 = "up";
+                                    string argvalue38 = "1";
+                                    m_oGlobals.VariableList.Add(argkey64, argvalue38, Globals.Variables.VariableType.Reserved);
+                                    break;
+                                }
+
+                                case "down":
+                                {
+                                    m_oCompassHash[Direction.Down] = true;
+                                    string argkey65 = "down";
+                                    string argvalue39 = "1";
+                                    m_oGlobals.VariableList.Add(argkey65, argvalue39, Globals.Variables.VariableType.Reserved);
+                                    break;
+                                }
+
+                                case "out":
+                                {
+                                    m_oCompassHash[Direction.Out] = true;
+                                    string argkey66 = "out";
+                                    string argvalue40 = "1";
+                                    m_oGlobals.VariableList.Add(argkey66, argvalue40, Globals.Variables.VariableType.Reserved);
+                                    break;
+                                }
+
+                                default:
+                                {
+                                    break;
+                                }
+                                /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
                             }
 
-                            break;
+                            string argsVariable43 = "compass";
+                            VariableChanged(argsVariable43);
                         }
+
+                        break;
+                    }
 
                     case "pushBold":
-                        {
-                            m_bBold = true;
-                            break;
-                        }
+                    {
+                        m_bBold = true;
+                        break;
+                    }
 
                     case "popBold":
-                        {
-                            m_bBold = false;
-                            break;
-                        }
+                    {
+                        m_bBold = false;
+                        break;
+                    }
 
                     case "b":
-                        {
-                            sReturn += oXmlNode.InnerText;
-                            break;
-                        }
+                    {
+                        sReturn += oXmlNode.InnerText;
+                        break;
+                    }
 
                     case "settingsInfo":
+                    {
+                        if (m_bIsParsingSettings == false)
                         {
-                            if (m_bIsParsingSettings == false)
-                            {
-                                m_bIsParsingSettingsStart = true;
-                                SendRaw("<sendSettings/>" + Constants.vbLf);
-                            }
-
-                            break;
+                            m_bIsParsingSettingsStart = true;
+                            SendRaw("<sendSettings/>" + Constants.vbLf);
                         }
-                        /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
+
+                        break;
+                    }
+                    /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
                 }
             }
 
             return sReturn;
         }
 
-         public void ResetIndicators()
+        public void ResetIndicators()
         {
             m_oIndicatorHash[Indicator.Bleeding] = false;
             m_oIndicatorHash[Indicator.Dead] = false;
@@ -2699,7 +2703,7 @@ namespace GenieClient.Genie
             m_sEncryptionKey = string.Empty;
             m_oConnectState = ConnectStates.ConnectingKeyServer;
             m_oSocket.ConnectAndAuthenticate(sHostName, iPort);
-            
+
         }
 
         private MatchCollection m_oMatchCollection;
@@ -2712,7 +2716,7 @@ namespace GenieClient.Genie
 
         public void PrintTextWithParse(string sText, GenieColor color, GenieColor bgcolor, bool bIsPrompt = false, WindowTarget oWindowTarget = WindowTarget.Unknown, bool bIsRoomOutput = false)
         {
-            
+
             if (sText.Trim().Length > 0)
             {
                 if (sText.StartsWith("  You also see"))
@@ -2727,34 +2731,37 @@ namespace GenieClient.Genie
                     switch (switchExpr)
                     {
                         case "roomName":
-                            {
-                                color = m_oGlobals.PresetList["roomname"].Foreground;
-                                bgcolor = m_oGlobals.PresetList["roomname"].Background;
-                                m_oLastFgColor = color;
-                                break;
-                            }
+                        {
+                            color = m_oGlobals.PresetList["roomname"].Foreground;
+                            bgcolor = m_oGlobals.PresetList["roomname"].Background;
+                            m_oLastFgColor = color;
+                            break;
+                        }
 
                         case "roomDesc":
-                            {
-                                color = m_oGlobals.PresetList["roomdesc"].Foreground;
-                                bgcolor = m_oGlobals.PresetList["roomdesc"].Background;
-                                m_oLastFgColor = color;
-                                break;
-                            }
+                        {
+                            color = m_oGlobals.PresetList["roomdesc"].Foreground;
+                            bgcolor = m_oGlobals.PresetList["roomdesc"].Background;
+                            m_oLastFgColor = color;
+                            break;
+                        }
 
                         default:
-                            {
-                                break;
-                            }
-                            /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
+                        {
+                            break;
+                        }
+                        /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
                     }
 
                     m_sStyle = string.Empty;
                 }
 
-                if (m_bPresetSpeechOutput) m_bPresetSpeechOutput = false;
-                if (m_bPresetWhisperOutput) m_bPresetWhisperOutput = false;
-                if (m_bPresetThoughtOutput) m_bPresetThoughtOutput = false;
+                if (m_bPresetSpeechOutput)
+                    m_bPresetSpeechOutput = false;
+                if (m_bPresetWhisperOutput)
+                    m_bPresetWhisperOutput = false;
+                if (m_bPresetThoughtOutput)
+                    m_bPresetThoughtOutput = false;
 
                 //if (m_bBold == true)
                 //{
@@ -2816,7 +2823,7 @@ namespace GenieClient.Genie
                 oWindowTarget = m_oTargetWindow;
             }
             PrintTextToWindow(sText, color, bgcolor, oWindowTarget, bIsPrompt, bIsRoomOutput);
-            
+
         }
 
         private GenieColor m_oLastFgColor = default;
@@ -2834,88 +2841,88 @@ namespace GenieClient.Genie
             switch (switchExpr)
             {
                 case WindowTarget.Main:
-                    {
-                        sTargetWindowString = "main";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "main";
+                    break;
+                }
 
                 case WindowTarget.Death:
-                    {
-                        sTargetWindowString = "death";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "death";
+                    break;
+                }
 
                 case WindowTarget.Combat:
-                    {
-                        sTargetWindowString = "combat";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "combat";
+                    break;
+                }
                 case WindowTarget.Portrait:
-                    {
-                        sTargetWindowString = "portrait";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "portrait";
+                    break;
+                }
                 case WindowTarget.Familiar:
-                    {
-                        sTargetWindowString = "familiar";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "familiar";
+                    break;
+                }
 
                 case WindowTarget.Inv:
-                    {
-                        sTargetWindowString = "inv";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "inv";
+                    break;
+                }
 
                 case WindowTarget.Log:
-                    {
-                        sTargetWindowString = "log";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "log";
+                    break;
+                }
 
                 case WindowTarget.Logons:
-                    {
-                        sTargetWindowString = "logons";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "logons";
+                    break;
+                }
 
                 case WindowTarget.Room:
-                    {
-                        sTargetWindowString = "room";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "room";
+                    break;
+                }
 
                 case WindowTarget.Thoughts:
-                    {
-                        sTargetWindowString = "thoughts";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "thoughts";
+                    break;
+                }
 
                 case WindowTarget.Raw:
-                    {
-                        sTargetWindowString = "raw";
-                        m_sTargetWindow = "raw";
-                        targetwindow = WindowTarget.Other;
-                        break;
-                    }
+                {
+                    sTargetWindowString = "raw";
+                    m_sTargetWindow = "raw";
+                    targetwindow = WindowTarget.Other;
+                    break;
+                }
                 case WindowTarget.Debug:
-                    {
-                        sTargetWindowString = "debug";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "debug";
+                    break;
+                }
 
                 case WindowTarget.ActiveSpells:
-                    {
-                        sTargetWindowString = "percwindow";
-                        break;
-                    }
+                {
+                    sTargetWindowString = "percwindow";
+                    break;
+                }
 
                 case WindowTarget.Other:
-                    {
-                       // Debug.Write("Target Window is " + targetwindow.ToString());
-                        sTargetWindowString = m_sTargetWindow.ToLower();
-                        break;
-                    }
+                {
+                    // Debug.Write("Target Window is " + targetwindow.ToString());
+                    sTargetWindowString = m_sTargetWindow.ToLower();
+                    break;
+                }
             }
 
             text = ParsePluginText(text, sTargetWindowString);
@@ -3148,7 +3155,7 @@ namespace GenieClient.Genie
             var trueVar = true;
             var falseVar = false;
 
-         //   EventPrintText?.Invoke(sText, oColor, oBgColor, windowVar, emptyVar, m_bMonoOutput, trueVar, falseVar);
+            //   EventPrintText?.Invoke(sText, oColor, oBgColor, windowVar, emptyVar, m_bMonoOutput, trueVar, falseVar);
             EventPrintText?.Invoke(sText, oColor, oBgColor, windowVar, emptyVar, m_bMonoOutput, falseVar, trueVar);
         }
 
@@ -3210,28 +3217,28 @@ namespace GenieClient.Genie
             switch (switchExpr)
             {
                 case ConnectStates.ConnectingKeyServer:
-                    {
-                        m_oConnectState = ConnectStates.ConnectedKey;
-                        m_oSocket.Authenticate(AccountName, AccountPassword);
-                        ParseKeyRow(m_oSocket.GetLoginKey(AccountGame, AccountCharacter));
-                        break;
-                    }
+                {
+                    m_oConnectState = ConnectStates.ConnectedKey;
+                    m_oSocket.Authenticate(AccountName, AccountPassword);
+                    ParseKeyRow(m_oSocket.GetLoginKey(AccountGame, AccountCharacter));
+                    break;
+                }
 
                 case ConnectStates.ConnectingGameServer:
-                    {
-                        m_oConnectState = ConnectStates.ConnectedGameHandshake;
-                        m_iConnectAttempts = 0;
-                        m_bManualDisconnect = false;
-                        m_oReconnectTime = default;
-                        m_oSocket.Send(m_sConnectKey + Constants.vbLf + "FE:WRAYTH /VERSION:1.0.1.22 /P:WIN_UNKNOWN /XML" + Constants.vbLf);    // TEMP
-                        string argkey = "connected";
-                        m_oGlobals.VariableList["connected"] = m_oSocket.IsConnected ? "1" : "0";
-                        VariableChanged("$connected");
-                        m_oGlobals.VariableList["account"] = AccountName;
-                        VariableChanged("$account");
-                        m_bStatusPromptEnabled = false;                        
-                        break;
-                    }
+                {
+                    m_oConnectState = ConnectStates.ConnectedGameHandshake;
+                    m_iConnectAttempts = 0;
+                    m_bManualDisconnect = false;
+                    m_oReconnectTime = default;
+                    m_oSocket.Send(m_sConnectKey + Constants.vbLf + "FE:WRAYTH /VERSION:1.0.1.22 /P:WIN_UNKNOWN /XML" + Constants.vbLf);    // TEMP
+                    string argkey = "connected";
+                    m_oGlobals.VariableList["connected"] = m_oSocket.IsConnected ? "1" : "0";
+                    VariableChanged("$connected");
+                    m_oGlobals.VariableList["account"] = AccountName;
+                    VariableChanged("$account");
+                    m_bStatusPromptEnabled = false;
+                    break;
+                }
             }
         }
 

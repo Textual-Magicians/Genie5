@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -95,13 +95,17 @@ namespace GenieClient
                         xml.LoadXml(fileContents);
                         string game = xml.GetValue("Genie/Profile", "Game", "");
                         string account = xml.GetValue("Genie/Profile", "Account", "");
-                        if (string.IsNullOrWhiteSpace(account)) account = "ACCOUNT_UNKNOWN";
+                        if (string.IsNullOrWhiteSpace(account))
+                            account = "ACCOUNT_UNKNOWN";
                         string note = xml.GetValue("Genie/Profile", "Note", "");
-                        if (!_profiles.Nodes.ContainsKey(game)) _profiles.Nodes.Add(game, game);
-                        if (!_profiles.Nodes[game].Nodes.ContainsKey(account)) _profiles.Nodes[game].Nodes.Add(account, account);
+                        if (!_profiles.Nodes.ContainsKey(game))
+                            _profiles.Nodes.Add(game, game);
+                        if (!_profiles.Nodes[game].Nodes.ContainsKey(account))
+                            _profiles.Nodes[game].Nodes.Add(account, account);
                         string profileName = Path.GetFileNameWithoutExtension(profile);
                         string profileText = profileName;
-                        if (!string.IsNullOrWhiteSpace(note)) profileText += $" - {note}";
+                        if (!string.IsNullOrWhiteSpace(note))
+                            profileText += $" - {note}";
                         TreeNode profileNode = new TreeNode();
                         profileNode.Name = profileName;
                         profileNode.Text = profileText;
@@ -111,7 +115,8 @@ namespace GenieClient
                     }
                 }
                 _profiles.ExpandAll();
-                if(_profiles.Nodes.Count > 0) _profiles.Nodes[0].EnsureVisible(); //this will scroll the window to the top of the list
+                if (_profiles.Nodes.Count > 0)
+                    _profiles.Nodes[0].EnsureVisible(); //this will scroll the window to the top of the list
 
             }
 
@@ -122,13 +127,14 @@ namespace GenieClient
         {
             int start = profileContents.IndexOf(element + "=");
             string returnValue = string.Empty;
-            if(start > 0)
+            if (start > 0)
             {
                 start += element.Length + 2;
                 int end = profileContents.IndexOf('"', start);
                 returnValue = profileContents.Substring(start, end - start);
             }
-            if (string.IsNullOrEmpty(returnValue)) returnValue = $"{element} Missing";
+            if (string.IsNullOrEmpty(returnValue))
+                returnValue = $"{element} Missing";
             return returnValue;
         }
         private void ListBoxProfiles_KeyDown(object sender, KeyEventArgs e)
@@ -180,13 +186,15 @@ namespace GenieClient
             {
                 int noteStart = _profiles.SelectedNode.Text.IndexOf(" - ");
                 string noteText = "";
-                if (noteStart > 0) noteText = _profiles.SelectedNode.Text.Substring(noteStart + 3).Trim();
+                if (noteStart > 0)
+                    noteText = _profiles.SelectedNode.Text.Substring(noteStart + 3).Trim();
                 My.MyProject.Forms.DialogProfileNote.NoteText = noteText;
                 if (My.MyProject.Forms.DialogProfileNote.ShowDialog(Parent) == DialogResult.OK)
                 {
                     string note = My.MyProject.Forms.DialogProfileNote.NoteText;
                     string profileText = _profiles.SelectedNode.Name;
-                    if (!string.IsNullOrWhiteSpace(note)) profileText += $" - {note}";
+                    if (!string.IsNullOrWhiteSpace(note))
+                        profileText += $" - {note}";
                     _profiles.SelectedNode.Text = profileText;
                     Genie.XMLConfig xml = new XMLConfig();
                     xml.LoadFile(_profiles.SelectedNode.Tag.ToString());

@@ -10,7 +10,7 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-        
+
         // Initialize local directory - check if we should use user data directory
         // (when no local Config folder exists next to the executable)
         LocalDirectory.CheckUserDirectory();

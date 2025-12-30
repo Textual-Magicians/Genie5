@@ -1,4 +1,4 @@
-﻿// Imports System.IO
+// Imports System.IO
 // Imports Jint
 
 // Public Class JavaScript

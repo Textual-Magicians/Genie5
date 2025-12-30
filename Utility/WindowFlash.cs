@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace GenieClient
 {
 
     /// <summary>
-/// Necessary native methods to import
-/// </summary>
+    /// Necessary native methods to import
+    /// </summary>
     public static class NativeMethods
     {
         static NativeMethods()

@@ -37,7 +37,7 @@ public partial class ScriptExplorerDialog : Window
     public ScriptExplorerDialog()
     {
         InitializeComponent();
-        
+
         // Timer to refresh running scripts display
         _refreshTimer = new DispatcherTimer
         {
@@ -81,7 +81,7 @@ public partial class ScriptExplorerDialog : Window
     private void LoadScripts()
     {
         var scriptDir = _scriptManager?.GetScriptDirectory() ?? "";
-        
+
         if (!Directory.Exists(scriptDir))
         {
             StatusText.Text = $"Script directory not found: {scriptDir}";
@@ -90,18 +90,19 @@ public partial class ScriptExplorerDialog : Window
 
         var rootNodes = new ObservableCollection<ScriptTreeNode>();
         LoadDirectory(scriptDir, rootNodes, "");
-        
+
         ScriptTree.ItemsSource = rootNodes;
         StatusText.Text = $"Scripts: {scriptDir}";
     }
 
     private void LoadDirectory(string baseDir, ObservableCollection<ScriptTreeNode> nodes, string relativePath)
     {
-        var currentDir = string.IsNullOrEmpty(relativePath) 
-            ? baseDir 
+        var currentDir = string.IsNullOrEmpty(relativePath)
+            ? baseDir
             : Path.Combine(baseDir, relativePath);
 
-        if (!Directory.Exists(currentDir)) return;
+        if (!Directory.Exists(currentDir))
+            return;
 
         try
         {
@@ -115,10 +116,10 @@ public partial class ScriptExplorerDialog : Window
                     FullPath = string.IsNullOrEmpty(relativePath) ? dirName : Path.Combine(relativePath, dirName),
                     IsDirectory = true
                 };
-                
+
                 // Recursively load children
                 LoadDirectory(baseDir, node.Children, node.FullPath);
-                
+
                 nodes.Add(node);
             }
 
@@ -146,17 +147,17 @@ public partial class ScriptExplorerDialog : Window
     {
         var scripts = _scriptManager?.GetRunningScripts();
         RunningScriptsList.ItemsSource = scripts;
-        
+
         // Show/hide the running scripts panel based on whether any are running
         RunningScriptsPanel.IsVisible = scripts?.Count > 0;
-        
+
         // Update button states for selected item
         if (_selectedNode != null && !_selectedNode.IsDirectory)
         {
-            var isRunning = scripts?.Any(s => 
+            var isRunning = scripts?.Any(s =>
                 s.FileName.Equals(_selectedNode.FullPath, StringComparison.OrdinalIgnoreCase) ||
                 s.FileName.Equals(_selectedNode.Name, StringComparison.OrdinalIgnoreCase)) == true;
-            
+
             AbortButton.IsEnabled = isRunning;
             PauseButton.IsEnabled = isRunning;
         }
@@ -165,7 +166,7 @@ public partial class ScriptExplorerDialog : Window
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         _selectedNode = ScriptTree.SelectedItem as ScriptTreeNode;
-        
+
         if (_selectedNode == null)
         {
             RunButton.IsEnabled = false;
@@ -176,16 +177,16 @@ public partial class ScriptExplorerDialog : Window
 
         // Enable Run button for files only
         RunButton.IsEnabled = !_selectedNode.IsDirectory;
-        
+
         // Check if script is running
         var scripts = _scriptManager?.GetRunningScripts();
-        var isRunning = scripts?.Any(s => 
+        var isRunning = scripts?.Any(s =>
             s.FileName.Equals(_selectedNode.FullPath, StringComparison.OrdinalIgnoreCase) ||
             s.FileName.Equals(_selectedNode.Name, StringComparison.OrdinalIgnoreCase)) == true;
-        
+
         AbortButton.IsEnabled = isRunning;
         PauseButton.IsEnabled = isRunning;
-        
+
         if (!_selectedNode.IsDirectory)
         {
             StatusText.Text = isRunning ? $"Running: {_selectedNode.Name}" : $"Selected: {_selectedNode.Name}";
@@ -211,30 +212,32 @@ public partial class ScriptExplorerDialog : Window
 
     private void RunSelectedScript()
     {
-        if (_selectedNode == null || _selectedNode.IsDirectory) return;
-        
+        if (_selectedNode == null || _selectedNode.IsDirectory)
+            return;
+
         // Run the script
         var scriptPath = _selectedNode.FullPath;
-        
+
         // Raise event to let parent handle it
         RunScriptRequested?.Invoke(scriptPath);
-        
+
         // Or run directly if we have a script manager
         _scriptManager?.RunScript(scriptPath);
-        
+
         StatusText.Text = $"Started: {_selectedNode.Name}";
         UpdateRunningScripts();
     }
 
     private void OnPauseClick(object? sender, RoutedEventArgs e)
     {
-        if (_selectedNode == null || _selectedNode.IsDirectory) return;
-        
+        if (_selectedNode == null || _selectedNode.IsDirectory)
+            return;
+
         var scripts = _scriptManager?.GetRunningScripts();
-        var script = scripts?.FirstOrDefault(s => 
+        var script = scripts?.FirstOrDefault(s =>
             s.FileName.Equals(_selectedNode.FullPath, StringComparison.OrdinalIgnoreCase) ||
             s.FileName.Equals(_selectedNode.Name, StringComparison.OrdinalIgnoreCase));
-        
+
         if (script != null)
         {
             _scriptManager?.TogglePauseScript(script);
@@ -244,8 +247,9 @@ public partial class ScriptExplorerDialog : Window
 
     private void OnAbortClick(object? sender, RoutedEventArgs e)
     {
-        if (_selectedNode == null || _selectedNode.IsDirectory) return;
-        
+        if (_selectedNode == null || _selectedNode.IsDirectory)
+            return;
+
         _scriptManager?.AbortScript(_selectedNode.Name);
         UpdateRunningScripts();
     }

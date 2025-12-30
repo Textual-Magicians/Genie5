@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Linq;
 using System.Windows.Forms;
@@ -183,14 +183,14 @@ namespace GenieClient
             {
                 case "true":
                 case "on":
-                    {
-                        return true;
-                    }
+                {
+                    return true;
+                }
 
                 default:
-                    {
-                        return false;
-                    }
+                {
+                    return false;
+                }
             }
         }
 

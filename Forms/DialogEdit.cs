@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.VisualBasic;
@@ -48,26 +48,26 @@ namespace GenieClient
                 switch (switchExpr)
                 {
                     case '{':
-                        {
-                            depth += 1;
-                            break;
-                        }
+                    {
+                        depth += 1;
+                        break;
+                    }
 
                     case '}':
-                        {
-                            depth -= 1;
-                            break;
-                        }
+                    {
+                        depth -= 1;
+                        break;
+                    }
 
                     case ';':
+                    {
+                        if (depth == 0)
                         {
-                            if (depth == 0)
-                            {
-                                switchExpr = Conversions.ToChar(Constants.vbLf);
-                            }
-
-                            break;
+                            switchExpr = Conversions.ToChar(Constants.vbLf);
                         }
+
+                        break;
+                    }
                 }
 
                 sb.Append(switchExpr);

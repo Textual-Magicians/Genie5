@@ -16,7 +16,7 @@ namespace GenieClient.Services
         public PathService()
         {
             _appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            
+
             // Check for portable mode: if a Config folder exists next to the exe, use portable mode
             var portableConfigPath = Path.Combine(_appDirectory, "Config");
             _isPortableMode = Directory.Exists(portableConfigPath);

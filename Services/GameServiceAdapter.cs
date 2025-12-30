@@ -178,19 +178,32 @@ namespace GenieClient.Services
         {
             var newStatus = CharacterStatus.None;
 
-            if (ParseBoolVariable("kneeling")) newStatus |= CharacterStatus.Kneeling;
-            if (ParseBoolVariable("prone")) newStatus |= CharacterStatus.Prone;
-            if (ParseBoolVariable("sitting")) newStatus |= CharacterStatus.Sitting;
-            if (ParseBoolVariable("standing")) newStatus |= CharacterStatus.Standing;
-            if (ParseBoolVariable("stunned")) newStatus |= CharacterStatus.Stunned;
-            if (ParseBoolVariable("hidden")) newStatus |= CharacterStatus.Hidden;
-            if (ParseBoolVariable("invisible")) newStatus |= CharacterStatus.Invisible;
-            if (ParseBoolVariable("dead")) newStatus |= CharacterStatus.Dead;
-            if (ParseBoolVariable("webbed")) newStatus |= CharacterStatus.Webbed;
-            if (ParseBoolVariable("joined")) newStatus |= CharacterStatus.Joined;
-            if (ParseBoolVariable("bleeding")) newStatus |= CharacterStatus.Bleeding;
-            if (ParseBoolVariable("poisoned")) newStatus |= CharacterStatus.Poisoned;
-            if (ParseBoolVariable("diseased")) newStatus |= CharacterStatus.Diseased;
+            if (ParseBoolVariable("kneeling"))
+                newStatus |= CharacterStatus.Kneeling;
+            if (ParseBoolVariable("prone"))
+                newStatus |= CharacterStatus.Prone;
+            if (ParseBoolVariable("sitting"))
+                newStatus |= CharacterStatus.Sitting;
+            if (ParseBoolVariable("standing"))
+                newStatus |= CharacterStatus.Standing;
+            if (ParseBoolVariable("stunned"))
+                newStatus |= CharacterStatus.Stunned;
+            if (ParseBoolVariable("hidden"))
+                newStatus |= CharacterStatus.Hidden;
+            if (ParseBoolVariable("invisible"))
+                newStatus |= CharacterStatus.Invisible;
+            if (ParseBoolVariable("dead"))
+                newStatus |= CharacterStatus.Dead;
+            if (ParseBoolVariable("webbed"))
+                newStatus |= CharacterStatus.Webbed;
+            if (ParseBoolVariable("joined"))
+                newStatus |= CharacterStatus.Joined;
+            if (ParseBoolVariable("bleeding"))
+                newStatus |= CharacterStatus.Bleeding;
+            if (ParseBoolVariable("poisoned"))
+                newStatus |= CharacterStatus.Poisoned;
+            if (ParseBoolVariable("diseased"))
+                newStatus |= CharacterStatus.Diseased;
 
             if (_status != newStatus)
             {
@@ -381,17 +394,28 @@ namespace GenieClient.Services
         {
             var directions = CompassDirections.None;
 
-            if (ParseBoolVariable("north")) directions |= CompassDirections.North;
-            if (ParseBoolVariable("northeast")) directions |= CompassDirections.NorthEast;
-            if (ParseBoolVariable("east")) directions |= CompassDirections.East;
-            if (ParseBoolVariable("southeast")) directions |= CompassDirections.SouthEast;
-            if (ParseBoolVariable("south")) directions |= CompassDirections.South;
-            if (ParseBoolVariable("southwest")) directions |= CompassDirections.SouthWest;
-            if (ParseBoolVariable("west")) directions |= CompassDirections.West;
-            if (ParseBoolVariable("northwest")) directions |= CompassDirections.NorthWest;
-            if (ParseBoolVariable("up")) directions |= CompassDirections.Up;
-            if (ParseBoolVariable("down")) directions |= CompassDirections.Down;
-            if (ParseBoolVariable("out")) directions |= CompassDirections.Out;
+            if (ParseBoolVariable("north"))
+                directions |= CompassDirections.North;
+            if (ParseBoolVariable("northeast"))
+                directions |= CompassDirections.NorthEast;
+            if (ParseBoolVariable("east"))
+                directions |= CompassDirections.East;
+            if (ParseBoolVariable("southeast"))
+                directions |= CompassDirections.SouthEast;
+            if (ParseBoolVariable("south"))
+                directions |= CompassDirections.South;
+            if (ParseBoolVariable("southwest"))
+                directions |= CompassDirections.SouthWest;
+            if (ParseBoolVariable("west"))
+                directions |= CompassDirections.West;
+            if (ParseBoolVariable("northwest"))
+                directions |= CompassDirections.NorthWest;
+            if (ParseBoolVariable("up"))
+                directions |= CompassDirections.Up;
+            if (ParseBoolVariable("down"))
+                directions |= CompassDirections.Down;
+            if (ParseBoolVariable("out"))
+                directions |= CompassDirections.Out;
 
             return directions;
         }

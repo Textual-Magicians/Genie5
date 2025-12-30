@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace GenieClient
 {
@@ -15,8 +15,9 @@ namespace GenieClient
         public static void Error(string section, string message, string description = null)
         {
             // Prevent infinite recursion if an error handler raises another error
-            if (_isHandlingError) return;
-            
+            if (_isHandlingError)
+                return;
+
             try
             {
                 _isHandlingError = true;

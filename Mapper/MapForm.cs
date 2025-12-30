@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Drawing;
 using System.IO;
@@ -156,7 +156,8 @@ namespace GenieClient.Mapper
         private int _mapOffsetY;
         private Point3D GetOffset()
         {
-            if(m_NodeList is not null) return new Point3D(_mapOffsetX, _mapOffsetY);
+            if (m_NodeList is not null)
+                return new Point3D(_mapOffsetX, _mapOffsetY);
             return new Point3D((int)(this.Width / 2 * m_Scale), (int)(this.Height / 2 * m_Scale));
         }
 
@@ -318,9 +319,9 @@ namespace GenieClient.Mapper
 
                 return true;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return false;
             }
@@ -583,9 +584,9 @@ namespace GenieClient.Mapper
 
                 return sReturn;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return string.Empty;
             }
@@ -736,92 +737,92 @@ namespace GenieClient.Mapper
                             {
                                 case "north":
                                 case "n":
-                                    {
-                                        a.Direction = Direction.North;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.North;
+                                    break;
+                                }
 
                                 case "northeast":
                                 case "ne":
-                                    {
-                                        a.Direction = Direction.NorthEast;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.NorthEast;
+                                    break;
+                                }
 
                                 case "east":
                                 case "e":
-                                    {
-                                        a.Direction = Direction.East;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.East;
+                                    break;
+                                }
 
                                 case "southeast":
                                 case "se":
-                                    {
-                                        a.Direction = Direction.SouthEast;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.SouthEast;
+                                    break;
+                                }
 
                                 case "south":
                                 case "s":
-                                    {
-                                        a.Direction = Direction.South;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.South;
+                                    break;
+                                }
 
                                 case "southwest":
                                 case "sw":
-                                    {
-                                        a.Direction = Direction.SouthWest;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.SouthWest;
+                                    break;
+                                }
 
                                 case "west":
                                 case "w":
-                                    {
-                                        a.Direction = Direction.West;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.West;
+                                    break;
+                                }
 
                                 case "northwest":
                                 case "nw":
-                                    {
-                                        a.Direction = Direction.NorthWest;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.NorthWest;
+                                    break;
+                                }
 
                                 case "up":
                                 case "u":
-                                    {
-                                        a.Direction = Direction.Up;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.Up;
+                                    break;
+                                }
 
                                 case "down":
                                 case "d":
-                                    {
-                                        a.Direction = Direction.Down;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.Down;
+                                    break;
+                                }
 
                                 case "out":
                                 case "o":
-                                    {
-                                        a.Direction = Direction.Out;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.Out;
+                                    break;
+                                }
 
                                 case "go":
-                                    {
-                                        a.Direction = Direction.Go;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.Go;
+                                    break;
+                                }
 
                                 case "climb":
-                                    {
-                                        a.Direction = Direction.Climb;
-                                        break;
-                                    }
+                                {
+                                    a.Direction = Direction.Climb;
+                                    break;
+                                }
                             }
                         }
 
@@ -834,7 +835,7 @@ namespace GenieClient.Mapper
                 m_NodeList.FixArcLinks();
                 UpdateMapSize(true);
                 var m_Offset = GetOffset();
-                    m_Offset = m_NodeList.GetOffset();
+                m_Offset = m_NodeList.GetOffset();
                 m_Offset.X *= m_Scale;
                 m_Offset.Y *= m_Scale;
                 _mapOffsetX = m_Offset.X;
@@ -859,9 +860,9 @@ namespace GenieClient.Mapper
 
                 return true;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return false;
             }
@@ -988,9 +989,9 @@ namespace GenieClient.Mapper
                 xw.Close();
                 return true;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return false;
             }
@@ -1113,7 +1114,7 @@ namespace GenieClient.Mapper
 
                     if (Information.IsNothing(m_SelectedNodes.Find(m_MovingNode.ID)))
                     {
-                        if (m_ShiftPress == false&& m_ControlPress == false)
+                        if (m_ShiftPress == false && m_ControlPress == false)
                         {
                             m_SelectedNodes.Clear();
                             m_SelectedLabels.Clear();
@@ -1659,8 +1660,10 @@ namespace GenieClient.Mapper
                     if (n.Position.Z < m_CurrentLevelZ)
                     {
                         var oColorRoom = n.Color;
-                        if (n.Color == Color.Transparent) { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor; }
-                        else oColorRoom = Color.FromArgb(m_oGlobals.Config.AutoMapperAlpha, n.Color.R, n.Color.G, n.Color.B);
+                        if (n.Color == Color.Transparent)
+                        { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor; }
+                        else
+                            oColorRoom = Color.FromArgb(m_oGlobals.Config.AutoMapperAlpha, n.Color.R, n.Color.G, n.Color.B);
 
                         var oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].FgColor;
                         if (n.Position.Z != m_CurrentLevelZ) // Mark all other levels gray
@@ -1734,8 +1737,10 @@ namespace GenieClient.Mapper
                     if (n.Position.Z == m_CurrentLevelZ)
                     {
                         var oColorRoom = n.Color;
-                        if (n.Color == Color.Transparent) { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor; }
-                        else oColorRoom = Color.FromArgb(m_oGlobals.Config.AutoMapperAlpha, n.Color.R, n.Color.G, n.Color.B);
+                        if (n.Color == Color.Transparent)
+                        { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor; }
+                        else
+                            oColorRoom = Color.FromArgb(m_oGlobals.Config.AutoMapperAlpha, n.Color.R, n.Color.G, n.Color.B);
                         var oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].FgColor;
                         if (n.Position.Z != m_CurrentLevelZ) // Mark all other levels gray
                         {
@@ -1910,7 +1915,7 @@ namespace GenieClient.Mapper
             NodeX += m_Offset.X;
             NodeY *= m_Scale;
             NodeY += m_Offset.Y;
-            
+
             var withBlock = PanelBase.AutoScrollPosition;
             // Debug.WriteLine("===============")
 
@@ -1949,7 +1954,7 @@ namespace GenieClient.Mapper
             if (iScrollY == 0)
                 iScrollY = -withBlock.Y;
             PanelBase.AutoScrollPosition = new Point(iScrollX, iScrollY);
-            
+
         }
 
         private bool m_ToggleSnapToGrid = true;

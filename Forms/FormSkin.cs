@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -163,181 +163,181 @@ namespace GenieClient
             switch (switchExpr)
             {
                 case Win32Utility.WM_GETMINMAXINFO:
-                    {
-                        GetMinMaxInfoHelper(m);
-                        base.WndProc(ref m);
-                        break;
-                    }
+                {
+                    GetMinMaxInfoHelper(m);
+                    base.WndProc(ref m);
+                    break;
+                }
 
                 case (int)Win32Utility.WindowMessages.WM_SETTEXT:
-                    {
-                        base.DefWndProc(ref m);
-                        break;
-                    }
+                {
+                    base.DefWndProc(ref m);
+                    break;
+                }
 
                 case (int)Win32Utility.WindowMessages.WM_NCACTIVATE:
+                {
+                    if (WindowState == FormWindowState.Minimized)
                     {
-                        if (WindowState == FormWindowState.Minimized)
-                        {
-                            base.DefWndProc(ref m);
-                        }
-                        else
-                        {
-                            m.Result = Win32Utility.TRUE;
-                        }
-
-                        break;
+                        base.DefWndProc(ref m);
                     }
-
-                case (int)Win32Utility.WindowMessages.WM_NCPAINT:
+                    else
                     {
                         m.Result = Win32Utility.TRUE;
-                        break;
                     }
+
+                    break;
+                }
+
+                case (int)Win32Utility.WindowMessages.WM_NCPAINT:
+                {
+                    m.Result = Win32Utility.TRUE;
+                    break;
+                }
 
                 case (int)Win32Utility.WindowMessages.WM_NCUAHDRAWCAPTION: // Ignore
-                    {
-                        return;
-                    }
+                {
+                    return;
+                }
 
                 case (int)Win32Utility.WindowMessages.WM_NCUAHDRAWFRAME: // Ignore
-                    {
-                        return;
-                    }
+                {
+                    return;
+                }
 
                 case Win32Utility.WM_WINDOWPOSCHANGING:
+                {
+                    Win32Utility.WINDOWPOSINFO pos = (Win32Utility.WINDOWPOSINFO)m.GetLParam(typeof(Win32Utility.WINDOWPOSINFO));
                     {
-                        Win32Utility.WINDOWPOSINFO pos = (Win32Utility.WINDOWPOSINFO)m.GetLParam(typeof(Win32Utility.WINDOWPOSINFO));
+                        var withBlock = (FormMain)MdiParent;
+                        if (withBlock.m_IsChangingLayout == false)
                         {
-                            var withBlock = (FormMain)MdiParent;
-                            if (withBlock.m_IsChangingLayout == false)
+                            bool bSnappedX = false;
+                            bool bSnappedY = false;
+                            if (oDragType == DragType.Move)
                             {
-                                bool bSnappedX = false;
-                                bool bSnappedY = false;
-                                if (oDragType == DragType.Move)
+                                if (pos.x < SnapDistance)
                                 {
-                                    if (pos.x < SnapDistance)
-                                    {
-                                        pos.x = 0;
-                                        bSnappedX = true;
-                                    }
-                                    else if (Conversions.ToBoolean(pos.x + Width > ((Size)withBlock.ClientSize).Width - SystemInformation.Border3DSize.Width * 2 - SnapDistance))
-                                    {
-                                        pos.x = Conversions.ToInteger(((Size)withBlock.ClientSize).Width - SystemInformation.Border3DSize.Width * 2 - Width);
-                                        bSnappedX = true;
-                                    }
-
-                                    if (pos.y < SnapDistance)
-                                    {
-                                        pos.y = 0;
-                                        bSnappedY = true;
-                                    }
-                                    else if (Conversions.ToBoolean(pos.y + Height > ((Size)withBlock.ClientSize).Height - SystemInformation.Border3DSize.Height * 2 - SnapDistance))
-                                    {
-                                        pos.y = Conversions.ToInteger(((Size)withBlock.ClientSize).Height - SystemInformation.Border3DSize.Height * 2 - Height);
-                                        bSnappedY = true;
-                                    }
+                                    pos.x = 0;
+                                    bSnappedX = true;
+                                }
+                                else if (Conversions.ToBoolean(pos.x + Width > ((Size)withBlock.ClientSize).Width - SystemInformation.Border3DSize.Width * 2 - SnapDistance))
+                                {
+                                    pos.x = Conversions.ToInteger(((Size)withBlock.ClientSize).Width - SystemInformation.Border3DSize.Width * 2 - Width);
+                                    bSnappedX = true;
                                 }
 
-                                for (int i = 0, loopTo = withBlock.MdiChildren.Length - 1; i <= loopTo; i++)
+                                if (pos.y < SnapDistance)
                                 {
-                                    if (withBlock.MdiChildren[i] is FormSkin && withBlock.MdiChildren[i].Visible == true)
+                                    pos.y = 0;
+                                    bSnappedY = true;
+                                }
+                                else if (Conversions.ToBoolean(pos.y + Height > ((Size)withBlock.ClientSize).Height - SystemInformation.Border3DSize.Height * 2 - SnapDistance))
+                                {
+                                    pos.y = Conversions.ToInteger(((Size)withBlock.ClientSize).Height - SystemInformation.Border3DSize.Height * 2 - Height);
+                                    bSnappedY = true;
+                                }
+                            }
+
+                            for (int i = 0, loopTo = withBlock.MdiChildren.Length - 1; i <= loopTo; i++)
+                            {
+                                if (withBlock.MdiChildren[i] is FormSkin && withBlock.MdiChildren[i].Visible == true)
+                                {
+                                    // Snap to other windows
+                                    if ((Name ?? "") != (withBlock.MdiChildren[i].Name ?? ""))
                                     {
-                                        // Snap to other windows
-                                        if ((Name ?? "") != (withBlock.MdiChildren[i].Name ?? ""))
+                                        if (bSnappedX == false & pos.x + pos.cx + SnapDistance > withBlock.MdiChildren[i].Left)
                                         {
-                                            if (bSnappedX == false & pos.x + pos.cx + SnapDistance > withBlock.MdiChildren[i].Left)
+                                            if (pos.x + pos.cx - SnapDistance < withBlock.MdiChildren[i].Left)
                                             {
-                                                if (pos.x + pos.cx - SnapDistance < withBlock.MdiChildren[i].Left)
+                                                if (oDragType == DragType.Move)
                                                 {
-                                                    if (oDragType == DragType.Move)
-                                                    {
-                                                        pos.x = withBlock.MdiChildren[i].Left - Width;
-                                                        bSnappedX = true;
-                                                    }
-                                                    else if (oDragType == DragType.Right || oDragType == DragType.TopRight || oDragType == DragType.BottomRight)
-                                                    {
-                                                        pos.cx = withBlock.MdiChildren[i].Left - Left;
-                                                        bSnappedX = true;
-                                                    }
+                                                    pos.x = withBlock.MdiChildren[i].Left - Width;
+                                                    bSnappedX = true;
+                                                }
+                                                else if (oDragType == DragType.Right || oDragType == DragType.TopRight || oDragType == DragType.BottomRight)
+                                                {
+                                                    pos.cx = withBlock.MdiChildren[i].Left - Left;
+                                                    bSnappedX = true;
                                                 }
                                             }
+                                        }
 
-                                            if (bSnappedX == false & pos.x + SnapDistance > withBlock.MdiChildren[i].Left + withBlock.MdiChildren[i].Width)
+                                        if (bSnappedX == false & pos.x + SnapDistance > withBlock.MdiChildren[i].Left + withBlock.MdiChildren[i].Width)
+                                        {
+                                            if (pos.x - SnapDistance < withBlock.MdiChildren[i].Left + withBlock.MdiChildren[i].Width)
                                             {
-                                                if (pos.x - SnapDistance < withBlock.MdiChildren[i].Left + withBlock.MdiChildren[i].Width)
+                                                if (oDragType == DragType.Move)
                                                 {
-                                                    if (oDragType == DragType.Move)
-                                                    {
-                                                        pos.x = withBlock.MdiChildren[i].Left + withBlock.MdiChildren[i].Width;
-                                                        bSnappedX = true;
-                                                    }
-                                                    else if (oDragType == DragType.Left || oDragType == DragType.TopLeft || oDragType == DragType.BottomLeft)
-                                                    {
-                                                        int t = pos.x;
-                                                        pos.x = withBlock.MdiChildren[i].Left + withBlock.MdiChildren[i].Width;
-                                                        pos.cx = pos.cx + (t - pos.x);
-                                                        bSnappedX = true;
-                                                    }
+                                                    pos.x = withBlock.MdiChildren[i].Left + withBlock.MdiChildren[i].Width;
+                                                    bSnappedX = true;
+                                                }
+                                                else if (oDragType == DragType.Left || oDragType == DragType.TopLeft || oDragType == DragType.BottomLeft)
+                                                {
+                                                    int t = pos.x;
+                                                    pos.x = withBlock.MdiChildren[i].Left + withBlock.MdiChildren[i].Width;
+                                                    pos.cx = pos.cx + (t - pos.x);
+                                                    bSnappedX = true;
                                                 }
                                             }
+                                        }
 
-                                            if (bSnappedY == false & pos.y + pos.cy + SnapDistance > withBlock.MdiChildren[i].Top)
+                                        if (bSnappedY == false & pos.y + pos.cy + SnapDistance > withBlock.MdiChildren[i].Top)
+                                        {
+                                            if (pos.y + pos.cy - SnapDistance < withBlock.MdiChildren[i].Top)
                                             {
-                                                if (pos.y + pos.cy - SnapDistance < withBlock.MdiChildren[i].Top)
+                                                if (oDragType == DragType.Move)
                                                 {
-                                                    if (oDragType == DragType.Move)
-                                                    {
-                                                        pos.y = withBlock.MdiChildren[i].Top - Height;
-                                                        bSnappedY = true;
-                                                    }
-                                                    else if (oDragType == DragType.Bottom || oDragType == DragType.BottomRight || oDragType == DragType.BottomLeft)
-                                                    {
-                                                        pos.cy = withBlock.MdiChildren[i].Top - Top;
-                                                        bSnappedY = true;
-                                                    }
+                                                    pos.y = withBlock.MdiChildren[i].Top - Height;
+                                                    bSnappedY = true;
+                                                }
+                                                else if (oDragType == DragType.Bottom || oDragType == DragType.BottomRight || oDragType == DragType.BottomLeft)
+                                                {
+                                                    pos.cy = withBlock.MdiChildren[i].Top - Top;
+                                                    bSnappedY = true;
                                                 }
                                             }
+                                        }
 
-                                            if (bSnappedY == false & pos.y + SnapDistance > withBlock.MdiChildren[i].Top + withBlock.MdiChildren[i].Height)
+                                        if (bSnappedY == false & pos.y + SnapDistance > withBlock.MdiChildren[i].Top + withBlock.MdiChildren[i].Height)
+                                        {
+                                            if (pos.y - SnapDistance < withBlock.MdiChildren[i].Top + withBlock.MdiChildren[i].Height)
                                             {
-                                                if (pos.y - SnapDistance < withBlock.MdiChildren[i].Top + withBlock.MdiChildren[i].Height)
+                                                if (oDragType == DragType.Move)
                                                 {
-                                                    if (oDragType == DragType.Move)
-                                                    {
-                                                        pos.y = withBlock.MdiChildren[i].Top + withBlock.MdiChildren[i].Height;
-                                                        bSnappedY = true;
-                                                    }
-                                                    else if (oDragType == DragType.Top || oDragType == DragType.TopLeft || oDragType == DragType.TopRight)
-                                                    {
-                                                        int t = pos.y;
-                                                        pos.y = withBlock.MdiChildren[i].Top + withBlock.MdiChildren[i].Height;
-                                                        pos.cy = pos.cy + (t - pos.y);
-                                                        bSnappedY = true;
-                                                    }
+                                                    pos.y = withBlock.MdiChildren[i].Top + withBlock.MdiChildren[i].Height;
+                                                    bSnappedY = true;
+                                                }
+                                                else if (oDragType == DragType.Top || oDragType == DragType.TopLeft || oDragType == DragType.TopRight)
+                                                {
+                                                    int t = pos.y;
+                                                    pos.y = withBlock.MdiChildren[i].Top + withBlock.MdiChildren[i].Height;
+                                                    pos.cy = pos.cy + (t - pos.y);
+                                                    bSnappedY = true;
                                                 }
                                             }
                                         }
                                     }
                                 }
                             }
-                            else
-                            {
-                                Invalidate();
-                            }
                         }
-
-                        Marshal.StructureToPtr(pos, m.LParam, true);
-                        m.Result = IntPtr.Zero;
-                        base.WndProc(ref m);
-                        break;
+                        else
+                        {
+                            Invalidate();
+                        }
                     }
+
+                    Marshal.StructureToPtr(pos, m.LParam, true);
+                    m.Result = IntPtr.Zero;
+                    base.WndProc(ref m);
+                    break;
+                }
 
                 default:
-                    {
-                        base.WndProc(ref m);
-                        break;
-                    }
+                {
+                    base.WndProc(ref m);
+                    break;
+                }
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using GenieClient.Genie;
+using GenieClient.Genie;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -53,11 +53,12 @@ namespace GenieClient
             }
         }
 
-        public Pen GridColor { 
-            get 
-            { 
-                return new Pen(_Globals.PresetList["automapper.panel"].BgColor); 
-            } 
+        public Pen GridColor
+        {
+            get
+            {
+                return new Pen(_Globals.PresetList["automapper.panel"].BgColor);
+            }
         }
     }
 }

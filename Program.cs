@@ -1,4 +1,4 @@
-﻿using GenieClient.Services;
+using GenieClient.Services;
 using GenieClient.Windows.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

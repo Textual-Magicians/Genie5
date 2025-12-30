@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 namespace GenieClient
@@ -26,7 +26,7 @@ namespace GenieClient
         {
             get
             {
-                    return TextBoxName.Text;
+                return TextBoxName.Text;
             }
 
             set

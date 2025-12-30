@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -8,8 +8,8 @@ namespace GenieClient.Forms.Components
     internal class MenuRenderer : ToolStripProfessionalRenderer
     {
         private Genie.Globals.Presets Presets;
-        public MenuRenderer(Genie.Globals.Presets PresetList) : base(new MenuColors(PresetList)) 
-        { 
+        public MenuRenderer(Genie.Globals.Presets PresetList) : base(new MenuColors(PresetList))
+        {
             Presets = PresetList;
         }
 
@@ -60,21 +60,21 @@ namespace GenieClient.Forms.Components
             get { return Presets["ui.menu.highlight"].FgColor; }
         }
 
-        public override Color CheckBackground 
+        public override Color CheckBackground
         {
             get { return Presets["ui.menu.checked"].FgColor; }
         }
-        public override Color CheckSelectedBackground 
+        public override Color CheckSelectedBackground
         {
             get { return Presets["ui.menu.highlight"].FgColor; }
         }
 
-        public override Color ImageMarginGradientBegin 
+        public override Color ImageMarginGradientBegin
         {
             get { return Presets["ui.menu"].BgColor; }
         }
 
-        public override Color ImageMarginGradientMiddle 
+        public override Color ImageMarginGradientMiddle
         {
             get { return Presets["ui.menu"].BgColor; }
         }

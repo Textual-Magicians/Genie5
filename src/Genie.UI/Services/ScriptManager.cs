@@ -21,7 +21,7 @@ public class ScriptInfo
     public bool IsRunning { get; set; } = true;
     public int DebugLevel { get; set; }
     public DateTime StartTime { get; } = DateTime.Now;
-    
+
     // Reference to the actual script (internal use)
     internal Script? ScriptInstance { get; set; }
 }
@@ -96,7 +96,7 @@ public class ScriptManager : IDisposable
         {
             return _globals.Config.ScriptDir;
         }
-        
+
         // Default fallback
         return Path.Combine(LocalDirectory.Path, "Scripts");
     }
@@ -139,7 +139,7 @@ public class ScriptManager : IDisposable
             }
 
             var fullPath = Path.Combine(scriptDir, scriptName);
-            
+
             if (!File.Exists(fullPath))
             {
                 ScriptOutput?.Invoke($"Script not found: {scriptName}", true);
@@ -165,7 +165,7 @@ public class ScriptManager : IDisposable
 
             // Create the script
             var script = new Script(_globals);
-            
+
             // Subscribe to script events
             script.EventPrintText += OnScriptPrintText;
             script.EventPrintError += OnScriptPrintError;
@@ -203,7 +203,7 @@ public class ScriptManager : IDisposable
             // Notify UI
             ScriptStarted?.Invoke(info);
             UpdateObservableCollection();
-            
+
             ScriptOutput?.Invoke($"[Script started: {info.DisplayName}]", false);
 
             return info;
@@ -225,7 +225,7 @@ public class ScriptManager : IDisposable
         {
             var toAbort = string.IsNullOrEmpty(scriptName)
                 ? _runningScripts.ToList()
-                : _runningScripts.Where(s => 
+                : _runningScripts.Where(s =>
                     s.FileName.Equals(scriptName, StringComparison.OrdinalIgnoreCase) ||
                     s.DisplayName.Equals(scriptName, StringComparison.OrdinalIgnoreCase)).ToList();
 
@@ -275,7 +275,7 @@ public class ScriptManager : IDisposable
         {
             var toPause = string.IsNullOrEmpty(scriptName)
                 ? _runningScripts.ToList()
-                : _runningScripts.Where(s => 
+                : _runningScripts.Where(s =>
                     s.FileName.Equals(scriptName, StringComparison.OrdinalIgnoreCase) ||
                     s.DisplayName.Equals(scriptName, StringComparison.OrdinalIgnoreCase)).ToList();
 
@@ -315,7 +315,7 @@ public class ScriptManager : IDisposable
         {
             var toResume = string.IsNullOrEmpty(scriptName)
                 ? _runningScripts.Where(s => s.IsPaused).ToList()
-                : _runningScripts.Where(s => 
+                : _runningScripts.Where(s =>
                     (s.FileName.Equals(scriptName, StringComparison.OrdinalIgnoreCase) ||
                      s.DisplayName.Equals(scriptName, StringComparison.OrdinalIgnoreCase)) && s.IsPaused).ToList();
 
@@ -459,7 +459,8 @@ public class ScriptManager : IDisposable
 
     private void OnTick(object? state)
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
 
         _lock.EnterUpgradeableReadLock();
         try
@@ -484,7 +485,7 @@ public class ScriptManager : IDisposable
                     {
                         info.IsRunning = false;
                         _runningScripts.Remove(info);
-                        
+
                         // Unsubscribe from events
                         if (info.ScriptInstance != null)
                         {
@@ -493,7 +494,7 @@ public class ScriptManager : IDisposable
                             info.ScriptInstance.EventSendText -= OnScriptSendText;
                             info.ScriptInstance.EventStatusChanged -= OnScriptStatusChanged;
                         }
-                        
+
                         ScriptStopped?.Invoke(info);
                         ScriptOutput?.Invoke($"[Script finished: {info.DisplayName}]", false);
                     }
@@ -564,13 +565,14 @@ public class ScriptManager : IDisposable
         {
             _lock.ExitReadLock();
         }
-        
+
         ScriptListChanged?.Invoke();
     }
 
     public void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
         _disposed = true;
 
         _tickTimer.Dispose();

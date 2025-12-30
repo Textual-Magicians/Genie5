@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 using Microsoft.VisualBasic;
@@ -21,7 +21,7 @@ namespace GenieClient.Genie.Script
                 bsym = (ClassSymbol)y;
                 if (String.Compare(asym.Token, bsym.Token) > 0)
                     return 1;
-                if (String.Compare(asym.Token,bsym.Token) < 0)
+                if (String.Compare(asym.Token, bsym.Token) < 0)
                     return -1;
                 if ((int)asym.PrecedenceLevel == -1 | (int)bsym.PrecedenceLevel == -1)
                     return 0;
@@ -160,80 +160,80 @@ namespace GenieClient.Genie.Script
             switch (switchExpr)
             {
                 case "^":
-                    {
-                        return Math.Pow(operand1, operand2);
-                    }
+                {
+                    return Math.Pow(operand1, operand2);
+                }
 
                 case "+":
+                {
+                    var switchExpr1 = op.PrecedenceLevel;
+                    switch (switchExpr1)
                     {
-                        var switchExpr1 = op.PrecedenceLevel;
-                        switch (switchExpr1)
+                        case PRECEDENCE.LEVEL1:
                         {
-                            case PRECEDENCE.LEVEL1:
-                                {
-                                    return operand2 + operand1;
-                                }
-
-                            case PRECEDENCE.LEVEL4:
-                                {
-                                    return operand1;
-                                }
+                            return operand2 + operand1;
                         }
 
-                        break;
+                        case PRECEDENCE.LEVEL4:
+                        {
+                            return operand1;
+                        }
                     }
+
+                    break;
+                }
 
                 case "-":
+                {
+                    var switchExpr2 = op.PrecedenceLevel;
+                    switch (switchExpr2)
                     {
-                        var switchExpr2 = op.PrecedenceLevel;
-                        switch (switchExpr2)
+                        case PRECEDENCE.LEVEL1:
                         {
-                            case PRECEDENCE.LEVEL1:
-                                {
-                                    return operand1 - operand2;
-                                }
-
-                            case PRECEDENCE.LEVEL4:
-                                {
-                                    return -1 * operand1;
-                                }
+                            return operand1 - operand2;
                         }
 
-                        break;
+                        case PRECEDENCE.LEVEL4:
+                        {
+                            return -1 * operand1;
+                        }
                     }
+
+                    break;
+                }
 
                 case "*":
-                    {
-                        return operand2 * operand1;
-                    }
+                {
+                    return operand2 * operand1;
+                }
 
                 case "/":
-                    {
-                        return operand1 / operand2;
-                    }
+                {
+                    return operand1 / operand2;
+                }
 
                 case @"\":
-                    {
-                        return Conversions.ToLong(operand1) / Conversions.ToLong(operand2);
-                    }
+                {
+                    return Conversions.ToLong(operand1) / Conversions.ToLong(operand2);
+                }
 
                 case "%":
-                    {
-                        return operand1 % operand2;
-                    }
+                {
+                    return operand1 % operand2;
+                }
 
                 case "!":
+                {
+                    int i;
+                    double res = 1;
+                    if (operand1 > 1)
                     {
-                        int i;
-                        double res = 1;
-                        if (operand1 > 1)
-                        {
-                            for (i = Conversions.ToInteger(operand1); i >= 1; i -= 1)
-                                res = res * i;
-                        }
-
-                        return res;
+                        for (i = Conversions.ToInteger(operand1); i >= 1; i -= 1)
+                            res = res * i;
                     }
+
+                    return res;
+                }
             }
 
             return default;
@@ -245,111 +245,111 @@ namespace GenieClient.Genie.Script
             switch (switchExpr)
             {
                 case "cos":
-                    {
-                        return Math.Cos(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Cos(Conversions.ToDouble(args[1]));
+                }
 
                 case "sin":
-                    {
-                        return Math.Sin(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Sin(Conversions.ToDouble(args[1]));
+                }
 
                 case "tan":
-                    {
-                        return Math.Tan(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Tan(Conversions.ToDouble(args[1]));
+                }
 
                 case "floor":
-                    {
-                        return Math.Floor(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Floor(Conversions.ToDouble(args[1]));
+                }
 
                 case "ceiling":
-                    {
-                        return Math.Ceiling(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Ceiling(Conversions.ToDouble(args[1]));
+                }
 
                 case "max":
+                {
+                    double currentMax = Conversions.ToDouble(args[1]);
+                    for (int i = 2; i <= args.Count; i++) //0 index is null, 1 index is used above
                     {
-                        double currentMax = Conversions.ToDouble(args[1]);
-                        for (int i = 2; i <= args.Count; i++) //0 index is null, 1 index is used above
-                        {
-                            currentMax = Math.Max(currentMax, Conversions.ToDouble(args[i]));
-                        }
-                        return currentMax;
+                        currentMax = Math.Max(currentMax, Conversions.ToDouble(args[i]));
                     }
+                    return currentMax;
+                }
 
                 case "min":
+                {
+                    double currentMin = Conversions.ToDouble(args[1]);
+                    for (int i = 2; i <= args.Count; i++) //0 index is null, 1 index is used above
                     {
-                        double currentMin = Conversions.ToDouble(args[1]);
-                        for (int i = 2; i <= args.Count; i++) //0 index is null, 1 index is used above
-                        {
-                            currentMin = Math.Min(currentMin, Conversions.ToDouble(args[i]));
-                        }
-                        return currentMin;
+                        currentMin = Math.Min(currentMin, Conversions.ToDouble(args[i]));
                     }
+                    return currentMin;
+                }
 
                 case "arcsin":
-                    {
-                        return Math.Asin(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Asin(Conversions.ToDouble(args[1]));
+                }
 
                 case "arccos":
-                    {
-                        return Math.Acos(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Acos(Conversions.ToDouble(args[1]));
+                }
 
                 case "arctan":
-                    {
-                        return Math.Atan(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Atan(Conversions.ToDouble(args[1]));
+                }
 
                 case "sqrt":
-                    {
-                        return Math.Sqrt(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Sqrt(Conversions.ToDouble(args[1]));
+                }
 
                 case "log":
-                    {
-                        return Math.Log10(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Log10(Conversions.ToDouble(args[1]));
+                }
 
                 case "log10":
-                    {
-                        return Math.Log10(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Log10(Conversions.ToDouble(args[1]));
+                }
 
                 case "abs":
-                    {
-                        return Math.Abs(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Abs(Conversions.ToDouble(args[1]));
+                }
 
                 case "round":
+                {
+                    if (args.Count == 2)
                     {
-                        if (args.Count == 2)
-                        {
-                            return Math.Round(Conversions.ToDouble(args[1]), Conversions.ToInteger(args[2]));
-                        }
-                        else
-                        {
-                            return Math.Round(Conversions.ToDouble(args[1]));
-                        }
+                        return Math.Round(Conversions.ToDouble(args[1]), Conversions.ToInteger(args[2]));
                     }
+                    else
+                    {
+                        return Math.Round(Conversions.ToDouble(args[1]));
+                    }
+                }
 
                 case "ln":
-                    {
-                        return Math.Log(Conversions.ToDouble(args[1]));
-                    }
+                {
+                    return Math.Log(Conversions.ToDouble(args[1]));
+                }
 
                 case "neg":
-                    {
-                        return -1 * Conversions.ToDouble(args[1]);
-                    }
+                {
+                    return -1 * Conversions.ToDouble(args[1]);
+                }
 
                 case "pos":
-                    {
-                        return +1 * Conversions.ToDouble(args[1]);
-                    }
+                {
+                    return +1 * Conversions.ToDouble(args[1]);
+                }
             }
 
             return default;
@@ -361,20 +361,20 @@ namespace GenieClient.Genie.Script
             switch (switchExpr)
             {
                 case "e":
-                    {
-                        return Math.E;
-                    }
+                {
+                    return Math.E;
+                }
 
                 case "pi":
-                    {
-                        return Math.PI;
-                    }
+                {
+                    return Math.PI;
+                }
 
                 default:
-                    {
-                        break;
-                    }
-                    // look in symbol table....?
+                {
+                    break;
+                }
+                // look in symbol table....?
             }
 
             return default;
@@ -439,29 +439,29 @@ namespace GenieClient.Genie.Script
                 switch (switchExpr)
                 {
                     case 2: // cc wasn't found in the column string
+                    {
+                        if (ALPHA.IndexOf(char.ToUpper(cc)) > 0)      // letter column?
                         {
-                            if (ALPHA.IndexOf(char.ToUpper(cc)) > 0)      // letter column?
-                            {
-                                col = 1;
-                            }
-                            else if (DIGITS.IndexOf(char.ToUpper(cc)) > 0) // number column?
-                            {
-                                col = 2;
-                            }
-                            else // everything else is assigned to the punctuation column
-                            {
-                                col = 6;
-                            }
-
-                            break;
+                            col = 1;
                         }
+                        else if (DIGITS.IndexOf(char.ToUpper(cc)) > 0) // number column?
+                        {
+                            col = 2;
+                        }
+                        else // everything else is assigned to the punctuation column
+                        {
+                            col = 6;
+                        }
+
+                        break;
+                    }
 
                     case object _ when switchExpr > 5: // cc was found and is > 5 so must be in operator column
-                        {
-                            col = 7;
-                            break;
-                        }
-                        // case else ' cc was found - col contains the correct column
+                    {
+                        col = 7;
+                        break;
+                    }
+                    // case else ' cc was found - col contains the correct column
                 }
 
                 // find the new state based on current state and column (determined by input)
@@ -470,59 +470,59 @@ namespace GenieClient.Genie.Script
                 switch (switchExpr1)
                 {
                     case 3: // function or variable  end state 
+                    {
+
+                        // TODO variables aren't supported but substitution 
+                        // could easily be performed here or after
+                        // tokenization
+
+                        var sym = new ClassSymbol();
+                        sym.Token = line.Substring(sp, cp - sp);
+                        if (is_function(sym.Token))
                         {
-
-                            // TODO variables aren't supported but substitution 
-                            // could easily be performed here or after
-                            // tokenization
-
-                            var sym = new ClassSymbol();
-                            sym.Token = line.Substring(sp, cp - sp);
-                            if (is_function(sym.Token))
-                            {
-                                sym.Cls = TOKENCLASS.KEYWORD;
-                            }
-                            else
-                            {
-                                sym.Cls = TOKENCLASS.IDENTIFIER;
-                            }
-
-                            symbols.Enqueue(sym);
-                            lex_state = 1;
-                            cp = cp - 1;
-                            break;
+                            sym.Cls = TOKENCLASS.KEYWORD;
                         }
+                        else
+                        {
+                            sym.Cls = TOKENCLASS.IDENTIFIER;
+                        }
+
+                        symbols.Enqueue(sym);
+                        lex_state = 1;
+                        cp = cp - 1;
+                        break;
+                    }
 
                     case 5: // number end state
-                        {
-                            var sym = new ClassSymbol();
-                            sym.Token = line.Substring(sp, cp - sp);
-                            sym.Cls = TOKENCLASS.NUMBER;
-                            symbols.Enqueue(sym);
-                            lex_state = 1;
-                            cp = cp - 1;
-                            break;
-                        }
+                    {
+                        var sym = new ClassSymbol();
+                        sym.Token = line.Substring(sp, cp - sp);
+                        sym.Cls = TOKENCLASS.NUMBER;
+                        symbols.Enqueue(sym);
+                        lex_state = 1;
+                        cp = cp - 1;
+                        break;
+                    }
 
                     case 6: // punctuation end state
-                        {
-                            var sym = new ClassSymbol();
-                            sym.Token = line.Substring(sp, cp - sp + 1);
-                            sym.Cls = TOKENCLASS.PUNCTUATION;
-                            symbols.Enqueue(sym);
-                            lex_state = 1;
-                            break;
-                        }
+                    {
+                        var sym = new ClassSymbol();
+                        sym.Token = line.Substring(sp, cp - sp + 1);
+                        sym.Cls = TOKENCLASS.PUNCTUATION;
+                        symbols.Enqueue(sym);
+                        lex_state = 1;
+                        break;
+                    }
 
                     case 7: // operator end state
-                        {
-                            var sym = new ClassSymbol();
-                            sym.Token = line.Substring(sp, cp - sp + 1);
-                            sym.Cls = TOKENCLASS.OPERATORTOKEN;
-                            symbols.Enqueue(sym);
-                            lex_state = 1;
-                            break;
-                        }
+                    {
+                        var sym = new ClassSymbol();
+                        sym.Token = line.Substring(sp, cp - sp + 1);
+                        sym.Cls = TOKENCLASS.OPERATORTOKEN;
+                        symbols.Enqueue(sym);
+                        lex_state = 1;
+                        break;
+                    }
                 }
 
                 cp += 1;
@@ -731,28 +731,28 @@ namespace GenieClient.Genie.Script
                 switch (switchExpr)
                 {
                     case TOKENCLASS.IDENTIFIER:
-                        {
-                            tokens.Dequeue();
-                            return identifier(symbol.Token);
-                        }
+                    {
+                        tokens.Dequeue();
+                        return identifier(symbol.Token);
+                    }
 
                     case TOKENCLASS.KEYWORD:
-                        {
-                            tokens.Dequeue();
-                            return calc_function(symbol.Token, arguments(tokens));
-                        }
+                    {
+                        tokens.Dequeue();
+                        return calc_function(symbol.Token, arguments(tokens));
+                    }
 
                     case TOKENCLASS.NUMBER:
-                        {
-                            tokens.Dequeue();
-                            m_stack.Push(Conversions.ToDouble(symbol.Token));
-                            return Conversions.ToDouble(symbol.Token);
-                        }
+                    {
+                        tokens.Dequeue();
+                        m_stack.Push(Conversions.ToDouble(symbol.Token));
+                        return Conversions.ToDouble(symbol.Token);
+                    }
 
                     default:
-                        {
-                            throw new Exception("Invalid expression.");
-                        }
+                    {
+                        throw new Exception("Invalid expression.");
+                    }
                 }
             }
         }

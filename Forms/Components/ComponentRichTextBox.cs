@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -142,7 +142,7 @@ namespace GenieClient
         private bool m_bNameListOnly = false;
         private int m_iMaxBufferSize = 500000;
         private bool m_bIsMainWindow = false;
-       
+
         public bool IsMainWindow
         {
             get
@@ -366,7 +366,7 @@ namespace GenieClient
             Clipboard.Clear();
             Clipboard.SetDataObject(image);
             this.ReadOnly = false;
-            this.Select(this.TextLength,0);
+            this.Select(this.TextLength, 0);
             this.Paste(DataFormats.GetFormat(DataFormats.Bitmap));
             this.ReadOnly = true;
             Clipboard.Clear();
@@ -378,7 +378,7 @@ namespace GenieClient
             {
                 Rectangle rc = new Rectangle(this.Location.X, this.Location.Y, this.Margin.Left * 3, this.Height);
                 Invalidate(rc, true);
-                
+
             }
         }
         public void AddText(string sText, Color oColor, Color oBgColor, bool bNoCache = true, bool bMono = false)
@@ -460,7 +460,8 @@ namespace GenieClient
                 {
                     foreach (Globals.HighlightRegExp.Highlight oHighlight in m_oParentForm.Globals.HighlightRegExpList.Values)
                     {
-                        if (oHighlight.IsActive) ParseRegExpHighlight(oHighlight);
+                        if (oHighlight.IsActive)
+                            ParseRegExpHighlight(oHighlight);
                     }
                 }
                 finally
@@ -483,7 +484,7 @@ namespace GenieClient
                 {
                     foreach (Group oGroup in oMatch.Groups)
                     {
-                        
+
                         m_oRichTextBuffer.SelectionStart = StartIndex + oGroup.Index - iDiff;
                         m_oRichTextBuffer.SelectionLength = oGroup.Length;
                         if (Highlight.FgColor != Color.Transparent & Highlight.FgColor != m_oEmptyColor)
@@ -537,14 +538,14 @@ namespace GenieClient
                     {
                         m_oRichTextBuffer.SelectionColor = Highlight.FgColor;
                     }
-    
+
                     if (Highlight.BgColor != Color.Transparent & Highlight.FgColor != m_oEmptyColor)
                     {
                         m_oRichTextBuffer.SelectionBackColor = Highlight.BgColor;
                     }
                 }
             }
-            
+
         }
 
         private void ParseVolatileHighlights(List<VolatileHighlight> highlightList)
@@ -569,8 +570,10 @@ namespace GenieClient
                         int indexOfHighlight = m_oRichTextBuffer.Text.IndexOf(highlight);
                         int lastNewLineIndex = m_oRichTextBuffer.Text.LastIndexOf("\n", indexOfHighlight);
                         int nextNewLineIndex = m_oRichTextBuffer.Text.IndexOf("\n", indexOfHighlight);
-                        if (lastNewLineIndex == -1) lastNewLineIndex = 0;
-                        if (nextNewLineIndex == -1) nextNewLineIndex = m_oRichTextBuffer.Text.Length;
+                        if (lastNewLineIndex == -1)
+                            lastNewLineIndex = 0;
+                        if (nextNewLineIndex == -1)
+                            nextNewLineIndex = m_oRichTextBuffer.Text.Length;
                         m_oRichTextBuffer.SelectionStart = lastNewLineIndex >= 0 ? lastNewLineIndex : 0;
                         m_oRichTextBuffer.SelectionLength = nextNewLineIndex - lastNewLineIndex;
                     }
@@ -677,7 +680,7 @@ namespace GenieClient
                     }
                 }
             }
-            
+
         }
 
         public FormSkin FormParent
@@ -778,7 +781,7 @@ namespace GenieClient
                 SelectionLength = iRemoveSize;
                 SelectedText = " ";
             }
-            
+
             SelectionStart = int.MaxValue;
             SelectionLength = 0;
 
@@ -963,7 +966,7 @@ namespace GenieClient
             {
                 throw new ArgumentOutOfRangeException("position");
             }
-            
+
             SelectionStart = position;
             SelectedRtf = @"{\rtf1\ansi " + text + @"\v #" + hyperlink + @"!#\v0}";
             Select(position, text.Length + hyperlink.Length + 1);
@@ -986,7 +989,7 @@ namespace GenieClient
                 SelectedRtf = @"{\rtf1\ansi " + SelectedText + @"\v #" + hyperlink + @"\v0}";
                 Select(position, length + hyperlink.Length + 1);
                 SetSelectionLink(Handle, true);
-                Select(Text.Length, 0); 
+                Select(Text.Length, 0);
             }
         }
 

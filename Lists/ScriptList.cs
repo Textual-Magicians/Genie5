@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 
 namespace GenieClient.Genie
 {
@@ -18,7 +18,7 @@ namespace GenieClient.Genie
                 }
                 return m_oRWLock.TryEnterWriteLock(500);
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -34,7 +34,7 @@ namespace GenieClient.Genie
                 }
                 return m_oRWLock.TryEnterReadLock(500);
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -47,7 +47,7 @@ namespace GenieClient.Genie
                 m_oRWLock.ExitWriteLock();
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -65,7 +65,7 @@ namespace GenieClient.Genie
                 return false;
             }
         }
-#endregion
+        #endregion
 
         public GenieClient.Script this[int Index]
         {

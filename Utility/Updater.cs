@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
@@ -68,12 +68,12 @@ namespace GenieClient
             }
         }
 
-        public static bool ClientIsCurrent 
-        { 
+        public static bool ClientIsCurrent
+        {
             get
             {
                 return LocalClientVersion == ServerClientVersion;
-            } 
+            }
         }
 
         public static async Task<bool> RunUpdate()
@@ -202,7 +202,9 @@ namespace GenieClient
                     // Clean up temp file
                     if (File.Exists(tempZipPath))
                     {
-                        try { File.Delete(tempZipPath); } catch { /* ignore cleanup errors */ }
+                        try
+                        { File.Delete(tempZipPath); }
+                        catch { /* ignore cleanup errors */ }
                     }
                 }
             }
@@ -230,7 +232,7 @@ namespace GenieClient
                 if (!string.IsNullOrWhiteSpace(AssetsURL))
                 {
                     Assets = new Dictionary<string, Asset>();
-                    
+
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
                     client.DefaultRequestHeaders.Add("User-Agent", "Genie Client Updater");
@@ -259,9 +261,9 @@ namespace GenieClient
             }
         }
 
-        
 
-        
+
+
 
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -94,40 +94,40 @@ namespace GenieClient.Genie.Script
                 switch (switchExpr)
                 {
                     case "eq":
-                        {
-                            sMatch = "=";
-                            break;
-                        }
+                    {
+                        sMatch = "=";
+                        break;
+                    }
 
                     case "and":
-                        {
-                            sMatch = "&&";
-                            break;
-                        }
+                    {
+                        sMatch = "&&";
+                        break;
+                    }
 
                     case "or":
-                        {
-                            sMatch = "||";
-                            break;
-                        }
+                    {
+                        sMatch = "||";
+                        break;
+                    }
 
                     case "not":
-                        {
-                            sMatch = "!";
-                            break;
-                        }
+                    {
+                        sMatch = "!";
+                        break;
+                    }
 
                     case "true":
-                        {
-                            sMatch = "1";
-                            break;
-                        }
+                    {
+                        sMatch = "1";
+                        break;
+                    }
 
                     case "false":
-                        {
-                            sMatch = "0";
-                            break;
-                        }
+                    {
+                        sMatch = "0";
+                        break;
+                    }
                 }
 
                 sTemp += sText.Substring(iLastPos, m.Index) + sMatch;
@@ -290,56 +290,56 @@ namespace GenieClient.Genie.Script
                     switch (switchExpr)
                     {
                         case "eq":
-                            {
-                                text = "=";
-                                type = ParseType.SeparatorType;
-                                break;
-                            }
+                        {
+                            text = "=";
+                            type = ParseType.SeparatorType;
+                            break;
+                        }
 
                         case "and":
-                            {
-                                text = "&&";
-                                type = ParseType.SeparatorType;
-                                break;
-                            }
+                        {
+                            text = "&&";
+                            type = ParseType.SeparatorType;
+                            break;
+                        }
 
                         case "or":
-                            {
-                                text = "||";
-                                type = ParseType.SeparatorType;
-                                break;
-                            }
+                        {
+                            text = "||";
+                            type = ParseType.SeparatorType;
+                            break;
+                        }
 
                         case "not":
-                            {
-                                text = "!";
-                                type = ParseType.NegateType;
-                                break;
-                            }
+                        {
+                            text = "!";
+                            type = ParseType.NegateType;
+                            break;
+                        }
 
                         case "true":
-                            {
-                                text = "1";
-                                type = ParseType.NumberType;
-                                break;
-                            }
+                        {
+                            text = "1";
+                            type = ParseType.NumberType;
+                            break;
+                        }
 
                         case "false":
-                            {
-                                text = "0";
-                                type = ParseType.NumberType;
-                                break;
-                            }
+                        {
+                            text = "0";
+                            type = ParseType.NumberType;
+                            break;
+                        }
 
                         default:
+                        {
+                            if (Functions.IndexOf("|" + text + "|") == -1) // Assume string
                             {
-                                if (Functions.IndexOf("|" + text + "|") == -1) // Assume string
-                                {
-                                    type = ParseType.StringType;
-                                }
-
-                                break;
+                                type = ParseType.StringType;
                             }
+
+                            break;
+                        }
                     }
                 }
                 else if (type == ParseType.SeparatorType)
@@ -370,16 +370,16 @@ namespace GenieClient.Genie.Script
                 switch (switchExpr)
                 {
                     case ParseType.SectionStartType:
-                        {
-                            j = ParseQueue(j + 1);
-                            break;
-                        }
+                    {
+                        j = ParseQueue(j + 1);
+                        break;
+                    }
 
                     case ParseType.SectionEndType:
-                        {
-                            ParseSection(start, j - 1);
-                            return j;
-                        }
+                    {
+                        ParseSection(start, j - 1);
+                        return j;
+                    }
                 }
             }
 
@@ -461,9 +461,9 @@ namespace GenieClient.Genie.Script
                         oSections.ReleaseReaderLock();
                     }
                 }
-                
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.Print(ex.Message);
             }
@@ -497,32 +497,32 @@ namespace GenieClient.Genie.Script
                     {
                         case ParseType.NumberType:
                         case ParseType.StringType:
+                        {
+                            if (iArgLeft > -1 & iComparer > -1)
                             {
-                                if (iArgLeft > -1 & iComparer > -1)
+                                iArgRight = j;
+                                if (ParseCompare(iArgLeft, iArgRight, iComparer, true) == true)
                                 {
-                                    iArgRight = j;
-                                    if (ParseCompare(iArgLeft, iArgRight, iComparer, true) == true)
-                                    {
-                                        ((Sections)oSections[iArgRight]).bParsed = true; // Parsed
-                                        ((Sections)oSections[iComparer]).bParsed = true; // Parsed
-                                        iArgLeft = -1;
-                                    }
-
-                                    iComparer = -1;
-                                }
-                                else
-                                {
-                                    iArgLeft = j;
+                                    ((Sections)oSections[iArgRight]).bParsed = true; // Parsed
+                                    ((Sections)oSections[iComparer]).bParsed = true; // Parsed
+                                    iArgLeft = -1;
                                 }
 
-                                break;
+                                iComparer = -1;
                             }
+                            else
+                            {
+                                iArgLeft = j;
+                            }
+
+                            break;
+                        }
 
                         case ParseType.SeparatorType:
-                            {
-                                iComparer = j;
-                                break;
-                            }
+                        {
+                            iComparer = j;
+                            break;
+                        }
                     }
                 }
             }
@@ -536,32 +536,32 @@ namespace GenieClient.Genie.Script
                     switch (switchExpr1)
                     {
                         case ParseType.NegateType:
-                            {
-                                ((Sections)oSections[j]).bParsed = true; // Parsed
-                                bNegate = true;
-                                break;
-                            }
+                        {
+                            ((Sections)oSections[j]).bParsed = true; // Parsed
+                            bNegate = true;
+                            break;
+                        }
 
                         case ParseType.NumberType:
                         case ParseType.StringType:
+                        {
+                            if (bNegate == true)
                             {
-                                if (bNegate == true)
+                                Sections argoSection = (Sections)oSections[j];
+                                if (IsSectionTrue(argoSection) == true)
                                 {
-                                    Sections argoSection = (Sections)oSections[j];
-                                    if (IsSectionTrue(argoSection) == true)
-                                    {
-                                        ((Sections)oSections[j]).sBlock = "0";
-                                    }
-                                    else
-                                    {
-                                        ((Sections)oSections[j]).sBlock = "1";
-                                    }
-
-                                    bNegate = false;
+                                    ((Sections)oSections[j]).sBlock = "0";
+                                }
+                                else
+                                {
+                                    ((Sections)oSections[j]).sBlock = "1";
                                 }
 
-                                break;
+                                bNegate = false;
                             }
+
+                            break;
+                        }
                     }
                 }
             }
@@ -579,32 +579,32 @@ namespace GenieClient.Genie.Script
                     {
                         case ParseType.NumberType:
                         case ParseType.StringType:
+                        {
+                            if (iArgLeft > -1 & iComparer > -1)
                             {
-                                if (iArgLeft > -1 & iComparer > -1)
+                                iArgRight = j;
+                                if (ParseCompare(iArgLeft, iArgRight, iComparer, false) == true)
                                 {
-                                    iArgRight = j;
-                                    if (ParseCompare(iArgLeft, iArgRight, iComparer, false) == true)
-                                    {
-                                        ((Sections)oSections[iArgRight]).bParsed = true; // Parsed
-                                        ((Sections)oSections[iComparer]).bParsed = true; // Parsed
-                                                                                         // iArgLeft = -1
-                                    }
-
-                                    iComparer = -1;
-                                }
-                                else
-                                {
-                                    iArgLeft = j;
+                                    ((Sections)oSections[iArgRight]).bParsed = true; // Parsed
+                                    ((Sections)oSections[iComparer]).bParsed = true; // Parsed
+                                                                                     // iArgLeft = -1
                                 }
 
-                                break;
+                                iComparer = -1;
                             }
+                            else
+                            {
+                                iArgLeft = j;
+                            }
+
+                            break;
+                        }
 
                         case ParseType.SeparatorType:
-                            {
-                                iComparer = j;
-                                break;
-                            }
+                        {
+                            iComparer = j;
+                            break;
+                        }
                     }
                 }
             }
@@ -647,147 +647,147 @@ namespace GenieClient.Genie.Script
                     {
                         case "=":
                         case "==":
-                            {
-                                // ' LINUS: Använd WITH och IIF!!
-                                // ' Koden nedan är samma som koden under, bara förenklad
-                                // With CType(oSections.Item(iArgLeft), Sections)
-                                // .sBlock = IIf(bNumberCompare, IIf(dLeftValue = dRightValue, "1", "0"), IIf(String.Equals(sLeftValue, sRightValue), "1", "0"))
-                                // .BlockType = ParseType.NumberType
-                                // .bParsed = False ' Unparse
-                                // End With
+                        {
+                            // ' LINUS: Använd WITH och IIF!!
+                            // ' Koden nedan är samma som koden under, bara förenklad
+                            // With CType(oSections.Item(iArgLeft), Sections)
+                            // .sBlock = IIf(bNumberCompare, IIf(dLeftValue = dRightValue, "1", "0"), IIf(String.Equals(sLeftValue, sRightValue), "1", "0"))
+                            // .BlockType = ParseType.NumberType
+                            // .bParsed = False ' Unparse
+                            // End With
 
-                                if (bNumberCompare == true)
-                                {
-                                    if (dLeftValue == dRightValue)
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "1";
-                                    }
-                                    else
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                    }
-                                }
-                                else if (string.Equals(sLeftValue, sRightValue) == true)
+                            if (bNumberCompare == true)
+                            {
+                                if (dLeftValue == dRightValue)
                                 {
                                     ((Sections)oSections[iArgLeft]).sBlock = "1";
                                 }
                                 else
                                 {
                                     ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
-                                ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
-                                return true;
+                                }
                             }
+                            else if (string.Equals(sLeftValue, sRightValue) == true)
+                            {
+                                ((Sections)oSections[iArgLeft]).sBlock = "1";
+                            }
+                            else
+                            {
+                                ((Sections)oSections[iArgLeft]).sBlock = "0";
+                            } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
+                            ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
+                            return true;
+                        }
 
                         case "!=":
                         case "<>":
+                        {
+                            if (bNumberCompare == true)
                             {
-                                if (bNumberCompare == true)
-                                {
-                                    if (dLeftValue != dRightValue)
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "1";
-                                    }
-                                    else
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                    }
-                                }
-                                else if (string.Equals(sLeftValue, sRightValue) == true)
-                                {
-                                    ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                }
-                                else
+                                if (dLeftValue != dRightValue)
                                 {
                                     ((Sections)oSections[iArgLeft]).sBlock = "1";
-                                } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
-                                ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
-                                return true;
+                                }
+                                else
+                                {
+                                    ((Sections)oSections[iArgLeft]).sBlock = "0";
+                                }
                             }
+                            else if (string.Equals(sLeftValue, sRightValue) == true)
+                            {
+                                ((Sections)oSections[iArgLeft]).sBlock = "0";
+                            }
+                            else
+                            {
+                                ((Sections)oSections[iArgLeft]).sBlock = "1";
+                            } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
+                            ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
+                            return true;
+                        }
 
                         case ">":
+                        {
+                            if (bNumberCompare == true)
                             {
-                                if (bNumberCompare == true)
+                                if (dLeftValue > dRightValue)
                                 {
-                                    if (dLeftValue > dRightValue)
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "1";
-                                    }
-                                    else
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                    }
+                                    ((Sections)oSections[iArgLeft]).sBlock = "1";
                                 }
                                 else
                                 {
                                     ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
-                                ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
-                                return true;
+                                }
                             }
+                            else
+                            {
+                                ((Sections)oSections[iArgLeft]).sBlock = "0";
+                            } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
+                            ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
+                            return true;
+                        }
 
                         case ">=":
+                        {
+                            if (bNumberCompare == true)
                             {
-                                if (bNumberCompare == true)
+                                if (dLeftValue >= dRightValue)
                                 {
-                                    if (dLeftValue >= dRightValue)
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "1";
-                                    }
-                                    else
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                    }
+                                    ((Sections)oSections[iArgLeft]).sBlock = "1";
                                 }
                                 else
                                 {
                                     ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
-                                ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
-                                return true;
+                                }
                             }
+                            else
+                            {
+                                ((Sections)oSections[iArgLeft]).sBlock = "0";
+                            } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
+                            ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
+                            return true;
+                        }
 
                         case "<":
+                        {
+                            if (bNumberCompare == true)
                             {
-                                if (bNumberCompare == true)
+                                if (dLeftValue < dRightValue)
                                 {
-                                    if (dLeftValue < dRightValue)
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "1";
-                                    }
-                                    else
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                    }
+                                    ((Sections)oSections[iArgLeft]).sBlock = "1";
                                 }
                                 else
                                 {
                                     ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
-                                ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
-                                return true;
+                                }
                             }
+                            else
+                            {
+                                ((Sections)oSections[iArgLeft]).sBlock = "0";
+                            } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
+                            ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
+                            return true;
+                        }
 
                         case "<=":
+                        {
+                            if (bNumberCompare == true)
                             {
-                                if (bNumberCompare == true)
+                                if (dLeftValue <= dRightValue)
                                 {
-                                    if (dLeftValue <= dRightValue)
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "1";
-                                    }
-                                    else
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                    }
+                                    ((Sections)oSections[iArgLeft]).sBlock = "1";
                                 }
                                 else
                                 {
                                     ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
-                                ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
-                                return true;
+                                }
                             }
+                            else
+                            {
+                                ((Sections)oSections[iArgLeft]).sBlock = "0";
+                            } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
+                            ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
+                            return true;
+                        }
                     }
                 }
                 else
@@ -796,46 +796,46 @@ namespace GenieClient.Genie.Script
                     switch (switchExpr1)
                     {
                         case "||":
+                        {
+                            if (bNumberCompare == true)
                             {
-                                if (bNumberCompare == true)
+                                if (dLeftValue > 0 | dRightValue > 0)
                                 {
-                                    if (dLeftValue > 0 | dRightValue > 0)
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "1";
-                                    }
-                                    else
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                    }
+                                    ((Sections)oSections[iArgLeft]).sBlock = "1";
                                 }
                                 else
                                 {
                                     ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
-                                ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
-                                return true;
+                                }
                             }
+                            else
+                            {
+                                ((Sections)oSections[iArgLeft]).sBlock = "0";
+                            } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
+                            ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
+                            return true;
+                        }
 
                         case "&&":
+                        {
+                            if (bNumberCompare == true)
                             {
-                                if (bNumberCompare == true)
+                                if (dLeftValue > 0 & dRightValue > 0)
                                 {
-                                    if (dLeftValue > 0 & dRightValue > 0)
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "1";
-                                    }
-                                    else
-                                    {
-                                        ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                    }
+                                    ((Sections)oSections[iArgLeft]).sBlock = "1";
                                 }
                                 else
                                 {
                                     ((Sections)oSections[iArgLeft]).sBlock = "0";
-                                } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
-                                ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
-                                return true;
+                                }
                             }
+                            else
+                            {
+                                ((Sections)oSections[iArgLeft]).sBlock = "0";
+                            } ((Sections)oSections[iArgLeft]).BlockType = ParseType.NumberType;
+                            ((Sections)oSections[iArgLeft]).bParsed = false; // Unparse
+                            return true;
+                        }
                     }
                 }
                 return false;
@@ -881,375 +881,377 @@ namespace GenieClient.Genie.Script
                 case "instr":
                 case "instring":
                 case "contains":
+                {
+                    if (args.Count == 2)
                     {
-                        if (args.Count == 2)
+                        if (((Sections)args[0]).sBlock.Contains(((Sections)args[1]).sBlock) == true)
                         {
-                            if (((Sections)args[0]).sBlock.Contains(((Sections)args[1]).sBlock) == true)
-                            {
-                                ((Sections)oSections[iStart]).sBlock = "1";
-                            }
-                            else
-                            {
-                                ((Sections)oSections[iStart]).sBlock = "0";
-                            } ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
+                            ((Sections)oSections[iStart]).sBlock = "1";
                         }
                         else
                         {
-                            // Error
-                        }
-
-                        break;
+                            ((Sections)oSections[iStart]).sBlock = "0";
+                        } ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "indexof":
+                {
+                    if (args.Count == 2)
                     {
-                        if (args.Count == 2)
-                        {
-                            ((Sections)oSections[iStart]).sBlock = (((Sections)args[0]).sBlock.IndexOf(((Sections)args[1]).sBlock) + 1).ToString();
-                            ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-                        else
-                        {
-                            // Error
-                        }
-
-                        break;
+                        ((Sections)oSections[iStart]).sBlock = (((Sections)args[0]).sBlock.IndexOf(((Sections)args[1]).sBlock) + 1).ToString();
+                        ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "lastindexof":
+                {
+                    if (args.Count == 2)
                     {
-                        if (args.Count == 2)
-                        {
-                            ((Sections)oSections[iStart]).sBlock = (((Sections)args[0]).sBlock.LastIndexOf(((Sections)args[1]).sBlock) + 1).ToString();
-                            ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-                        else
-                        {
-                            // Error
-                        }
-
-                        break;
+                        ((Sections)oSections[iStart]).sBlock = (((Sections)args[0]).sBlock.LastIndexOf(((Sections)args[1]).sBlock) + 1).ToString();
+                        ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "match":
+                {
+                    if (args.Count == 2)
                     {
-                        if (args.Count == 2)
+                        if (string.Equals(((Sections)args[0]).sBlock, ((Sections)args[1]).sBlock) == true)
                         {
-                            if (string.Equals(((Sections)args[0]).sBlock, ((Sections)args[1]).sBlock) == true)
-                            {
-                                ((Sections)oSections[iStart]).sBlock = "1";
-                            }
-                            else
-                            {
-                                ((Sections)oSections[iStart]).sBlock = "0";
-                            } ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
+                            ((Sections)oSections[iStart]).sBlock = "1";
                         }
                         else
                         {
-                            // Error
-                        }
-
-                        break;
+                            ((Sections)oSections[iStart]).sBlock = "0";
+                        } ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "startswith":
+                {
+                    if (args.Count == 2)
                     {
-                        if (args.Count == 2)
+                        if (((Sections)args[0]).sBlock.StartsWith(((Sections)args[1]).sBlock) == true)
                         {
-                            if (((Sections)args[0]).sBlock.StartsWith(((Sections)args[1]).sBlock) == true)
-                            {
-                                ((Sections)oSections[iStart]).sBlock = "1";
-                            }
-                            else
-                            {
-                                ((Sections)oSections[iStart]).sBlock = "0";
-                            } ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
+                            ((Sections)oSections[iStart]).sBlock = "1";
                         }
                         else
                         {
-                            // Error
-                        }
-
-                        break;
+                            ((Sections)oSections[iStart]).sBlock = "0";
+                        } ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "endswith":
+                {
+                    if (args.Count == 2)
                     {
-                        if (args.Count == 2)
+                        if (((Sections)args[0]).sBlock.EndsWith(((Sections)args[1]).sBlock) == true)
                         {
-                            if (((Sections)args[0]).sBlock.EndsWith(((Sections)args[1]).sBlock) == true)
-                            {
-                                ((Sections)oSections[iStart]).sBlock = "1";
-                            }
-                            else
-                            {
-                                ((Sections)oSections[iStart]).sBlock = "0";
-                            } ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
+                            ((Sections)oSections[iStart]).sBlock = "1";
                         }
                         else
                         {
-                            // Error
-                        }
-
-                        break;
+                            ((Sections)oSections[iStart]).sBlock = "0";
+                        } ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "replace":
+                {
+                    if (args.Count == 3)
                     {
-                        if (args.Count == 3)
-                        {
-                            ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Replace(((Sections)args[1]).sBlock, ((Sections)args[2]).sBlock).ToString();
-                            ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-                        else
-                        {
-                            // Error
-                        }
-
-                        break;
+                        ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Replace(((Sections)args[1]).sBlock, ((Sections)args[2]).sBlock).ToString();
+                        ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "tolower":
+                {
+                    if (args.Count == 1)
                     {
-                        if (args.Count == 1)
-                        {
-                            ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.ToLower();
-                            ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-                        else
-                        {
-                            // Error
-                        }
-
-                        break;
+                        ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.ToLower();
+                        ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "toupper":
+                {
+                    if (args.Count == 1)
                     {
-                        if (args.Count == 1)
-                        {
-                            ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.ToUpper();
-                            ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-                        else
-                        {
-                            // Error
-                        }
-
-                        break;
+                        ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.ToUpper();
+                        ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "trim":
+                {
+                    if (args.Count == 1)
                     {
-                        if (args.Count == 1)
-                        {
-                            ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Trim();
-                            ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-                        else
-                        {
-                            // Error
-                        }
-
-                        break;
+                        ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Trim();
+                        ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "len":
                 case "length":
+                {
+                    if (args.Count == 1)
                     {
-                        if (args.Count == 1)
-                        {
-                            ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Length.ToString();
-                            ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-                        else
-                        {
-                            // Error
-                        }
-
-                        break;
+                        ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Length.ToString();
+                        ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "substr":
                 case "substring":
+                {
+                    if (args.Count == 3)
                     {
-                        if (args.Count == 3)
+                        int stringLength = ((Sections)args[0]).sBlock.Length;
+                        int startPosition = Conversions.ToInteger(((Sections)args[1]).sBlock);
+                        int substringLength = Conversions.ToInteger(((Sections)args[2]).sBlock);
+                        if (substringLength < 0)
                         {
-                            int stringLength = ((Sections)args[0]).sBlock.Length;                   
-                            int startPosition = Conversions.ToInteger(((Sections)args[1]).sBlock);   
-                            int substringLength = Conversions.ToInteger(((Sections)args[2]).sBlock);   
-                            if (substringLength < 0)
+                            //This allows for negative substrings lengths to read starting before the start index
+                            //however, we cannot actually go negative on our substring call so 
+                            if (startPosition + substringLength >= 0)
                             {
-                                //This allows for negative substrings lengths to read starting before the start index
-                                //however, we cannot actually go negative on our substring call so 
-                                if (startPosition + substringLength >= 0)
-                                {
-                                    //if the negative length is not below 0 simply set our new start there and 
-                                    //and set the length to its absolute value
-                                    startPosition = startPosition + substringLength;
-                                    substringLength = System.Math.Abs(substringLength);
-                                }
-                                else 
-                                {   
-                                    //the new startPosition would be less than 0 so set it to zero
-                                    startPosition = 0;
-                                    //and read the remainder of the length, which is conveniently the start position
-                                    substringLength = Conversions.ToInteger(((Sections)args[1]).sBlock);
-                                }
-                            }
-                            
-                            if (startPosition < 0) startPosition = 0; //prevent negative start or end positions
-                            if (substringLength < 0) substringLength = 0; //in the case we got a negative length and negative start position this can be negative here
-
-                            if (startPosition + substringLength > stringLength)
-                            {   //If the start position + substringLength are greater than the size of the string, just read to the end
-                                ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Substring(startPosition).ToString();
-                                ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
-                                ((Sections)oSections[iStart]).bParsed = false;
+                                //if the negative length is not below 0 simply set our new start there and 
+                                //and set the length to its absolute value
+                                startPosition = startPosition + substringLength;
+                                substringLength = System.Math.Abs(substringLength);
                             }
                             else
-                            {   //the full substring is within the size of the string
-                                ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Substring(startPosition, substringLength).ToString();
-                                ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
-                                ((Sections)oSections[iStart]).bParsed = false;
-                            }
-                        }
-                        else if (args.Count == 2)
-                        {
-                            int stringLength = ((Sections)args[0]).sBlock.Length;                   
-                            int startPosition = Conversions.ToInteger(((Sections)args[1]).sBlock);   
-                            if (startPosition <= stringLength && startPosition >= 0)                                  
                             {
-                                //Will only evalutate if starting position is within supplied string
-                                ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Substring(startPosition).ToString();
-                                ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
-                                ((Sections)oSections[iStart]).bParsed = false;
+                                //the new startPosition would be less than 0 so set it to zero
+                                startPosition = 0;
+                                //and read the remainder of the length, which is conveniently the start position
+                                substringLength = Conversions.ToInteger(((Sections)args[1]).sBlock);
                             }
                         }
 
-                        break;
+                        if (startPosition < 0)
+                            startPosition = 0; //prevent negative start or end positions
+                        if (substringLength < 0)
+                            substringLength = 0; //in the case we got a negative length and negative start position this can be negative here
+
+                        if (startPosition + substringLength > stringLength)
+                        {   //If the start position + substringLength are greater than the size of the string, just read to the end
+                            ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Substring(startPosition).ToString();
+                            ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
+                            ((Sections)oSections[iStart]).bParsed = false;
+                        }
+                        else
+                        {   //the full substring is within the size of the string
+                            ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Substring(startPosition, substringLength).ToString();
+                            ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
+                            ((Sections)oSections[iStart]).bParsed = false;
+                        }
                     }
+                    else if (args.Count == 2)
+                    {
+                        int stringLength = ((Sections)args[0]).sBlock.Length;
+                        int startPosition = Conversions.ToInteger(((Sections)args[1]).sBlock);
+                        if (startPosition <= stringLength && startPosition >= 0)
+                        {
+                            //Will only evalutate if starting position is within supplied string
+                            ((Sections)oSections[iStart]).sBlock = ((Sections)args[0]).sBlock.Substring(startPosition).ToString();
+                            ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
+                            ((Sections)oSections[iStart]).bParsed = false;
+                        }
+                    }
+
+                    break;
+                }
 
                 case "matchre":
+                {
+                    if (args.Count == 2)
                     {
-                        if (args.Count == 2)
+                        Match oMatch;
+                        oMatch = Regex.Match(((Sections)args[0]).sBlock, ((Sections)args[1]).sBlock);
+                        if (oMatch.Success == true)
                         {
-                            Match oMatch;
-                            oMatch = Regex.Match(((Sections)args[0]).sBlock, ((Sections)args[1]).sBlock);
-                            if (oMatch.Success == true)
-                            {
-                                ((Sections)oSections[iStart]).sBlock = "1";
-                                ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
-                                m_RegExpResultList.Clear();
-                                foreach (Group m in oMatch.Groups)
-                                    m_RegExpResultList.Add(m.Value);
-                            }
-                            else
-                            {
-                                ((Sections)oSections[iStart]).sBlock = "0";
-                                ((Sections)oSections[iStart]).BlockType = ParseType.NumberType;
-                            } ((Sections)oSections[iStart]).bParsed = false; // Result
+                            ((Sections)oSections[iStart]).sBlock = "1";
+                            ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
+                            m_RegExpResultList.Clear();
+                            foreach (Group m in oMatch.Groups)
+                                m_RegExpResultList.Add(m.Value);
                         }
                         else
                         {
-                            // Error
-                        }
-
-                        break;
+                            ((Sections)oSections[iStart]).sBlock = "0";
+                            ((Sections)oSections[iStart]).BlockType = ParseType.NumberType;
+                        } ((Sections)oSections[iStart]).bParsed = false; // Result
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "replacere":
+                {
+                    if (args.Count == 3)
                     {
-                        if (args.Count == 3)
-                        {
-                            ((Sections)oSections[iStart]).sBlock = Regex.Replace(((Sections)args[0]).sBlock, ((Sections)args[1]).sBlock, ((Sections)args[2]).sBlock);
-                            ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-                        else
-                        {
-                            // Error
-                        }
-
-                        break;
+                        ((Sections)oSections[iStart]).sBlock = Regex.Replace(((Sections)args[0]).sBlock, ((Sections)args[1]).sBlock, ((Sections)args[2]).sBlock);
+                        ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "count":
+                {
+                    if (args.Count == 2)
                     {
-                        if (args.Count == 2)
-                        {
-                            ((Sections)oSections[iStart]).sBlock = Count(((Sections)args[0]).sBlock, ((Sections)args[1]).sBlock).ToString();
-                            ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-                        else
-                        {
-                            // Error
-                        }
-
-                        break;
+                        ((Sections)oSections[iStart]).sBlock = Count(((Sections)args[0]).sBlock, ((Sections)args[1]).sBlock).ToString();
+                        ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "element":
+                {
+                    if (args.Count == 2)
                     {
-                        if (args.Count == 2)
+                        var oArray = ((Sections)args[0]).sBlock.Replace("(", "").Replace(")", "").Split('|');
+                        int iIndex = int.Parse(((Sections)args[1]).sBlock);
+                        if (iIndex >= oArray.GetLength(0))
                         {
-                            var oArray = ((Sections)args[0]).sBlock.Replace("(", "").Replace(")", "").Split('|');
-                            int iIndex = int.Parse(((Sections)args[1]).sBlock);
-                            if (iIndex >= oArray.GetLength(0))
-                            {
-                                iIndex = oArray.GetLength(0) - 1;
-                            }
-
-                            if (iIndex < 0)
-                            {
-                                iIndex = oArray.GetLength(0) + iIndex;
-                            }
-
-                            if (iIndex < 0)
-                            {
-                                iIndex = 0;
-                            } ((Sections)oSections[iStart]).sBlock = oArray[iIndex];
-                            ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-                        else
-                        {
-                            // Error
+                            iIndex = oArray.GetLength(0) - 1;
                         }
 
-                        break;
+                        if (iIndex < 0)
+                        {
+                            iIndex = oArray.GetLength(0) + iIndex;
+                        }
+
+                        if (iIndex < 0)
+                        {
+                            iIndex = 0;
+                        } ((Sections)oSections[iStart]).sBlock = oArray[iIndex];
+                        ((Sections)oSections[iStart]).BlockType = ParseType.StringType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+                    else
+                    {
+                        // Error
+                    }
+
+                    break;
+                }
 
                 case "def":
                 case "defined":
+                {
+                    if (args.Count == 1)
                     {
-                        if (args.Count == 1)
-                        {
-                            string MyArg = ((Sections)args[0]).sBlock;
-                            ((Sections)oSections[iStart]).sBlock = Conversions.ToString(Interaction.IIf(m_oGlobals.VariableList.ContainsKey(MyArg), "1", "0"));
-                            ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
-                            ((Sections)oSections[iStart]).bParsed = false;
-                        }
-
-                        break;
+                        string MyArg = ((Sections)args[0]).sBlock;
+                        ((Sections)oSections[iStart]).sBlock = Conversions.ToString(Interaction.IIf(m_oGlobals.VariableList.ContainsKey(MyArg), "1", "0"));
+                        ((Sections)oSections[iStart]).BlockType = ParseType.NumberType; // Result
+                        ((Sections)oSections[iStart]).bParsed = false;
                     }
+
+                    break;
+                }
 
                 default:
-                    {
-                        throw new Exception("Invalid function name.");
-                    }
+                {
+                    throw new Exception("Invalid function name.");
+                }
             }
         }
 
@@ -1281,9 +1283,9 @@ namespace GenieClient.Genie.Script
                     return false;
                 }
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 return false;
             }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Threading;
 
@@ -9,17 +9,17 @@ namespace GenieClient.Genie.Collections
         private ReaderWriterLockSlim m_oRWLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         private const int m_iDefaultTimeout = 250;
 
-public bool AcquireWriterLock()
+        public bool AcquireWriterLock()
         {
             try
             {
-                if(m_oRWLock.IsWriteLockHeld | m_oRWLock.IsReadLockHeld)
+                if (m_oRWLock.IsWriteLockHeld | m_oRWLock.IsReadLockHeld)
                 {
                     return false;
                 }
                 return m_oRWLock.TryEnterWriteLock(500);
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -29,10 +29,11 @@ public bool AcquireWriterLock()
         {
             try
             {
-                if (m_oRWLock.IsWriteLockHeld) return false;
+                if (m_oRWLock.IsWriteLockHeld)
+                    return false;
                 return m_oRWLock.TryEnterReadLock(500);
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -44,7 +45,7 @@ public bool AcquireWriterLock()
                 m_oRWLock.ExitWriteLock();
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -57,7 +58,7 @@ public bool AcquireWriterLock()
                 m_oRWLock.ExitReadLock();
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }

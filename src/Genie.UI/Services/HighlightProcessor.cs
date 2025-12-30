@@ -27,11 +27,11 @@ public class HighlightProcessor
     /// <param name="defaultFg">Default foreground color</param>
     /// <param name="defaultBg">Default background color</param>
     /// <param name="volatileHighlightSnapshot">Optional snapshot of VolatileHighlights captured before async dispatch</param>
-    public List<StyledTextSegment> Process(string text, GenieColor defaultFg, GenieColor defaultBg, 
+    public List<StyledTextSegment> Process(string text, GenieColor defaultFg, GenieColor defaultBg,
         List<GenieClient.Genie.VolatileHighlight>? volatileHighlightSnapshot = null)
     {
         var result = new List<StyledTextSegment>();
-        
+
         if (string.IsNullOrEmpty(text))
         {
             return result;
@@ -50,14 +50,14 @@ public class HighlightProcessor
 
         // Collect all matches from different sources
         var allMatches = new List<GenericMatch>();
-        
+
         // 1. Get volatile highlights (monsterbold, presets like creatures, roomdesc, etc.)
         // Use the snapshot if provided, otherwise fall back to globals (for backward compatibility)
         allMatches.AddRange(GetVolatileHighlightMatches(text, volatileHighlightSnapshot));
-        
+
         // 2. Get string highlights (user-defined patterns)
         allMatches.AddRange(GetStringHighlightMatches(text));
-        
+
         if (allMatches.Count == 0)
         {
             // No highlights, return the text as-is
@@ -106,7 +106,7 @@ public class HighlightProcessor
 
         return result;
     }
-    
+
     /// <summary>
     /// Gets volatile highlight matches (monsterbold, presets) for the text.
     /// These are position-based highlights set by the game parser.
@@ -114,16 +114,16 @@ public class HighlightProcessor
     /// </summary>
     /// <param name="text">The text to search for matches</param>
     /// <param name="volatileHighlightSnapshot">Optional snapshot of VHs captured before async dispatch</param>
-    private List<GenericMatch> GetVolatileHighlightMatches(string text, 
+    private List<GenericMatch> GetVolatileHighlightMatches(string text,
         List<GenieClient.Genie.VolatileHighlight>? volatileHighlightSnapshot = null)
     {
         var matches = new List<GenericMatch>();
-        
+
         try
         {
             // Use snapshot if provided, otherwise fall back to globals
             var vhList = volatileHighlightSnapshot ?? _globals.VolatileHighlights?.ToList();
-            
+
             // Process volatile highlights (like creatures/monsterbold)
             // These have position-based StartIndex set by the game parser
             if (vhList?.Count > 0)
@@ -131,8 +131,9 @@ public class HighlightProcessor
                 foreach (var vh in vhList)
                 {
                     var preset = GetPreset(vh.Preset);
-                    if (preset == null) continue;
-                    
+                    if (preset == null)
+                        continue;
+
                     // Use the stored StartIndex for position-based matching
                     // Verify the text actually matches at that position
                     if (vh.StartIndex >= 0 && vh.StartIndex + vh.Length <= text.Length)
@@ -141,9 +142,9 @@ public class HighlightProcessor
                         if (textAtPosition == vh.Text)
                         {
                             matches.Add(new GenericMatch(
-                                vh.StartIndex, 
-                                vh.Length, 
-                                vh.Text, 
+                                vh.StartIndex,
+                                vh.Length,
+                                vh.Text,
                                 preset.Foreground,
                                 preset.Background,
                                 true,  // is volatile
@@ -152,38 +153,40 @@ public class HighlightProcessor
                             continue;
                         }
                     }
-                    
+
                     // Fallback: if position-based matching fails (e.g., text was modified),
                     // find ALL occurrences of the text instead of just the first
                     int searchStart = 0;
                     while (searchStart < text.Length)
                     {
                         var idx = text.IndexOf(vh.Text, searchStart, StringComparison.Ordinal);
-                        if (idx < 0) break;
-                        
+                        if (idx < 0)
+                            break;
+
                         matches.Add(new GenericMatch(
-                            idx, 
-                            vh.Length, 
-                            vh.Text, 
+                            idx,
+                            vh.Length,
+                            vh.Text,
                             preset.Foreground,
                             preset.Background,
                             true,  // is volatile
                             true,  // is bold (monsterbold)
                             null));
-                        
+
                         searchStart = idx + vh.Length;
                     }
                 }
             }
-            
+
             // Also process room objects (creatures in "You also see" lines)
             if (_globals.RoomObjects?.Count > 0 && text.Contains("You also see"))
             {
                 foreach (var ro in _globals.RoomObjects.ToArray())
                 {
                     var preset = GetPreset(ro.Preset);
-                    if (preset == null) continue;
-                    
+                    if (preset == null)
+                        continue;
+
                     // Use position-based matching first
                     if (ro.StartIndex >= 0 && ro.StartIndex + ro.Length <= text.Length)
                     {
@@ -202,14 +205,15 @@ public class HighlightProcessor
                             continue;
                         }
                     }
-                    
+
                     // Fallback: find ALL occurrences
                     int searchStart = 0;
                     while (searchStart < text.Length)
                     {
                         var idx = text.IndexOf(ro.Text, searchStart, StringComparison.Ordinal);
-                        if (idx < 0) break;
-                        
+                        if (idx < 0)
+                            break;
+
                         matches.Add(new GenericMatch(
                             idx,
                             ro.Length,
@@ -219,7 +223,7 @@ public class HighlightProcessor
                             true,
                             true,
                             null));
-                        
+
                         searchStart = idx + ro.Length;
                     }
                 }
@@ -229,10 +233,10 @@ public class HighlightProcessor
         {
             Console.WriteLine($"[HighlightProcessor] Volatile highlight error: {ex.Message}");
         }
-        
+
         return matches;
     }
-    
+
     /// <summary>
     /// Gets the preset by name from Globals.
     /// </summary>
@@ -304,9 +308,9 @@ public class HighlightProcessor
                     if (highlight?.IsActive == true)
                     {
                         matches.Add(new GenericMatch(
-                            match.Index, 
-                            match.Length, 
-                            match.Value, 
+                            match.Index,
+                            match.Length,
+                            match.Value,
                             highlight.Foreground,
                             highlight.Background,
                             false,  // not volatile
@@ -328,10 +332,10 @@ public class HighlightProcessor
     /// Generic match record that works for both volatile highlights and string highlights.
     /// </summary>
     private record GenericMatch(
-        int Start, 
-        int Length, 
-        string Text, 
-        GenieColor FgColor, 
+        int Start,
+        int Length,
+        string Text,
+        GenieColor FgColor,
         GenieColor BgColor,
         bool IsVolatile,
         bool IsBold,

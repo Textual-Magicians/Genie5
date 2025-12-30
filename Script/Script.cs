@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing; // Still needed for PresetList color conversion
@@ -840,64 +840,64 @@ namespace GenieClient
                 {
                     case ScriptState.actionwait:
                     case ScriptState.actioninstant:
-                        {
-                            return "ActionWait";
-                        }
+                    {
+                        return "ActionWait";
+                    }
 
                     case ScriptState.delayed:
-                        {
-                            return "Delayed";
-                        }
+                    {
+                        return "Delayed";
+                    }
 
                     case ScriptState.finished:
-                        {
-                            return "Finished";
-                        }
+                    {
+                        return "Finished";
+                    }
 
                     case ScriptState.matchwait:
-                        {
-                            return "MatchWait";
-                        }
+                    {
+                        return "MatchWait";
+                    }
 
                     case ScriptState.move:
-                        {
-                            return "Move";
-                        }
+                    {
+                        return "Move";
+                    }
 
                     case ScriptState.pausing:
-                        {
-                            return "Pausing";
-                        }
+                    {
+                        return "Pausing";
+                    }
 
                     case ScriptState.running:
-                        {
-                            return "Running";
-                        }
+                    {
+                        return "Running";
+                    }
 
                     case ScriptState.scripterror:
-                        {
-                            return "ScriptError";
-                        }
+                    {
+                        return "ScriptError";
+                    }
 
                     case ScriptState.wait:
-                        {
-                            return "Wait";
-                        }
+                    {
+                        return "Wait";
+                    }
 
                     case ScriptState.waitfor:
-                        {
-                            return "WaitFor";
-                        }
+                    {
+                        return "WaitFor";
+                    }
 
                     case ScriptState.waiteval:
-                        {
-                            return "WaitForEvent";
-                        }
+                    {
+                        return "WaitForEvent";
+                    }
 
                     default:
-                        {
-                            return "Unknown";
-                        }
+                    {
+                        return "Unknown";
+                    }
                 }
             }
         }
@@ -1936,24 +1936,30 @@ namespace GenieClient
 
         private int HotReload(string label, ScriptLine line)
         {
-            if (!_pendingReload) return (int)m_oScriptLabels[label];
+            if (!_pendingReload)
+                return (int)m_oScriptLabels[label];
             m_CurrentState = ScriptState.pausing;
             //save what we want to preserve
             ClassVariableList localVars = new ClassVariableList();
             ClassActionList actions = new ClassActionList();
             ClassMatchList matchList = new ClassMatchList();
 
-            foreach (DictionaryEntry kvp in m_oLocalVarList) localVars.Add(kvp.Key, kvp.Value);
-            foreach (DictionaryEntry kvp in m_oActions) actions.Add(kvp.Key, kvp.Value);
-            foreach (Match match in MatchList) matchList.Add(match);
+            foreach (DictionaryEntry kvp in m_oLocalVarList)
+                localVars.Add(kvp.Key, kvp.Value);
+            foreach (DictionaryEntry kvp in m_oActions)
+                actions.Add(kvp.Key, kvp.Value);
+            foreach (Match match in MatchList)
+                matchList.Add(match);
             Genie.Script.Trace trace = m_oTraceList;
             DateTime timerStart = m_oTimerStart;
             double timerLastTime = m_dTimerLastTime;
             bool waitForEvent = m_bWaitForEvent;
             CurrentLine oldCurrentLine = m_oCurrentLine;
             ScriptLine oldCurrentScriptLine = m_oScript.get_Item(oldCurrentLine.LineValue) as ScriptLine;
-            Dictionary<Line, ScriptLine> oldScriptLines = new Dictionary<Line, ScriptLine> ();
-            foreach (Line jump in oldCurrentLine.oLineList) if (!oldScriptLines.ContainsKey(jump)) oldScriptLines.Add(jump, m_oScript.get_Item(jump.iIndex) as ScriptLine);
+            Dictionary<Line, ScriptLine> oldScriptLines = new Dictionary<Line, ScriptLine>();
+            foreach (Line jump in oldCurrentLine.oLineList)
+                if (!oldScriptLines.ContainsKey(jump))
+                    oldScriptLines.Add(jump, m_oScript.get_Item(jump.iIndex) as ScriptLine);
             if (ReloadFile(FileName) && m_oScriptLabels.Contains(label))
             {
                 //now load what we've saved over the initial values
@@ -1984,15 +1990,18 @@ namespace GenieClient
 
         public int FindNewJumpLineIndex(ScriptLine jump)
         {
-            if (jump.iFileRow == 0) return 0;
+            if (jump.iFileRow == 0)
+                return 0;
             int nearestMatch = 0;
-            for(int i = 0;i < m_oScript.Count;i++)
+            for (int i = 0; i < m_oScript.Count; i++)
             {
                 ScriptLine line = m_oScript[i] as ScriptLine;
                 if (jump.sRowContent == line.sRowContent && jump.iFileId == line.iFileId)
                 {
-                    if (nearestMatch == 0) nearestMatch = i;
-                    else if(Math.Abs(jump.iFileRow - line.iFileRow) < nearestMatch) nearestMatch = i;
+                    if (nearestMatch == 0)
+                        nearestMatch = i;
+                    else if (Math.Abs(jump.iFileRow - line.iFileRow) < nearestMatch)
+                        nearestMatch = i;
                 }
             }
             return nearestMatch;
@@ -2207,70 +2216,70 @@ namespace GenieClient
                 switch (switchExpr)
                 {
                     case ScriptFunctions.iffunc:
+                    {
+                        int i = oLine.sRowContent.ToLower().IndexOf(" then ");
+                        if (i == 0)
                         {
-                            int i = oLine.sRowContent.ToLower().IndexOf(" then ");
-                            if (i == 0)
-                            {
-                                continue;
-                            }
-
-                            if (oLine.sRowContent.Length < 6)
-                            {
-                                continue;
-                            }
-
-                            string sEval = ParseVariables(oLine.sRowContent.Substring(0, i));
-                            string sArgument = oLine.sRowContent.Substring(i + 6);
-                            if (EvalIfStatement(Utility.GetArgumentString(sEval), iFileId, iFileRow) == true)
-                            {
-                                oLine.oFunction = GetFunctionType(Utility.GetKeywordString(sArgument));
-                                oLine.sRowContent = sArgument;
-                            }
-                            else
-                            {
-                                continue;
-                            }
-
-                            break;
+                            continue;
                         }
+
+                        if (oLine.sRowContent.Length < 6)
+                        {
+                            continue;
+                        }
+
+                        string sEval = ParseVariables(oLine.sRowContent.Substring(0, i));
+                        string sArgument = oLine.sRowContent.Substring(i + 6);
+                        if (EvalIfStatement(Utility.GetArgumentString(sEval), iFileId, iFileRow) == true)
+                        {
+                            oLine.oFunction = GetFunctionType(Utility.GetKeywordString(sArgument));
+                            oLine.sRowContent = sArgument;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
+                        break;
+                    }
 
                     case ScriptFunctions.gosubfunc:
-                        {
-                            int argiFileId = 0;
-                            int argiFileRow = 0;
-                            PrintError("GOSUB is not allowed from an ACTION command!", iFileId: argiFileId, iFileRow: argiFileRow);
-                            AbortOnScriptError();
-                            return;
-                        }
+                    {
+                        int argiFileId = 0;
+                        int argiFileRow = 0;
+                        PrintError("GOSUB is not allowed from an ACTION command!", iFileId: argiFileId, iFileRow: argiFileRow);
+                        AbortOnScriptError();
+                        return;
+                    }
 
                     case ScriptFunctions.blockstart:
-                        {
-                            int argiFileId1 = 0;
-                            int argiFileRow1 = 0;
-                            PrintError("BLOCK START is not allowed from an ACTION command!", iFileId: argiFileId1, iFileRow: argiFileRow1);
-                            AbortOnScriptError();
-                            return;
-                        }
+                    {
+                        int argiFileId1 = 0;
+                        int argiFileRow1 = 0;
+                        PrintError("BLOCK START is not allowed from an ACTION command!", iFileId: argiFileId1, iFileRow: argiFileRow1);
+                        AbortOnScriptError();
+                        return;
+                    }
 
                     case ScriptFunctions.blockend:
-                        {
-                            int argiFileId2 = 0;
-                            int argiFileRow2 = 0;
-                            PrintError("BLOCK END is not allowed from an ACTION command!", iFileId: argiFileId2, iFileRow: argiFileRow2);
-                            AbortOnScriptError();
-                            return;
-                        }
+                    {
+                        int argiFileId2 = 0;
+                        int argiFileRow2 = 0;
+                        PrintError("BLOCK END is not allowed from an ACTION command!", iFileId: argiFileId2, iFileRow: argiFileRow2);
+                        AbortOnScriptError();
+                        return;
+                    }
 
                     case ScriptFunctions.returnfunc:
-                        {
-                            int argiFileId3 = 0;
-                            int argiFileRow3 = 0;
-                            PrintError("RETURN is not allowed from an ACTION command!", iFileId: argiFileId3, iFileRow: argiFileRow3);
-                            AbortOnScriptError();
-                            return;
-                        }
-                        // Case ScriptFunctions.gotofunc ' Do not wait for RT on action GOTO
-                        // m_CurrentState = ScriptState.delayed
+                    {
+                        int argiFileId3 = 0;
+                        int argiFileRow3 = 0;
+                        PrintError("RETURN is not allowed from an ACTION command!", iFileId: argiFileId3, iFileRow: argiFileRow3);
+                        AbortOnScriptError();
+                        return;
+                    }
+                    // Case ScriptFunctions.gotofunc ' Do not wait for RT on action GOTO
+                    // m_CurrentState = ScriptState.delayed
                 }
 
                 int iResult = RunScriptRow(oLine, -1);
@@ -2346,24 +2355,24 @@ namespace GenieClient
                     switch (switchExpr)
                     {
                         case "%":
+                        {
+                            if (p <= 0 || (sText.Substring(p - 1, 1) ?? "") != @"\")
                             {
-                                if (p <= 0 || (sText.Substring(p - 1, 1) ?? "") != @"\")
-                                {
-                                    sText = sText.Substring(0, p) + ParseVariable(sText.Substring(p));
-                                }
-
-                                break;
+                                sText = sText.Substring(0, p) + ParseVariable(sText.Substring(p));
                             }
+
+                            break;
+                        }
 
                         case "$":
+                        {
+                            if (p <= 0 || (sText.Substring(p - 1, 1) ?? "") != @"\")
                             {
-                                if (p <= 0 || (sText.Substring(p - 1, 1) ?? "") != @"\")
-                                {
-                                    sText = sText.Substring(0, p) + m_oGlobals.ParseVariable(sText.Substring(p));
-                                }
-
-                                break;
+                                sText = sText.Substring(0, p) + m_oGlobals.ParseVariable(sText.Substring(p));
                             }
+
+                            break;
+                        }
                     }
 
                     p -= 1;
@@ -2473,415 +2482,415 @@ namespace GenieClient
             switch (switchExpr)
             {
                 case ScriptFunctions.echo:
-                    {
-                        PrintEcho(Utility.GetArgumentString(ParsedLine));
-                        break;
-                    }
+                {
+                    PrintEcho(Utility.GetArgumentString(ParsedLine));
+                    break;
+                }
 
                 case ScriptFunctions.gotofunc:
+                {
+                    int argiLevel1 = 1;
+                    string argsText1 = "goto " + Utility.GetArgumentString(ParsedLine);
+                    PrintDebug(argiLevel1, argsText1, oLine.iFileId, oLine.iFileRow);
+                    string strLabel = Utility.GetArgumentString(ParsedLine).ToLower();
+                    if (_pendingReload)
                     {
-                        int argiLevel1 = 1;
-                        string argsText1 = "goto " + Utility.GetArgumentString(ParsedLine);
-                        PrintDebug(argiLevel1, argsText1, oLine.iFileId, oLine.iFileRow);
-                        string strLabel = Utility.GetArgumentString(ParsedLine).ToLower();
-                        if (_pendingReload)
-                        {
-                            iRowIndex = HotReload(strLabel, oLine);
+                        iRowIndex = HotReload(strLabel, oLine);
 
-                        }
-                        if (m_oScriptLabels.ContainsKey(strLabel))
-                        {
-                            iRowIndex = HotReload(strLabel, oLine);
-                            m_oLocalVarList.Add("lastlabel", strLabel);
-                            TriggerVariableChanged("%lastlabel");
-                            m_oCurrentLine.ClearBlocks(); // Remove all {} depth on goto
-                            m_oTraceList.Add("goto " + strLabel, GetFileName(oLine.iFileId), oLine.iFileRow);
-                        }
-                        else
-                        {
-                            PrintError("Unknown label from GOTO: " + strLabel, oLine.iFileId, oLine.iFileRow);
-                            AbortOnScriptError();
-                            return default;
-                        }
-
-                        break;
                     }
+                    if (m_oScriptLabels.ContainsKey(strLabel))
+                    {
+                        iRowIndex = HotReload(strLabel, oLine);
+                        m_oLocalVarList.Add("lastlabel", strLabel);
+                        TriggerVariableChanged("%lastlabel");
+                        m_oCurrentLine.ClearBlocks(); // Remove all {} depth on goto
+                        m_oTraceList.Add("goto " + strLabel, GetFileName(oLine.iFileId), oLine.iFileRow);
+                    }
+                    else
+                    {
+                        PrintError("Unknown label from GOTO: " + strLabel, oLine.iFileId, oLine.iFileRow);
+                        AbortOnScriptError();
+                        return default;
+                    }
+
+                    break;
+                }
 
                 case ScriptFunctions.gosubfunc:
+                {
+                    int argiLevel2 = 1;
+                    string argsText2 = "gosub " + Utility.GetArgumentString(ParsedLine);
+                    PrintDebug(argiLevel2, argsText2, oLine.iFileId, oLine.iFileRow);
+                    string strLabel = Utility.GetKeywordString(Utility.GetArgumentString(ParsedLine)).ToLower();
+                    if ((strLabel ?? "") == "clear")
                     {
-                        int argiLevel2 = 1;
-                        string argsText2 = "gosub " + Utility.GetArgumentString(ParsedLine);
-                        PrintDebug(argiLevel2, argsText2, oLine.iFileId, oLine.iFileRow);
-                        string strLabel = Utility.GetKeywordString(Utility.GetArgumentString(ParsedLine)).ToLower();
-                        if ((strLabel ?? "") == "clear")
-                        {
-                            m_oCurrentLine.Clear();
-                        }
-                        else if (m_oScriptLabels.ContainsKey(strLabel))
-                        {
-                            m_oTraceList.Add("gosub " + strLabel, GetFileName(oLine.iFileId), oLine.iFileRow);
-                            m_oCurrentLine.AddJump(iRowIndex, Utility.GetArgumentString(Utility.GetArgumentString(ParsedLine)));
-                            int argiLevel3 = 40;
-                            string argsText3 = "Add jump (count = " + m_oCurrentLine.Count + ")";
-                            PrintDebug(argiLevel3, argsText3, oLine.iFileId, oLine.iFileRow);
-                            if (m_oCurrentLine.Count > m_oGlobals.Config.iMaxGoSubDepth)
-                            {
-                                PrintError("Maximum GOSUB depth (" + m_oGlobals.Config.iMaxGoSubDepth.ToString() + ") on: " + strLabel, oLine.iFileId, oLine.iFileRow);
-                                PrintTrace();
-                                AbortOnScriptError();
-                                return default;
-                            }
-                            iRowIndex = HotReload(strLabel, oLine);
-                        }
-                        else
-                        {
-                            PrintError("Unknown label from GOSUB: " + strLabel, oLine.iFileId, oLine.iFileRow);
-                            AbortOnScriptError();
-                            return default;
-                        }
-
-                        break;
+                        m_oCurrentLine.Clear();
                     }
-
-                case ScriptFunctions.returnfunc:
+                    else if (m_oScriptLabels.ContainsKey(strLabel))
                     {
-                        if (m_oCurrentLine.RemoveJump())
+                        m_oTraceList.Add("gosub " + strLabel, GetFileName(oLine.iFileId), oLine.iFileRow);
+                        m_oCurrentLine.AddJump(iRowIndex, Utility.GetArgumentString(Utility.GetArgumentString(ParsedLine)));
+                        int argiLevel3 = 40;
+                        string argsText3 = "Add jump (count = " + m_oCurrentLine.Count + ")";
+                        PrintDebug(argiLevel3, argsText3, oLine.iFileId, oLine.iFileRow);
+                        if (m_oCurrentLine.Count > m_oGlobals.Config.iMaxGoSubDepth)
                         {
-                            m_oTraceList.Add("return", GetFileName(oLine.iFileId), oLine.iFileRow);
-                            int argiLevel4 = 1;
-                            string argsText4 = "return";
-                            PrintDebug(argiLevel4, argsText4, oLine.iFileId, oLine.iFileRow);
-                            int argiLevel5 = 40;
-                            string argsText5 = "Remove jump (count = " + m_oCurrentLine.Count + ")";
-                            PrintDebug(argiLevel5, argsText5, oLine.iFileId, oLine.iFileRow);
-                            iRowIndex = m_oCurrentLine.LineValue;
-                        }
-                        else
-                        {
-                            // Failed return
-                            PrintError("RETURN command failed. There are no more gosub bookmarks to return to!", oLine.iFileId, oLine.iFileRow);
+                            PrintError("Maximum GOSUB depth (" + m_oGlobals.Config.iMaxGoSubDepth.ToString() + ") on: " + strLabel, oLine.iFileId, oLine.iFileRow);
                             PrintTrace();
                             AbortOnScriptError();
                             return default;
                         }
-
-                        break;
+                        iRowIndex = HotReload(strLabel, oLine);
                     }
+                    else
+                    {
+                        PrintError("Unknown label from GOSUB: " + strLabel, oLine.iFileId, oLine.iFileRow);
+                        AbortOnScriptError();
+                        return default;
+                    }
+
+                    break;
+                }
+
+                case ScriptFunctions.returnfunc:
+                {
+                    if (m_oCurrentLine.RemoveJump())
+                    {
+                        m_oTraceList.Add("return", GetFileName(oLine.iFileId), oLine.iFileRow);
+                        int argiLevel4 = 1;
+                        string argsText4 = "return";
+                        PrintDebug(argiLevel4, argsText4, oLine.iFileId, oLine.iFileRow);
+                        int argiLevel5 = 40;
+                        string argsText5 = "Remove jump (count = " + m_oCurrentLine.Count + ")";
+                        PrintDebug(argiLevel5, argsText5, oLine.iFileId, oLine.iFileRow);
+                        iRowIndex = m_oCurrentLine.LineValue;
+                    }
+                    else
+                    {
+                        // Failed return
+                        PrintError("RETURN command failed. There are no more gosub bookmarks to return to!", oLine.iFileId, oLine.iFileRow);
+                        PrintTrace();
+                        AbortOnScriptError();
+                        return default;
+                    }
+
+                    break;
+                }
 
                 case ScriptFunctions.label:
+                {
+                    string sLabelName = Conversions.ToString(Interaction.IIf(oLine.sRowContent.Trim().EndsWith(":"), oLine.sRowContent.Trim().Substring(0, oLine.sRowContent.Trim().Length - 1), oLine.sRowContent.Trim()));
+                    m_oTraceList.Add("passing label " + sLabelName, GetFileName(oLine.iFileId), oLine.iFileRow);
+                    int argiLevel6 = 1;
+                    string argsText6 = "passing label: " + sLabelName;
+                    PrintDebug(argiLevel6, argsText6, oLine.iFileId, oLine.iFileRow);
+                    if (m_oCurrentLine.BlockCount > 1)
                     {
-                        string sLabelName = Conversions.ToString(Interaction.IIf(oLine.sRowContent.Trim().EndsWith(":"), oLine.sRowContent.Trim().Substring(0, oLine.sRowContent.Trim().Length - 1), oLine.sRowContent.Trim()));
-                        m_oTraceList.Add("passing label " + sLabelName, GetFileName(oLine.iFileId), oLine.iFileRow);
-                        int argiLevel6 = 1;
-                        string argsText6 = "passing label: " + sLabelName;
-                        PrintDebug(argiLevel6, argsText6, oLine.iFileId, oLine.iFileRow);
-                        if (m_oCurrentLine.BlockCount > 1)
-                        {
-                            PrintError("Passing a LABEL from within a script block is not allowed: " + sLabelName, oLine.iFileId, oLine.iFileRow);
-                            AbortOnScriptError();
-                            return default;
-                        }
-
-                        break;
+                        PrintError("Passing a LABEL from within a script block is not allowed: " + sLabelName, oLine.iFileId, oLine.iFileRow);
+                        AbortOnScriptError();
+                        return default;
                     }
+
+                    break;
+                }
 
                 case ScriptFunctions.exitfunc:
-                    {
-                        iRowIndex = m_oScript.Count; // End Script
-                        var argoDateEnd = DateTime.Now;
-                        PrintText("[Script finished (In " + (Utility.GetTimeDiffInMilliseconds(m_oScriptStart, argoDateEnd) / 1000).ToString() + " seconds): " + GetFileAndRow(oLine.iFileId, oLine.iFileRow) + "]");
-                        m_oTraceList.Add("exit", GetFileName(oLine.iFileId), oLine.iFileRow);
-                        ScriptDone = true;
-                        ClearScript();
-                        m_CurrentState = ScriptState.finished;
-                        EventStatusChanged?.Invoke(this, ScriptState.finished);
-                        break;
-                    }
+                {
+                    iRowIndex = m_oScript.Count; // End Script
+                    var argoDateEnd = DateTime.Now;
+                    PrintText("[Script finished (In " + (Utility.GetTimeDiffInMilliseconds(m_oScriptStart, argoDateEnd) / 1000).ToString() + " seconds): " + GetFileAndRow(oLine.iFileId, oLine.iFileRow) + "]");
+                    m_oTraceList.Add("exit", GetFileName(oLine.iFileId), oLine.iFileRow);
+                    ScriptDone = true;
+                    ClearScript();
+                    m_CurrentState = ScriptState.finished;
+                    EventStatusChanged?.Invoke(this, ScriptState.finished);
+                    break;
+                }
 
                 case ScriptFunctions.iffunc:
+                {
+                    if (oLine.sRowContent.Trim().ToLower().EndsWith(" then"))
                     {
-                        if (oLine.sRowContent.Trim().ToLower().EndsWith(" then"))
-                        {
-                            m_oCurrentLine.LastRowWasEvaluation = true;
-                        }
-
-                        if (EvalIfStatement(Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow) == true)
-                        {
-                            // Run "block"
-                            m_oCurrentLine.BlockValue = CurrentLine.BlockState.evaltrue;
-                        }
-                        else
-                        {
-                            // Skip "block"
-                            m_oCurrentLine.BlockValue = CurrentLine.BlockState.evalfalse;
-                            m_oCurrentLine.SkipBlock = true;
-                        }
-
-                        break;
+                        m_oCurrentLine.LastRowWasEvaluation = true;
                     }
+
+                    if (EvalIfStatement(Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow) == true)
+                    {
+                        // Run "block"
+                        m_oCurrentLine.BlockValue = CurrentLine.BlockState.evaltrue;
+                    }
+                    else
+                    {
+                        // Skip "block"
+                        m_oCurrentLine.BlockValue = CurrentLine.BlockState.evalfalse;
+                        m_oCurrentLine.SkipBlock = true;
+                    }
+
+                    break;
+                }
 
                 case ScriptFunctions.whilefunc:
+                {
+                    if (oLine.sRowContent.ToLower().EndsWith("do"))
                     {
-                        if (oLine.sRowContent.ToLower().EndsWith("do"))
-                        {
-                            m_oCurrentLine.LastRowWasEvaluation = true;
-                        }
-
-                        if (EvalWhileStatement(Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow) == true)
-                        {
-                            // Run "block"
-                            m_oCurrentLine.BlockValue = CurrentLine.BlockState.evalwhiletrue;
-                        }
-                        else
-                        {
-                            // Skip "block"
-                            m_oCurrentLine.BlockValue = CurrentLine.BlockState.evalwhilefalse;
-                            m_oCurrentLine.SkipBlock = true;
-                        }
-
-                        break;
+                        m_oCurrentLine.LastRowWasEvaluation = true;
                     }
+
+                    if (EvalWhileStatement(Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow) == true)
+                    {
+                        // Run "block"
+                        m_oCurrentLine.BlockValue = CurrentLine.BlockState.evalwhiletrue;
+                    }
+                    else
+                    {
+                        // Skip "block"
+                        m_oCurrentLine.BlockValue = CurrentLine.BlockState.evalwhilefalse;
+                        m_oCurrentLine.SkipBlock = true;
+                    }
+
+                    break;
+                }
 
                 case ScriptFunctions.elsefunc:
+                {
+                    if (oLine.sRowContent.ToLower().EndsWith("else"))
                     {
-                        if (oLine.sRowContent.ToLower().EndsWith("else"))
-                        {
-                            m_oCurrentLine.LastRowWasEvaluation = true;
-                        }
-
-                        if (m_oCurrentLine.BlockValue == CurrentLine.BlockState.evaltrue)
-                        {
-                            // Skip "block"
-                            m_oCurrentLine.SkipBlock = true;
-                        }
-                        break;
+                        m_oCurrentLine.LastRowWasEvaluation = true;
                     }
+
+                    if (m_oCurrentLine.BlockValue == CurrentLine.BlockState.evaltrue)
+                    {
+                        // Skip "block"
+                        m_oCurrentLine.SkipBlock = true;
+                    }
+                    break;
+                }
 
                 case ScriptFunctions.pause:
-                    {
-                        int argiLevel7 = 2;
-                        string argsText7 = "pause " + Utility.GetArgumentString(ParsedLine);
-                        PrintDebug(argiLevel7, argsText7, oLine.iFileId, oLine.iFileRow);
-                        EvalPauseScript(Utility.EvalDoubleTime(Utility.GetArgumentString(ParsedLine)));
-                        break;
-                    }
+                {
+                    int argiLevel7 = 2;
+                    string argsText7 = "pause " + Utility.GetArgumentString(ParsedLine);
+                    PrintDebug(argiLevel7, argsText7, oLine.iFileId, oLine.iFileRow);
+                    EvalPauseScript(Utility.EvalDoubleTime(Utility.GetArgumentString(ParsedLine)));
+                    break;
+                }
 
                 case ScriptFunctions.delay:
-                    {
-                        int argiLevel8 = 2;
-                        string argsText8 = "delay " + Utility.GetArgumentString(ParsedLine);
-                        PrintDebug(argiLevel8, argsText8, oLine.iFileId, oLine.iFileRow);
-                        EvalDelayScript(Utility.EvalDoubleTime(Utility.GetArgumentString(ParsedLine)));
-                        break;
-                    }
+                {
+                    int argiLevel8 = 2;
+                    string argsText8 = "delay " + Utility.GetArgumentString(ParsedLine);
+                    PrintDebug(argiLevel8, argsText8, oLine.iFileId, oLine.iFileRow);
+                    EvalDelayScript(Utility.EvalDoubleTime(Utility.GetArgumentString(ParsedLine)));
+                    break;
+                }
 
                 case ScriptFunctions.wait:
-                    {
-                        int argiLevel9 = 2;
-                        string argsText9 = "wait " + Utility.GetArgumentString(ParsedLine);
-                        PrintDebug(argiLevel9, argsText9, oLine.iFileId, oLine.iFileRow);
-                        EvalWait(Utility.EvalDoubleTime(Utility.GetArgumentString(ParsedLine)));
-                        break;
-                    }
+                {
+                    int argiLevel9 = 2;
+                    string argsText9 = "wait " + Utility.GetArgumentString(ParsedLine);
+                    PrintDebug(argiLevel9, argsText9, oLine.iFileId, oLine.iFileRow);
+                    EvalWait(Utility.EvalDoubleTime(Utility.GetArgumentString(ParsedLine)));
+                    break;
+                }
 
                 case ScriptFunctions.waitfor:
-                    {
-                        int argiLevel10 = 2;
-                        string argsText10 = "waitfor " + Utility.GetArgumentString(ParsedLine);
-                        PrintDebug(argiLevel10, argsText10, oLine.iFileId, oLine.iFileRow);
-                        EvalWaitString(Utility.GetArgumentString(ParsedLine));
-                        break;
-                    }
-                    
+                {
+                    int argiLevel10 = 2;
+                    string argsText10 = "waitfor " + Utility.GetArgumentString(ParsedLine);
+                    PrintDebug(argiLevel10, argsText10, oLine.iFileId, oLine.iFileRow);
+                    EvalWaitString(Utility.GetArgumentString(ParsedLine));
+                    break;
+                }
+
                 case ScriptFunctions.waiteval:
-                    {
-                        int argiLevel11 = 2;
-                        string argsText11 = "waiteval " + Utility.GetArgumentString(oLine.sRowContent);
-                        PrintDebug(argiLevel11, argsText11, oLine.iFileId, oLine.iFileRow);
-                        EvalWaitEval(Utility.GetArgumentString(oLine.sRowContent));
-                        break;
-                    }
+                {
+                    int argiLevel11 = 2;
+                    string argsText11 = "waiteval " + Utility.GetArgumentString(oLine.sRowContent);
+                    PrintDebug(argiLevel11, argsText11, oLine.iFileId, oLine.iFileRow);
+                    EvalWaitEval(Utility.GetArgumentString(oLine.sRowContent));
+                    break;
+                }
 
                 case ScriptFunctions.waitforre:
+                {
+                    int argiLevel12 = 2;
+                    string argsText12 = "waitforre " + Utility.GetArgumentString(ParsedLine);
+                    PrintDebug(argiLevel12, argsText12, oLine.iFileId, oLine.iFileRow);
+                    if (EvalWaitString(Utility.GetArgumentString(ParsedLine), true) == false)
                     {
-                        int argiLevel12 = 2;
-                        string argsText12 = "waitforre " + Utility.GetArgumentString(ParsedLine);
-                        PrintDebug(argiLevel12, argsText12, oLine.iFileId, oLine.iFileRow);
-                        if (EvalWaitString(Utility.GetArgumentString(ParsedLine), true) == false)
-                        {
-                            PrintError("Invalid RegExp in waitforre: " + Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow);
-                            AbortOnScriptError();
-                        }
-
-                        break;
+                        PrintError("Invalid RegExp in waitforre: " + Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow);
+                        AbortOnScriptError();
                     }
+
+                    break;
+                }
 
                 case ScriptFunctions.move:
-                    {
-                        int argiLevel13 = 2;
-                        string argsText13 = "waitformove " + Utility.GetArgumentString(ParsedLine);
-                        PrintDebug(argiLevel13, argsText13, oLine.iFileId, oLine.iFileRow);
-                        EvalMove(Utility.GetArgumentString(ParsedLine));
-                        break;
-                    }
+                {
+                    int argiLevel13 = 2;
+                    string argsText13 = "waitformove " + Utility.GetArgumentString(ParsedLine);
+                    PrintDebug(argiLevel13, argsText13, oLine.iFileId, oLine.iFileRow);
+                    EvalMove(Utility.GetArgumentString(ParsedLine));
+                    break;
+                }
 
                 case ScriptFunctions.nextroom:
-                    {
-                        int argiLevel14 = 2;
-                        string argsText14 = "nextroom";
-                        PrintDebug(argiLevel14, argsText14, oLine.iFileId, oLine.iFileRow);
-                        EvalMove(string.Empty);
-                        break;
-                    }
+                {
+                    int argiLevel14 = 2;
+                    string argsText14 = "nextroom";
+                    PrintDebug(argiLevel14, argsText14, oLine.iFileId, oLine.iFileRow);
+                    EvalMove(string.Empty);
+                    break;
+                }
 
                 case ScriptFunctions.put:
-                    {
-                        EvalPut(Utility.GetArgumentString(ParsedLine));
-                        break;
-                    }
+                {
+                    EvalPut(Utility.GetArgumentString(ParsedLine));
+                    break;
+                }
 
                 case ScriptFunctions.send:
-                    {
-                        EvalSend(Utility.GetArgumentString(ParsedLine));
-                        break;
-                    }
+                {
+                    EvalSend(Utility.GetArgumentString(ParsedLine));
+                    break;
+                }
                 case ScriptFunctions.dofunc:
+                {
+                    DoCommandMatchList.Clear();
+                    DoCommandMatchList.AddRange(MatchList);
+                    if (!EvalDo(Utility.GetArgumentString(ParsedLine)))
                     {
-                        DoCommandMatchList.Clear();
-                        DoCommandMatchList.AddRange(MatchList);
-                        if (!EvalDo(Utility.GetArgumentString(ParsedLine)))
-                        {
-                            PrintError("Invalid RegExp in Do: " + Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow);
-                            AbortOnScriptError();
-                        }
-                        break;
+                        PrintError("Invalid RegExp in Do: " + Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow);
+                        AbortOnScriptError();
                     }
+                    break;
+                }
                 case ScriptFunctions.save:
-                    {
-                        EvalSetvariableSave(Utility.GetArgumentString(ParsedLine));
-                        break;
-                    }
+                {
+                    EvalSetvariableSave(Utility.GetArgumentString(ParsedLine));
+                    break;
+                }
 
                 case ScriptFunctions.setvariable:
-                    {
-                        EvalSetvariable(Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    EvalSetvariable(Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.deletevariable:
-                    {
-                        EvalDeletevariable(Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    EvalDeletevariable(Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.match:
-                    {
-                        EvalMatch(Utility.GetArgumentString(ParsedLine));
-                        break;
-                    }
+                {
+                    EvalMatch(Utility.GetArgumentString(ParsedLine));
+                    break;
+                }
 
                 case ScriptFunctions.matchre:
+                {
+                    if (EvalMatch(Utility.GetArgumentString(ParsedLine), true) == false)
                     {
-                        if (EvalMatch(Utility.GetArgumentString(ParsedLine), true) == false)
-                        {
-                            PrintError("Invalid RegExp in matchre: " + Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow);
-                            AbortOnScriptError();
-                        }
-
-                        break;
+                        PrintError("Invalid RegExp in matchre: " + Utility.GetArgumentString(ParsedLine), oLine.iFileId, oLine.iFileRow);
+                        AbortOnScriptError();
                     }
+
+                    break;
+                }
 
                 case ScriptFunctions.matchwait:
-                    {
-                        int argiLevel15 = 2;
-                        string argsText15 = "matchwait";
-                        PrintDebug(argiLevel15, argsText15, oLine.iFileId, oLine.iFileRow);
-                        EvalMatchWait(Utility.EvalDoubleTime(Utility.GetArgumentString(ParsedLine), 0));
-                        break;
-                    }
+                {
+                    int argiLevel15 = 2;
+                    string argsText15 = "matchwait";
+                    PrintDebug(argiLevel15, argsText15, oLine.iFileId, oLine.iFileRow);
+                    EvalMatchWait(Utility.EvalDoubleTime(Utility.GetArgumentString(ParsedLine), 0));
+                    break;
+                }
 
                 case ScriptFunctions.counter:
-                    {
-                        string argsText16 = Utility.GetArgumentString(ParsedLine);
-                        EvalCounter(argsText16, oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    string argsText16 = Utility.GetArgumentString(ParsedLine);
+                    EvalCounter(argsText16, oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.mathfunc:
-                    {
-                        string argsText17 = Utility.GetArgumentString(ParsedLine);
-                        EvalMath(argsText17, oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    string argsText17 = Utility.GetArgumentString(ParsedLine);
+                    EvalMath(argsText17, oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.eval:
-                    {
-                        string argsText18 = Utility.GetArgumentString(ParsedLine);
-                        EvalEval(argsText18, oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    string argsText18 = Utility.GetArgumentString(ParsedLine);
+                    EvalEval(argsText18, oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.evalmath:
-                    {
-                        string argsText19 = Utility.GetArgumentString(ParsedLine);
-                        EvalEvalMath(argsText19, oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    string argsText19 = Utility.GetArgumentString(ParsedLine);
+                    EvalEvalMath(argsText19, oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.action:
-                    {
-                        EvalAction(Utility.GetArgumentString(oLine.sRowContent), oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    EvalAction(Utility.GetArgumentString(oLine.sRowContent), oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.random:
-                    {
-                        EvalRandom(Utility.GetKeywordString(Utility.GetArgumentString(ParsedLine)), Utility.GetKeywordString(Utility.GetArgumentString(Utility.GetArgumentString(ParsedLine))));
-                        break;
-                    }
+                {
+                    EvalRandom(Utility.GetKeywordString(Utility.GetArgumentString(ParsedLine)), Utility.GetKeywordString(Utility.GetArgumentString(Utility.GetArgumentString(ParsedLine))));
+                    break;
+                }
 
                 case ScriptFunctions.timer:
-                    {
-                        string argsText20 = Utility.GetArgumentString(oLine.sRowContent);
-                        EvalTimer(argsText20, oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    string argsText20 = Utility.GetArgumentString(oLine.sRowContent);
+                    EvalTimer(argsText20, oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.shift:
-                    {
-                        EvalShift();
-                        break;
-                    }
+                {
+                    EvalShift();
+                    break;
+                }
 
                 case ScriptFunctions.debuglevel:
-                    {
-                        string argsText21 = Utility.GetArgumentString(oLine.sRowContent);
-                        EvalSetDebugLevel(argsText21, oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    string argsText21 = Utility.GetArgumentString(oLine.sRowContent);
+                    EvalSetDebugLevel(argsText21, oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.js:
-                    {
-                        string argsText22 = Utility.GetArgumentString(oLine.sRowContent);
-                        EvalJS(argsText22, oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    string argsText22 = Utility.GetArgumentString(oLine.sRowContent);
+                    EvalJS(argsText22, oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.jscall:
-                    {
-                        string argsText23 = Utility.GetArgumentString(Utility.GetArgumentString(oLine.sRowContent));
-                        string sResult = EvalJS(argsText23, oLine.iFileId, oLine.iFileRow);
-                        EvalSetvariable(Utility.GetKeywordString(Utility.GetArgumentString(oLine.sRowContent)) + " " + sResult, oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    string argsText23 = Utility.GetArgumentString(Utility.GetArgumentString(oLine.sRowContent));
+                    string sResult = EvalJS(argsText23, oLine.iFileId, oLine.iFileRow);
+                    EvalSetvariable(Utility.GetKeywordString(Utility.GetArgumentString(oLine.sRowContent)) + " " + sResult, oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
 
                 case ScriptFunctions.plugin:
-                    {
-                        string argsText24 = Utility.GetArgumentString(Utility.GetArgumentString(oLine.sRowContent));
-                        string sResult = EvalPlugin(argsText24, oLine.iFileId, oLine.iFileRow);
-                        EvalSetvariable(Utility.GetKeywordString(Utility.GetArgumentString(oLine.sRowContent)) + " " + sResult, oLine.iFileId, oLine.iFileRow);
-                        break;
-                    }
+                {
+                    string argsText24 = Utility.GetArgumentString(Utility.GetArgumentString(oLine.sRowContent));
+                    string sResult = EvalPlugin(argsText24, oLine.iFileId, oLine.iFileRow);
+                    EvalSetvariable(Utility.GetKeywordString(Utility.GetArgumentString(oLine.sRowContent)) + " " + sResult, oLine.iFileId, oLine.iFileRow);
+                    break;
+                }
             }
 
             return iRowIndex;
@@ -2979,70 +2988,70 @@ namespace GenieClient
             switch (switchExpr)
             {
                 case "start":
+                {
+                    if (m_oTimerStart == m_oBlankTimer)
                     {
-                        if (m_oTimerStart == m_oBlankTimer)
+                        m_oTimerStart = DateTime.Now;
+                        if (m_dTimerLastTime > 0)
                         {
-                            m_oTimerStart = DateTime.Now;
-                            if (m_dTimerLastTime > 0)
-                            {
-                                m_oTimerStart = m_oTimerStart.AddMilliseconds(-m_dTimerLastTime);
-                            }
-
-                            m_oLocalVarList.Add("t", "@timer@");
+                            m_oTimerStart = m_oTimerStart.AddMilliseconds(-m_dTimerLastTime);
                         }
 
-                        break;
+                        m_oLocalVarList.Add("t", "@timer@");
                     }
 
+                    break;
+                }
+
                 case "stop":
+                {
+                    if (m_oTimerStart != m_oBlankTimer)
                     {
-                        if (m_oTimerStart != m_oBlankTimer)
+                        var argoDateEnd = DateTime.Now;
+                        m_dTimerLastTime = Utility.GetTimeDiffInMilliseconds(m_oTimerStart, argoDateEnd);
+                        m_oTimerStart = default;
+                        if (m_dTimerLastTime > 0)
                         {
-                            var argoDateEnd = DateTime.Now;
-                            m_dTimerLastTime = Utility.GetTimeDiffInMilliseconds(m_oTimerStart, argoDateEnd);
-                            m_oTimerStart = default;
-                            if (m_dTimerLastTime > 0)
-                            {
-                                m_oLocalVarList.Add("t", (m_dTimerLastTime / 1000).ToString());
-                            }
-                            else
-                            {
-                                m_oLocalVarList.Add("t", "0");
-                            }
+                            m_oLocalVarList.Add("t", (m_dTimerLastTime / 1000).ToString());
                         }
                         else
                         {
                             m_oLocalVarList.Add("t", "0");
                         }
-
-                        break;
                     }
+                    else
+                    {
+                        m_oLocalVarList.Add("t", "0");
+                    }
+
+                    break;
+                }
 
                 case "setstart":
+                {
+                    try
                     {
-                        try
-                        {
-                            m_oTimerStart = DateTime.Parse(Utility.GetArgumentString(sText));
-                            m_oLocalVarList.Add("t", "@timer@"); // set automatically "start" timer
-                        }
-                        #pragma warning disable CS0168
-                        catch (Exception ex)
-                        #pragma warning restore CS0168
-                        {
-                            PrintError("Invalid datetime format in TIMER SETSTART command: " + Utility.GetArgumentString(sText), iFileId, iFileRow);
-                            AbortOnScriptError();
-                        }
-
-                        break;
+                        m_oTimerStart = DateTime.Parse(Utility.GetArgumentString(sText));
+                        m_oLocalVarList.Add("t", "@timer@"); // set automatically "start" timer
                     }
+#pragma warning disable CS0168
+                    catch (Exception ex)
+#pragma warning restore CS0168
+                    {
+                        PrintError("Invalid datetime format in TIMER SETSTART command: " + Utility.GetArgumentString(sText), iFileId, iFileRow);
+                        AbortOnScriptError();
+                    }
+
+                    break;
+                }
 
                 case "clear":
-                    {
-                        m_oTimerStart = default;
-                        m_dTimerLastTime = 0;
-                        m_oLocalVarList.Add("t", "0");
-                        break;
-                    }
+                {
+                    m_oTimerStart = default;
+                    m_dTimerLastTime = 0;
+                    m_oLocalVarList.Add("t", "0");
+                    break;
+                }
             }
         }
 
@@ -3079,25 +3088,25 @@ namespace GenieClient
                         case "off":
                         case "false":
                         case "inactivate":
-                            {
-                                m_oActions.SetClass(sClass, false);
-                                int argiLevel = 4;
-                                string argsText = "class off: " + sClass;
-                                PrintDebug(argiLevel, argsText, iFileId, iFileRow);
-                                return;
-                            }
+                        {
+                            m_oActions.SetClass(sClass, false);
+                            int argiLevel = 4;
+                            string argsText = "class off: " + sClass;
+                            PrintDebug(argiLevel, argsText, iFileId, iFileRow);
+                            return;
+                        }
 
                         case "1":
                         case "on":
                         case "true":
                         case "activate":
-                            {
-                                m_oActions.SetClass(sClass, true);
-                                int argiLevel1 = 4;
-                                string argsText1 = "class on: " + sClass;
-                                PrintDebug(argiLevel1, argsText1, iFileId, iFileRow);
-                                return;
-                            }
+                        {
+                            m_oActions.SetClass(sClass, true);
+                            int argiLevel1 = 4;
+                            string argsText1 = "class on: " + sClass;
+                            PrintDebug(argiLevel1, argsText1, iFileId, iFileRow);
+                            return;
+                        }
                     }
                 }
             }
@@ -3108,34 +3117,34 @@ namespace GenieClient
             switch (switchExpr1)
             {
                 case "remove":
+                {
+                    string argsText2 = Utility.GetArgumentString(sText);
+                    if (argsText2.ToLower().StartsWith("eval ") == false)
                     {
-                        string argsText2 = Utility.GetArgumentString(sText);
-                        if (argsText2.ToLower().StartsWith("eval ") == false)
-                        {
-                            argsText2 = ParseVariables(argsText2);
-                        }
-                        m_oActions.Remove(argsText2);
-                        return;
+                        argsText2 = ParseVariables(argsText2);
                     }
+                    m_oActions.Remove(argsText2);
+                    return;
+                }
 
                 case "clear":
-                    {
-                        m_oActions.Clear();
-                        return;
-                    }
+                {
+                    m_oActions.Clear();
+                    return;
+                }
 
                 case "add":
-                    {
-                        sText = Utility.GetArgumentString(sText);
-                        break;
-                    }
+                {
+                    sText = Utility.GetArgumentString(sText);
+                    break;
+                }
 
                 case "instant":
-                    {
-                        bInstant = true;
-                        sText = Utility.GetArgumentString(sText);
-                        break;
-                    }
+                {
+                    bInstant = true;
+                    sText = Utility.GetArgumentString(sText);
+                    break;
+                }
             }
 
             i = sText.ToLower().IndexOf(" when ");
@@ -3185,7 +3194,7 @@ namespace GenieClient
                 m_oLocalVarList.Add(sVar, d.ToString());
                 TriggerVariableChanged("%" + sVar);
             }
-            catch(System.InvalidCastException ex)
+            catch (System.InvalidCastException ex)
             {
                 PrintError(ex.Message + ". Local Variable " + sVar + " has been set to 0.");
                 m_oLocalVarList.Add(sVar, "0");
@@ -3264,9 +3273,9 @@ namespace GenieClient
             {
                 return Utility.MathCalc(dValue, sExpression);
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 PrintError("Invalid MATH expression: " + sExpression, iFileId, iFileRow);
                 AbortOnScriptError();
@@ -3431,24 +3440,24 @@ namespace GenieClient
                     return false;
                 }
                 MatchCollection doRegex = Regex.Matches(FullCommand, PARAMETER_REGEX);
-                if(doRegex.Count == 0)
-                {   
+                if (doRegex.Count == 0)
+                {
                     DoCommandText = FullCommand;
                     DoCommandAdditionalRegex = "";
                     DoCommandRepeatRegex = m_oGlobals.VariableList["repeatregex"].ToString();
                 }
-                else if(doRegex.Count == 1)
-                {   
+                else if (doRegex.Count == 1)
+                {
                     DoCommandText = doRegex[0].Captures[0].ToString();
                     DoCommandText = DoCommandText.Substring(1, DoCommandText.Length - 2);
                     DoCommandAdditionalRegex = "";
                     DoCommandRepeatRegex = m_oGlobals.VariableList["repeatregex"].ToString();
                 }
-                else if(doRegex.Count > 1)
+                else if (doRegex.Count > 1)
                 {
                     DoCommandText = doRegex[0].Captures[0].ToString();
                     DoCommandText = DoCommandText.Substring(1, DoCommandText.Length - 2);
-                    DoCommandAdditionalRegex = doRegex[1].Captures[0].ToString() ;
+                    DoCommandAdditionalRegex = doRegex[1].Captures[0].ToString();
                     DoCommandAdditionalRegex = DoCommandAdditionalRegex.Substring(1, DoCommandAdditionalRegex.Length - 2);
                     DoCommandRepeatRegex = m_oGlobals.VariableList["repeatregex"].ToString() + "|" + DoCommandAdditionalRegex;
                 }
@@ -3602,17 +3611,17 @@ namespace GenieClient
                     return false;
                 }
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (FileNotFoundException ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 PrintError("File not found: " + sFriendlyName, iFileId: argiFileId, iFileRow: argiFileRow);
                 AbortScript();
                 return false;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (FileLoadException ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 PrintError("File load exception: " + sFriendlyName, iFileId: argiFileId, iFileRow: argiFileRow);
                 AbortScript();
@@ -3719,17 +3728,17 @@ namespace GenieClient
                     return false;
                 }
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (FileNotFoundException ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 PrintError("File not found: " + sFriendlyName, iFileId: argiFileId, iFileRow: argiFileRow);
                 AbortScript();
                 return false;
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (FileLoadException ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 PrintError("File load exception: " + sFriendlyName, iFileId: argiFileId, iFileRow: argiFileRow);
                 AbortScript();
@@ -3825,66 +3834,60 @@ namespace GenieClient
                     switch (switchExpr)
                     {
                         case ScriptFunctions.include:
+                        {
+                            if (m_oScriptFiles.Contains(strArgument))
                             {
-                                if (m_oScriptFiles.Contains(strArgument))
-                                {
-                                    continue;
-                                }
-                                else
-                                {
-                                    m_oScriptFiles.Add(strArgument);
-                                }
-                                if (strArgument.ToLower().EndsWith(".js"))
-                                {
-                                    if (AppendFile(strArgument, true) == false)
-                                    {
-                                        return false;
-                                    }
-                                }
-                                else if (AppendFile(strArgument) == false)
+                                continue;
+                            }
+                            else
+                            {
+                                m_oScriptFiles.Add(strArgument);
+                            }
+                            if (strArgument.ToLower().EndsWith(".js"))
+                            {
+                                if (AppendFile(strArgument, true) == false)
                                 {
                                     return false;
                                 }
-                                continue;
                             }
+                            else if (AppendFile(strArgument) == false)
+                            {
+                                return false;
+                            }
+                            continue;
+                        }
 
                         case ScriptFunctions.pluginscript:
+                        {
+                            string strScript = EvalPluginScript(strArgument, iFileId, iFileRow);
+                            if (strScript.Length > 0)
                             {
-                                string strScript = EvalPluginScript(strArgument, iFileId, iFileRow);
-                                if (strScript.Length > 0)
-                                {
-                                    AppendString(strScript);
-                                }
-                                continue;
+                                AppendString(strScript);
                             }
+                            continue;
+                        }
 
                         case ScriptFunctions.iffunc:
+                        {
+                            if (strArgument.TrimEnd().ToLower().EndsWith(" then") == false)
                             {
-                                if (strArgument.TrimEnd().ToLower().EndsWith(" then") == false)
+                                int I = strArgument.ToLower().IndexOf(" then ") + 6;
+                                if (I - 6 >= 0)
                                 {
-                                    int I = strArgument.ToLower().IndexOf(" then ") + 6;
-                                    if (I - 6 >= 0)
+                                    if (strArgument.Length > I)
                                     {
-                                        if (strArgument.Length > I)
+                                        int J = sr.sRowContent.ToLower().IndexOf(" then ") + 6;
+                                        if (J < sr.sRowContent.Length)
                                         {
-                                            int J = sr.sRowContent.ToLower().IndexOf(" then ") + 6;
-                                            if (J < sr.sRowContent.Length)
+                                            sr.sRowContent = sr.sRowContent.Substring(0, J).Trim();
+                                            m_oScript.Add(sr);
+                                            // PrintText("Adding virtual line: " & strArgument.Substring(I).Trim())
+                                            if (AddLine(iFileRow, strArgument.Substring(I).Trim(), iFileId) == false)
                                             {
-                                                sr.sRowContent = sr.sRowContent.Substring(0, J).Trim();
-                                                m_oScript.Add(sr);
-                                                // PrintText("Adding virtual line: " & strArgument.Substring(I).Trim())
-                                                if (AddLine(iFileRow, strArgument.Substring(I).Trim(), iFileId) == false)
-                                                {
-                                                    return false;
-                                                }
-
-                                                continue;
-                                            }
-                                            else
-                                            {
-                                                PrintError("Invalid IF statement: " + sRow, iFileId, iFileRow);
                                                 return false;
                                             }
+
+                                            continue;
                                         }
                                         else
                                         {
@@ -3898,37 +3901,37 @@ namespace GenieClient
                                         return false;
                                     }
                                 }
-
-                                break;
+                                else
+                                {
+                                    PrintError("Invalid IF statement: " + sRow, iFileId, iFileRow);
+                                    return false;
+                                }
                             }
 
-                        case ScriptFunctions.whilefunc:
-                            {
-                                if (strArgument.TrimEnd().ToLower().EndsWith(" do") == false)
-                                {
-                                    int I = strArgument.IndexOf(" do ") + 4;
-                                    if (I - 4 >= 0)
-                                    {
-                                        if (strArgument.Length > I)
-                                        {
-                                            int J = sr.sRowContent.ToLower().IndexOf(" do ") + 4;
-                                            if (J < sr.sRowContent.Length)
-                                            {
-                                                sr.sRowContent = sr.sRowContent.ToLower().Substring(0, J).Trim();
-                                                m_oScript.Add(sr);
-                                                // PrintError("Adding virtual line: " & strArgument.Substring(I).Trim())
-                                                if (AddLine(iFileRow, strArgument.Substring(I).Trim(), iFileId) == false)
-                                                {
-                                                    return false;
-                                                }
+                            break;
+                        }
 
-                                                continue;
-                                            }
-                                            else
+                        case ScriptFunctions.whilefunc:
+                        {
+                            if (strArgument.TrimEnd().ToLower().EndsWith(" do") == false)
+                            {
+                                int I = strArgument.IndexOf(" do ") + 4;
+                                if (I - 4 >= 0)
+                                {
+                                    if (strArgument.Length > I)
+                                    {
+                                        int J = sr.sRowContent.ToLower().IndexOf(" do ") + 4;
+                                        if (J < sr.sRowContent.Length)
+                                        {
+                                            sr.sRowContent = sr.sRowContent.ToLower().Substring(0, J).Trim();
+                                            m_oScript.Add(sr);
+                                            // PrintError("Adding virtual line: " & strArgument.Substring(I).Trim())
+                                            if (AddLine(iFileRow, strArgument.Substring(I).Trim(), iFileId) == false)
                                             {
-                                                PrintError("Invalid WHILE statement: " + sRow, iFileId, iFileRow);
                                                 return false;
                                             }
+
+                                            continue;
                                         }
                                         else
                                         {
@@ -3942,83 +3945,89 @@ namespace GenieClient
                                         return false;
                                     }
                                 }
-
-                                break;
-                            }
-
-                        case ScriptFunctions.elsefunc:
-                            {
-                                if (strArgument.Length > 0)
+                                else
                                 {
-                                    sr.sRowContent = "else";
-                                    m_oScript.Add(sr);
-                                    if (AddLine(iFileRow, strArgument.Trim(), iFileId) == false)
-                                    {
-                                        return false;
-                                    }
-
-                                    continue;
-                                }
-
-                                break;
-                            }
-
-                        case ScriptFunctions.elseiffunc: // "elseif"
-                            {
-                                if (strArgument.Length > 0)
-                                {
-                                    sr.sRowContent = "else";
-                                    sr.oFunction = ScriptFunctions.elsefunc;
-                                    m_oScript.Add(sr);
-                                    if (AddLine(iFileRow, "if " + strArgument.Trim(), iFileId) == false)
-                                    {
-                                        return false;
-                                    }
-
-                                    continue;
-                                }
-
-                                break;
-                            }
-
-                        case ScriptFunctions.blockstart:
-                            {
-                                sr.oFunction = ScriptFunctions.blockstart;
-                                int argiLevel = 50;
-                                string argsText = "Block start: " + sRow;
-                                PrintDebug(argiLevel, argsText, iFileId, iFileRow);
-                                break;
-                            }
-
-                        case ScriptFunctions.blockend:
-                            {
-                                sr.oFunction = ScriptFunctions.blockend;
-                                int argiLevel1 = 50;
-                                string argsText1 = "Block end: " + sRow;
-                                PrintDebug(argiLevel1, argsText1, iFileId, iFileRow);
-                                if (strArgument.Length > 0)
-                                {
-                                    sr.sRowContent = "}";
-                                    m_oScript.Add(sr);
-                                    if (AddLine(iFileRow, strArgument.Trim(), iFileId) == false)
-                                    {
-                                        return false;
-                                    }
-
-                                    continue;
-                                }
-                                break;
-                            }
-
-                        case ScriptFunctions.empty:
-                            {
-                                if (m_oGlobals.Config.bIgnoreScriptWarnings == false)
-                                {
-                                    PrintError("Unknown script command: " + sRow, iFileId, iFileRow);
+                                    PrintError("Invalid WHILE statement: " + sRow, iFileId, iFileRow);
                                     return false;
                                 }
+                            }
+
+                            break;
+                        }
+
+                        case ScriptFunctions.elsefunc:
+                        {
+                            if (strArgument.Length > 0)
+                            {
+                                sr.sRowContent = "else";
+                                m_oScript.Add(sr);
+                                if (AddLine(iFileRow, strArgument.Trim(), iFileId) == false)
+                                {
+                                    return false;
+                                }
+
                                 continue;
                             }
+
+                            break;
+                        }
+
+                        case ScriptFunctions.elseiffunc: // "elseif"
+                        {
+                            if (strArgument.Length > 0)
+                            {
+                                sr.sRowContent = "else";
+                                sr.oFunction = ScriptFunctions.elsefunc;
+                                m_oScript.Add(sr);
+                                if (AddLine(iFileRow, "if " + strArgument.Trim(), iFileId) == false)
+                                {
+                                    return false;
+                                }
+
+                                continue;
+                            }
+
+                            break;
+                        }
+
+                        case ScriptFunctions.blockstart:
+                        {
+                            sr.oFunction = ScriptFunctions.blockstart;
+                            int argiLevel = 50;
+                            string argsText = "Block start: " + sRow;
+                            PrintDebug(argiLevel, argsText, iFileId, iFileRow);
+                            break;
+                        }
+
+                        case ScriptFunctions.blockend:
+                        {
+                            sr.oFunction = ScriptFunctions.blockend;
+                            int argiLevel1 = 50;
+                            string argsText1 = "Block end: " + sRow;
+                            PrintDebug(argiLevel1, argsText1, iFileId, iFileRow);
+                            if (strArgument.Length > 0)
+                            {
+                                sr.sRowContent = "}";
+                                m_oScript.Add(sr);
+                                if (AddLine(iFileRow, strArgument.Trim(), iFileId) == false)
+                                {
+                                    return false;
+                                }
+
+                                continue;
+                            }
+                            break;
+                        }
+
+                        case ScriptFunctions.empty:
+                        {
+                            if (m_oGlobals.Config.bIgnoreScriptWarnings == false)
+                            {
+                                PrintError("Unknown script command: " + sRow, iFileId, iFileRow);
+                                return false;
+                            }
+                            continue;
+                        }
                     }
                 }
 
@@ -4034,230 +4043,230 @@ namespace GenieClient
             switch (strKeyword)
             {
                 case "action":
-                    {
-                        return ScriptFunctions.action;
-                    }
+                {
+                    return ScriptFunctions.action;
+                }
 
                 case "include":
-                    {
-                        return ScriptFunctions.include;
-                    }
+                {
+                    return ScriptFunctions.include;
+                }
 
                 case "echo":
-                    {
-                        return ScriptFunctions.echo;
-                    }
+                {
+                    return ScriptFunctions.echo;
+                }
 
                 case "put":
-                    {
-                        return ScriptFunctions.put;
-                    }
+                {
+                    return ScriptFunctions.put;
+                }
 
                 case "send":
-                    {
-                        return ScriptFunctions.send;
-                    }
+                {
+                    return ScriptFunctions.send;
+                }
                 case "do":
-                    {
-                        return ScriptFunctions.dofunc;
-                    }
+                {
+                    return ScriptFunctions.dofunc;
+                }
                 case "exit":
-                    {
-                        return ScriptFunctions.exitfunc;
-                    }
+                {
+                    return ScriptFunctions.exitfunc;
+                }
 
                 case "goto":
-                    {
-                        return ScriptFunctions.gotofunc;
-                    }
+                {
+                    return ScriptFunctions.gotofunc;
+                }
 
                 case "save":
-                    {
-                        return ScriptFunctions.save;
-                    }
+                {
+                    return ScriptFunctions.save;
+                }
 
                 case "var":
                 case "vars":
                 case "variable":
                 case "setvar":
                 case "setvariable":
-                    {
-                        return ScriptFunctions.setvariable;
-                    }
+                {
+                    return ScriptFunctions.setvariable;
+                }
 
                 case "unvar":
                 case "unvariable":
                 case "unsetvar":
                 case "unsetvariable":
-                    {
-                        return ScriptFunctions.deletevariable;
-                    }
+                {
+                    return ScriptFunctions.deletevariable;
+                }
 
                 case "counter":
-                    {
-                        return ScriptFunctions.counter;
-                    }
+                {
+                    return ScriptFunctions.counter;
+                }
 
                 case "shift":
-                    {
-                        return ScriptFunctions.shift;
-                    }
+                {
+                    return ScriptFunctions.shift;
+                }
 
                 case "pause":
-                    {
-                        return ScriptFunctions.pause;
-                    }
+                {
+                    return ScriptFunctions.pause;
+                }
 
                 case "delay":
-                    {
-                        return ScriptFunctions.delay;
-                    }
+                {
+                    return ScriptFunctions.delay;
+                }
 
                 case "waitfor":
-                    {
-                        return ScriptFunctions.waitfor;
-                    }
+                {
+                    return ScriptFunctions.waitfor;
+                }
 
                 case "waiteval":
-                    {
-                        return ScriptFunctions.waiteval;
-                    }
+                {
+                    return ScriptFunctions.waiteval;
+                }
 
                 case "match":
-                    {
-                        return ScriptFunctions.match;
-                    }
+                {
+                    return ScriptFunctions.match;
+                }
 
                 case "matchwait":
-                    {
-                        return ScriptFunctions.matchwait;
-                    }
+                {
+                    return ScriptFunctions.matchwait;
+                }
 
                 case "wait":
-                    {
-                        return ScriptFunctions.wait;
-                    }
+                {
+                    return ScriptFunctions.wait;
+                }
 
                 case "move":
-                    {
-                        return ScriptFunctions.move;
-                    }
+                {
+                    return ScriptFunctions.move;
+                }
 
                 case "nextroom":
-                    {
-                        return ScriptFunctions.nextroom;
-                    }
+                {
+                    return ScriptFunctions.nextroom;
+                }
 
                 case "matchre":
-                    {
-                        return ScriptFunctions.matchre;
-                    }
+                {
+                    return ScriptFunctions.matchre;
+                }
 
                 case "waitforre":
-                    {
-                        return ScriptFunctions.waitforre;
-                    }
+                {
+                    return ScriptFunctions.waitforre;
+                }
 
                 case "gosub":
-                    {
-                        return ScriptFunctions.gosubfunc;
-                    }
+                {
+                    return ScriptFunctions.gosubfunc;
+                }
 
                 case "return":
-                    {
-                        return ScriptFunctions.returnfunc;
-                    }
+                {
+                    return ScriptFunctions.returnfunc;
+                }
 
                 case "if":
-                    {
-                        return ScriptFunctions.iffunc;
-                    }
+                {
+                    return ScriptFunctions.iffunc;
+                }
 
                 case "while":
-                    {
-                        return ScriptFunctions.whilefunc;
-                    }
+                {
+                    return ScriptFunctions.whilefunc;
+                }
 
                 case "timer":
-                    {
-                        return ScriptFunctions.timer;
-                    }
+                {
+                    return ScriptFunctions.timer;
+                }
 
                 case "random":
-                    {
-                        return ScriptFunctions.random;
-                    }
+                {
+                    return ScriptFunctions.random;
+                }
 
                 case "math":
-                    {
-                        return ScriptFunctions.mathfunc;
-                    }
+                {
+                    return ScriptFunctions.mathfunc;
+                }
 
                 case "eval":
                 case "evaluate":
-                    {
-                        return ScriptFunctions.eval;
-                    }
+                {
+                    return ScriptFunctions.eval;
+                }
 
                 case "evalmath":
                 case "evaluatemath":
-                    {
-                        return ScriptFunctions.evalmath;
-                    }
+                {
+                    return ScriptFunctions.evalmath;
+                }
 
                 case "debug":
                 case "debuglevel":
-                    {
-                        return ScriptFunctions.debuglevel;
-                    }
+                {
+                    return ScriptFunctions.debuglevel;
+                }
 
                 case "js":
                 case "javascript":
-                    {
-                        return ScriptFunctions.js;
-                    }
+                {
+                    return ScriptFunctions.js;
+                }
 
                 case "plugin":
-                    {
-                        return ScriptFunctions.plugin;
-                    }
+                {
+                    return ScriptFunctions.plugin;
+                }
 
                 case "pluginscript":
-                    {
-                        return ScriptFunctions.pluginscript;
-                    }
+                {
+                    return ScriptFunctions.pluginscript;
+                }
 
                 case "jscall":
-                    {
-                        return ScriptFunctions.jscall;
-                    }
+                {
+                    return ScriptFunctions.jscall;
+                }
 
                 case "else":
-                    {
-                        return ScriptFunctions.elsefunc;
-                    }
+                {
+                    return ScriptFunctions.elsefunc;
+                }
 
                 case "elseif":
-                    {
-                        return ScriptFunctions.elseiffunc;
-                    }
+                {
+                    return ScriptFunctions.elseiffunc;
+                }
 
                 case "{":
                 case "begin":
-                    {
-                        return ScriptFunctions.blockstart;
-                    }
+                {
+                    return ScriptFunctions.blockstart;
+                }
 
                 case "}":
                 case "end":
-                    {
-                        return ScriptFunctions.blockend;
-                    }
+                {
+                    return ScriptFunctions.blockend;
+                }
 
                 default:
-                    {
-                        return ScriptFunctions.empty;
-                    }
+                {
+                    return ScriptFunctions.empty;
+                }
             }
         }
 

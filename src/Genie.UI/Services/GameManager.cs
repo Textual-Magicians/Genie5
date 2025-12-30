@@ -20,11 +20,11 @@ public class GameManager : IDisposable
     private Timer? _roundtimeTimer;
     private int _currentRoundtime;
     private int _maxRoundtime;
-    
+
     // Window manager for multi-window support
     private GameWindowManager? _windowManager;
     public GameWindowManager? WindowManager => _windowManager;
-    
+
     // Script manager for running scripts
     private ScriptManager? _scriptManager;
     public ScriptManager? ScriptManager => _scriptManager;
@@ -43,7 +43,7 @@ public class GameManager : IDisposable
     public event Action<string, string>? HandsChanged; // left, right
     public event Action<string>? SpellChanged;
     public event Action<string, bool, bool, bool, bool, bool, bool, bool>? StatusChanged; // position, hidden, invisible, joined, webbed, stunned, bleeding, dead
-    
+
     // Script events
     public event Action<ScriptInfo>? ScriptStarted;
     public event Action<ScriptInfo>? ScriptStopped;
@@ -51,7 +51,7 @@ public class GameManager : IDisposable
 
     public bool IsConnected => _game?.IsConnected ?? false;
     public string? LastError { get; private set; }
-    
+
     /// <summary>
     /// Gets the Globals instance for accessing highlights, presets, and other configuration.
     /// Returns null if not initialized.
@@ -70,7 +70,7 @@ public class GameManager : IDisposable
         {
             _currentRoundtime--;
             RoundtimeChanged?.Invoke(_currentRoundtime);
-            
+
             if (_currentRoundtime <= 0)
             {
                 // Stop the timer when RT reaches 0
@@ -83,10 +83,10 @@ public class GameManager : IDisposable
     {
         _currentRoundtime = seconds;
         _maxRoundtime = seconds;
-        
+
         // Fire initial event
         RoundtimeChanged?.Invoke(_currentRoundtime);
-        
+
         if (seconds > 0)
         {
             // Start countdown timer (1 second interval)
@@ -101,20 +101,21 @@ public class GameManager : IDisposable
 
     private bool Initialize()
     {
-        if (_initialized) return _game != null;
+        if (_initialized)
+            return _game != null;
         _initialized = true;
 
         try
         {
             Console.WriteLine("[GameManager] Initializing Globals...");
             _globals = new Globals();
-            
+
             Console.WriteLine("[GameManager] Creating Game instance...");
             _game = new Game(ref _globals);
-            
+
             Console.WriteLine("[GameManager] Creating window manager...");
             _windowManager = new GameWindowManager();
-            
+
             Console.WriteLine("[GameManager] Creating script manager...");
             _scriptManager = new ScriptManager();
             _scriptManager.SetGlobals(_globals);
@@ -122,14 +123,14 @@ public class GameManager : IDisposable
             _scriptManager.ScriptStopped += info => ScriptStopped?.Invoke(info);
             _scriptManager.ScriptOutput += (msg, isError) => ScriptOutput?.Invoke(msg, isError);
             _scriptManager.SendCommand += (cmd, toQueue) => SendCommand(cmd);
-            
+
             Console.WriteLine("[GameManager] Subscribing to events...");
             _game.EventPrintText += OnGamePrintText;
             _game.EventPrintError += OnGamePrintError;
             _game.EventVariableChanged += OnVariableChanged;
             _game.EventClearWindow += OnClearWindow;
             _game.EventDataRecieveEnd += OnDataReceiveEnd;
-            
+
             Console.WriteLine("[GameManager] Initialization complete.");
             return true;
         }
@@ -153,7 +154,7 @@ public class GameManager : IDisposable
             try
             {
                 Console.WriteLine($"[GameManager] ConnectAsync called: account={account}, character={character}, game={game}");
-                
+
                 // Initialize on first connect
                 if (!Initialize())
                 {
@@ -162,12 +163,12 @@ public class GameManager : IDisposable
                 }
 
                 Console.WriteLine("[GameManager] Calling Game.Connect...");
-                
+
                 // The Game class handles the full authentication flow
                 _game!.Connect("", account, password, character, game);
-                
+
                 Console.WriteLine("[GameManager] Connect called, waiting for connection...");
-                
+
                 // Wait a bit for connection to establish
                 // In a real implementation, we'd use proper async/await with events
                 for (int i = 0; i < 30; i++) // Wait up to 15 seconds
@@ -180,7 +181,7 @@ public class GameManager : IDisposable
                         return true;
                     }
                 }
-                
+
                 Console.WriteLine("[GameManager] Connection timed out");
                 LastError = "Connection timed out";
                 ErrorReceived?.Invoke(LastError);
@@ -277,20 +278,21 @@ public class GameManager : IDisposable
         _scriptManager?.ResumeScript(scriptName);
     }
 
-    private void OnGamePrintText(string text, GenieColor color, GenieColor bgcolor, 
+    private void OnGamePrintText(string text, GenieColor color, GenieColor bgcolor,
         Game.WindowTarget targetwindow, string targetwindowstring, bool mono, bool isprompt, bool isinput)
     {
         // Debug: Log ALL incoming events at entry point (including Room)
         if (targetwindow == Game.WindowTarget.Room)
         {
             var roomDebug = text?.Replace("\r", "").Replace("\n", "\\n") ?? "";
-            if (roomDebug.Length > 60) roomDebug = roomDebug.Substring(0, 60) + "...";
+            if (roomDebug.Length > 60)
+                roomDebug = roomDebug.Substring(0, 60) + "...";
             Console.WriteLine($"[GameManager] *** ROOM EVENT ***: text=\"{roomDebug}\"");
         }
-        
+
         // Determine the window type
         var winType = GameWindow.FromWindowTarget(targetwindow, targetwindowstring);
-        
+
         // Handle control markers for window batching
         var trimmedText = text?.Trim() ?? "";
         if (trimmedText == "@suspend@")
@@ -307,27 +309,28 @@ public class GameManager : IDisposable
             window?.Resume();
             return;
         }
-        
+
         // For custom windows, use the targetwindowstring as the ID
         var customWindowId = targetwindow == Game.WindowTarget.Other ? targetwindowstring : "";
-        
+
         // Debug: log ALL window text (including Main)
         var debugText = (text ?? "").Replace("\r", "").Replace("\n", "\\n");
-        if (debugText.Length > 50) debugText = debugText.Substring(0, 50) + "...";
+        if (debugText.Length > 50)
+            debugText = debugText.Substring(0, 50) + "...";
         Console.WriteLine($"[GameManager] target={targetwindow}, winType={winType}, text=\"{debugText}\"");
-        
+
         // Fire the window-specific event (this is now the primary event)
         WindowTextReceived?.Invoke(winType, customWindowId, text ?? "", color, bgcolor);
-        
+
         // Check for vital updates in the globals
         CheckVitals();
     }
-    
+
     private void OnClearWindow(string windowId)
     {
         _windowManager?.ClearWindow(windowId);
     }
-    
+
     /// <summary>
     /// Called when the game socket finishes receiving a batch of data.
     /// This triggers deferred operations like Room window updates.
@@ -345,8 +348,9 @@ public class GameManager : IDisposable
 
     private void OnVariableChanged(string variable)
     {
-        if (_globals == null) return;
-        
+        if (_globals == null)
+            return;
+
         try
         {
             // Handle compass updates (no $ prefix)
@@ -355,24 +359,24 @@ public class GameManager : IDisposable
                 UpdateCompass();
                 return;
             }
-            
+
             // Check if it's a vital-related variable
             if (variable.StartsWith("$"))
             {
                 var varName = variable.Substring(1);
                 var value = _globals.VariableList?.ContainsKey(varName) == true
-                    ? _globals.VariableList[varName]?.ToString() ?? "" 
+                    ? _globals.VariableList[varName]?.ToString() ?? ""
                     : "";
-                
+
                 VariableChanged?.Invoke(varName, value);
-                
+
                 // Update vitals if needed
-                if (varName == "health" || varName == "mana" || varName == "fatigue" || 
+                if (varName == "health" || varName == "mana" || varName == "fatigue" ||
                     varName == "spirit" || varName == "concentration")
                 {
                     CheckVitals();
                 }
-                
+
                 // Update roundtime - starts the countdown timer
                 if (varName == "roundtime")
                 {
@@ -381,19 +385,19 @@ public class GameManager : IDisposable
                         SetRoundtime(rt);
                     }
                 }
-                
+
                 // Update hands
                 if (varName == "lefthand" || varName == "righthand")
                 {
                     UpdateHands();
                 }
-                
+
                 // Update prepared spell
                 if (varName == "preparedspell")
                 {
                     UpdateSpell();
                 }
-                
+
                 // Update status indicators
                 if (varName == "standing" || varName == "sitting" || varName == "kneeling" || varName == "prone" ||
                     varName == "hidden" || varName == "invisible" || varName == "joined" || varName == "webbed" ||
@@ -411,8 +415,9 @@ public class GameManager : IDisposable
 
     private void CheckVitals()
     {
-        if (_globals == null) return;
-        
+        if (_globals == null)
+            return;
+
         try
         {
             int health = GetVitalPercent("health");
@@ -420,7 +425,7 @@ public class GameManager : IDisposable
             int concentration = GetVitalPercent("concentration");
             int stamina = GetVitalPercent("fatigue"); // DR calls it fatigue
             int spirit = GetVitalPercent("spirit");
-            
+
             VitalsChanged?.Invoke(health, mana, concentration, stamina, spirit);
         }
         catch
@@ -431,13 +436,14 @@ public class GameManager : IDisposable
 
     private void UpdateCompass()
     {
-        if (_globals == null) return;
-        
+        if (_globals == null)
+            return;
+
         try
         {
-            bool GetDir(string name) => _globals.VariableList?.ContainsKey(name) == true 
+            bool GetDir(string name) => _globals.VariableList?.ContainsKey(name) == true
                 && _globals.VariableList[name]?.ToString() == "1";
-            
+
             bool n = GetDir("north");
             bool ne = GetDir("northeast");
             bool e = GetDir("east");
@@ -449,7 +455,7 @@ public class GameManager : IDisposable
             bool up = GetDir("up");
             bool down = GetDir("down");
             bool @out = GetDir("out");
-            
+
             CompassChanged?.Invoke(n, ne, e, se, s, sw, w, nw, up, down, @out);
         }
         catch (Exception ex)
@@ -460,21 +466,24 @@ public class GameManager : IDisposable
 
     private void UpdateHands()
     {
-        if (_globals == null) return;
-        
+        if (_globals == null)
+            return;
+
         try
         {
-            string GetVar(string name) => _globals.VariableList?.ContainsKey(name) == true 
-                ? _globals.VariableList[name]?.ToString() ?? "Empty" 
+            string GetVar(string name) => _globals.VariableList?.ContainsKey(name) == true
+                ? _globals.VariableList[name]?.ToString() ?? "Empty"
                 : "Empty";
-            
+
             var leftHand = GetVar("lefthand");
             var rightHand = GetVar("righthand");
-            
+
             // Empty string means empty hand
-            if (string.IsNullOrWhiteSpace(leftHand)) leftHand = "Empty";
-            if (string.IsNullOrWhiteSpace(rightHand)) rightHand = "Empty";
-            
+            if (string.IsNullOrWhiteSpace(leftHand))
+                leftHand = "Empty";
+            if (string.IsNullOrWhiteSpace(rightHand))
+                rightHand = "Empty";
+
             HandsChanged?.Invoke(leftHand, rightHand);
         }
         catch (Exception ex)
@@ -485,20 +494,21 @@ public class GameManager : IDisposable
 
     private void UpdateSpell()
     {
-        if (_globals == null) return;
-        
+        if (_globals == null)
+            return;
+
         try
         {
-            var spell = _globals.VariableList?.ContainsKey("preparedspell") == true 
-                ? _globals.VariableList["preparedspell"]?.ToString() ?? "" 
+            var spell = _globals.VariableList?.ContainsKey("preparedspell") == true
+                ? _globals.VariableList["preparedspell"]?.ToString() ?? ""
                 : "";
-            
+
             // "None" from the game means no spell
             if (string.IsNullOrWhiteSpace(spell) || spell.Equals("None", StringComparison.OrdinalIgnoreCase))
             {
                 spell = "";
             }
-            
+
             SpellChanged?.Invoke(spell);
         }
         catch (Exception ex)
@@ -509,20 +519,25 @@ public class GameManager : IDisposable
 
     private void UpdateStatus()
     {
-        if (_globals == null) return;
-        
+        if (_globals == null)
+            return;
+
         try
         {
-            bool IsActive(string name) => _globals.VariableList?.ContainsKey(name) == true 
+            bool IsActive(string name) => _globals.VariableList?.ContainsKey(name) == true
                 && _globals.VariableList[name]?.ToString() == "1";
-            
+
             // Determine position (only one should be active)
             string position = "Standing"; // default
-            if (IsActive("sitting")) position = "Sitting";
-            else if (IsActive("kneeling")) position = "Kneeling";
-            else if (IsActive("prone")) position = "Prone";
-            else if (IsActive("standing")) position = "Standing";
-            
+            if (IsActive("sitting"))
+                position = "Sitting";
+            else if (IsActive("kneeling"))
+                position = "Kneeling";
+            else if (IsActive("prone"))
+                position = "Prone";
+            else if (IsActive("standing"))
+                position = "Standing";
+
             // Status effects
             bool hidden = IsActive("hidden");
             bool invisible = IsActive("invisible");
@@ -531,7 +546,7 @@ public class GameManager : IDisposable
             bool stunned = IsActive("stunned");
             bool bleeding = IsActive("bleeding");
             bool dead = IsActive("dead");
-            
+
             StatusChanged?.Invoke(position, hidden, invisible, joined, webbed, stunned, bleeding, dead);
         }
         catch (Exception ex)
@@ -555,7 +570,8 @@ public class GameManager : IDisposable
 
     public void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
         _disposed = true;
 
         // Stop and dispose the roundtime timer
@@ -575,7 +591,7 @@ public class GameManager : IDisposable
                 _game.EventPrintError -= OnGamePrintError;
                 _game.EventVariableChanged -= OnVariableChanged;
                 _game.EventDataRecieveEnd -= OnDataReceiveEnd;
-                
+
                 if (_game.IsConnected)
                 {
                     _game.Disconnect();

@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms; // Required for Form - plugin API backward compatibility
+using System.Windows.Forms; // Required for Form - plugin API backward compatibility
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using GenieClient.Services;

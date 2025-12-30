@@ -21,7 +21,7 @@ public partial class MainWindow : Window
 {
     private GameManager? _gameManager;
     private HighlightProcessor? _highlightProcessor;
-    
+
     // Window scrollers for auto-scroll
     private readonly Dictionary<GameWindowType, ScrollViewer> _windowScrollers = new();
     private readonly Dictionary<GameWindowType, SelectableTextBlock> _windowOutputs = new();
@@ -29,29 +29,29 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        
+
         // Initialize services with null implementations for now
         // Platform-specific implementations will be registered later
         GenieServices.InitializeWithNullServices();
-        
+
         // Focus the command input on load
         CommandInput.AttachedToVisualTree += (s, e) => CommandInput.Focus();
-        
+
         // Initialize vitals at 100%
         UpdateVitals(100, 100, 100, 100, 100);
-        
+
         // Clear the initial text from XAML since we'll use Inlines
         GameOutput.Text = "";
         AppendText("Welcome to Genie 5 - Cross-Platform Edition\n\n", Colors.LightGreen);
         AppendText("Use File → Connect to connect to a game server.\n\n", Colors.Gray);
-        
+
         // Setup window output mappings
         SetupWindowMappings();
-        
+
         // Initialize game manager
         InitializeGameManager();
     }
-    
+
     private void SetupWindowMappings()
     {
         // Map window types to their UI elements
@@ -59,7 +59,7 @@ public partial class MainWindow : Window
         _windowOutputs[GameWindowType.Room] = RoomOutput;
         _windowOutputs[GameWindowType.Inventory] = InventoryOutput;
         _windowOutputs[GameWindowType.Thoughts] = ThoughtsOutput;
-        
+
         // Find scrollers (parent ScrollViewer)
         _windowScrollers[GameWindowType.Main] = OutputScroller;
     }
@@ -67,7 +67,7 @@ public partial class MainWindow : Window
     private void InitializeGameManager()
     {
         _gameManager = new GameManager();
-        
+
         // Subscribe to game events
         // Note: Using WindowTextReceived for all text routing (not TextReceived)
         _gameManager.WindowTextReceived += OnWindowTextReceived;
@@ -80,13 +80,13 @@ public partial class MainWindow : Window
         _gameManager.HandsChanged += OnHandsChanged;
         _gameManager.SpellChanged += OnSpellChanged;
         _gameManager.StatusChanged += OnStatusChanged;
-        
+
         // Subscribe to script events
         _gameManager.ScriptStarted += OnScriptStarted;
         _gameManager.ScriptStopped += OnScriptStopped;
         _gameManager.ScriptOutput += OnScriptOutput;
     }
-    
+
     private void OnWindowTextReceived(GameWindowType windowType, string customId, string text, GenieColor color, GenieColor bgcolor)
     {
         // CRITICAL: Capture VolatileHighlights snapshot BEFORE async dispatch!
@@ -97,7 +97,7 @@ public partial class MainWindow : Window
         {
             vhSnapshot = _gameManager.Globals.VolatileHighlights.ToList();
         }
-        
+
         Dispatcher.UIThread.Post(() =>
         {
             // Get the output for this window type
@@ -106,19 +106,19 @@ public partial class MainWindow : Window
                 // For unknown windows, route to main
                 output = GameOutput;
             }
-            
+
             // For Inventory window, clear when we see the header line
             if (windowType == GameWindowType.Inventory)
             {
                 var trimmed = text.Trim();
-                if (trimmed.StartsWith("Your worn items are:") || 
+                if (trimmed.StartsWith("Your worn items are:") ||
                     trimmed.StartsWith("You are carrying:") ||
                     trimmed.StartsWith("You have:"))
                 {
                     InventoryOutput.Inlines?.Clear();
                 }
             }
-            
+
             // For Room window, clear when we see a room title (starts with [)
             if (windowType == GameWindowType.Room)
             {
@@ -128,7 +128,7 @@ public partial class MainWindow : Window
                     RoomOutput.Inlines?.Clear();
                 }
             }
-            
+
             // Apply highlights using the captured VH snapshot
             if (_highlightProcessor != null)
             {
@@ -136,7 +136,7 @@ public partial class MainWindow : Window
                 foreach (var segment in segments)
                 {
                     var fg = Color.FromRgb(segment.ForegroundColor.R, segment.ForegroundColor.G, segment.ForegroundColor.B);
-                    var bg = segment.BackgroundColor != GenieColor.Transparent 
+                    var bg = segment.BackgroundColor != GenieColor.Transparent
                         ? Color.FromRgb(segment.BackgroundColor.R, segment.BackgroundColor.G, segment.BackgroundColor.B)
                         : (Color?)null;
                     AppendStyledTextTo(output, segment.Text, fg, bg);
@@ -147,7 +147,7 @@ public partial class MainWindow : Window
                 var avaloniaColor = Color.FromRgb(color.R, color.G, color.B);
                 AppendStyledTextTo(output, text, avaloniaColor);
             }
-            
+
             // Auto-scroll if we have a scroller for this window
             if (_windowScrollers.TryGetValue(windowType, out var scroller))
             {
@@ -155,14 +155,14 @@ public partial class MainWindow : Window
             }
         });
     }
-    
+
     private void OnToggleWindow(object? sender, RoutedEventArgs e)
     {
         if (sender is MenuItem menuItem)
         {
             var isChecked = !menuItem.IsChecked;
             menuItem.IsChecked = isChecked;
-            
+
             // Toggle panel visibility
             if (menuItem == MenuShowRoom)
                 RoomPanel.IsVisible = isChecked;
@@ -191,7 +191,7 @@ public partial class MainWindow : Window
         {
             vhSnapshot = _gameManager.Globals.VolatileHighlights.ToList();
         }
-        
+
         // Marshal to UI thread
         Dispatcher.UIThread.Post(() =>
         {
@@ -202,11 +202,11 @@ public partial class MainWindow : Window
                 foreach (var segment in segments)
                 {
                     var fg = Color.FromRgb(segment.ForegroundColor.R, segment.ForegroundColor.G, segment.ForegroundColor.B);
-                    var bg = segment.BackgroundColor != GenieColor.Transparent 
+                    var bg = segment.BackgroundColor != GenieColor.Transparent
                         ? Color.FromRgb(segment.BackgroundColor.R, segment.BackgroundColor.G, segment.BackgroundColor.B)
                         : (Color?)null;
                     AppendStyledText(segment.Text, fg, bg);
-                    
+
                     // Play sound if specified
                     if (!string.IsNullOrEmpty(segment.SoundFile))
                     {
@@ -327,8 +327,8 @@ public partial class MainWindow : Window
     public void UpdateSpell(string spellName)
     {
         PreparedSpellText.Text = string.IsNullOrEmpty(spellName) ? "None" : spellName;
-        PreparedSpellText.Foreground = string.IsNullOrEmpty(spellName) 
-            ? new SolidColorBrush(Color.Parse("#666")) 
+        PreparedSpellText.Foreground = string.IsNullOrEmpty(spellName)
+            ? new SolidColorBrush(Color.Parse("#666"))
             : new SolidColorBrush(Color.Parse("#a855f7"));
     }
 
@@ -339,7 +339,7 @@ public partial class MainWindow : Window
     {
         var activeColor = new SolidColorBrush(Color.Parse("#f97316")); // Orange
         var inactiveColor = new SolidColorBrush(Color.Parse("#444"));
-        
+
         CompassN.Foreground = n ? activeColor : inactiveColor;
         CompassNE.Foreground = ne ? activeColor : inactiveColor;
         CompassE.Foreground = e ? activeColor : inactiveColor;
@@ -360,13 +360,13 @@ public partial class MainWindow : Window
     {
         // Update tooltip
         ToolTip.SetTip(PositionBorder, position);
-        
+
         // Hide all icons first
         IconStanding.IsVisible = false;
         IconSitting.IsVisible = false;
         IconKneeling.IsVisible = false;
         IconProne.IsVisible = false;
-        
+
         // Show the correct icon
         switch (position)
         {
@@ -391,7 +391,7 @@ public partial class MainWindow : Window
     /// <summary>
     /// Updates status effect visibility.
     /// </summary>
-    public void UpdateStatusEffects(bool hidden = false, bool invisible = false, bool joined = false, 
+    public void UpdateStatusEffects(bool hidden = false, bool invisible = false, bool joined = false,
         bool webbed = false, bool stunned = false, bool bleeding = false, bool dead = false)
     {
         StatusHidden.IsVisible = hidden;
@@ -407,7 +407,7 @@ public partial class MainWindow : Window
     {
         percent = Math.Clamp(percent, 0, 100);
         text.Text = $"{percent}%";
-        
+
         // Use RenderTransform with ScaleX to show percentage
         bar.RenderTransformOrigin = new Avalonia.RelativePoint(0, 0.5, Avalonia.RelativeUnit.Relative);
         bar.RenderTransform = new ScaleTransform(percent / 100.0, 1.0);
@@ -426,14 +426,14 @@ public partial class MainWindow : Window
             _maxRoundtime = seconds;
 
         RoundtimeText.Text = seconds.ToString();
-        RoundtimeText.Foreground = seconds > 0 
-            ? new SolidColorBrush(Color.Parse("#ef4444")) 
+        RoundtimeText.Foreground = seconds > 0
+            ? new SolidColorBrush(Color.Parse("#ef4444"))
             : new SolidColorBrush(Color.Parse("#666"));
 
         // Update progress bar width (70px is the container width)
         double percentage = _maxRoundtime > 0 ? (double)seconds / _maxRoundtime : 0;
         RoundtimeBar.Width = 70 * percentage;
-        
+
         // Reset max when RT hits 0
         if (seconds == 0)
             _maxRoundtime = 1;
@@ -491,18 +491,18 @@ public partial class MainWindow : Window
         AppendText($"Account: {account}\n", Colors.Gray);
         if (!string.IsNullOrEmpty(character))
             AppendText($"Character: {character}\n", Colors.Gray);
-        
+
         StatusText.Text = $"Connecting to {gameCode}...";
         ConnectionStatus.Foreground = new SolidColorBrush(Colors.Yellow);
 
         try
         {
             var connected = await _gameManager!.ConnectAsync(
-                account, 
-                password, 
-                character, 
+                account,
+                password,
+                character,
                 gameCode);
-            
+
             if (!connected)
             {
                 AppendText("Connection failed. Check your credentials and try again.\n", Colors.Red);
@@ -529,7 +529,7 @@ public partial class MainWindow : Window
     }
 
     #region Open Directory Handlers
-    
+
     /// <summary>
     /// Opens a directory in the system's file explorer (cross-platform).
     /// </summary>
@@ -543,7 +543,7 @@ public partial class MainWindow : Window
                 Directory.CreateDirectory(path);
                 AppendText($"Created directory: {path}\n", Colors.Yellow);
             }
-            
+
             // Cross-platform directory opening
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -578,33 +578,33 @@ public partial class MainWindow : Window
             AppendText($"Error opening directory: {ex.Message}\n", Colors.Red);
         }
     }
-    
+
     private void OnOpenGenieDir(object? sender, RoutedEventArgs e)
     {
         OpenDirectory(LocalDirectory.Path);
     }
-    
+
     private void OnOpenScriptsDir(object? sender, RoutedEventArgs e)
     {
-        var dir = _gameManager?.Globals?.Config?.ScriptDir 
+        var dir = _gameManager?.Globals?.Config?.ScriptDir
             ?? Path.Combine(LocalDirectory.Path, "Scripts");
         OpenDirectory(dir);
     }
-    
+
     private void OnOpenMapsDir(object? sender, RoutedEventArgs e)
     {
-        var dir = _gameManager?.Globals?.Config?.MapDir 
+        var dir = _gameManager?.Globals?.Config?.MapDir
             ?? Path.Combine(LocalDirectory.Path, "Maps");
         OpenDirectory(dir);
     }
-    
+
     private void OnOpenPluginsDir(object? sender, RoutedEventArgs e)
     {
-        var dir = _gameManager?.Globals?.Config?.PluginDir 
+        var dir = _gameManager?.Globals?.Config?.PluginDir
             ?? Path.Combine(LocalDirectory.Path, "Plugins");
         OpenDirectory(dir);
     }
-    
+
     private void OnOpenLogsDir(object? sender, RoutedEventArgs e)
     {
         var dir = _gameManager?.Globals?.Config?.sLogDir;
@@ -614,24 +614,24 @@ public partial class MainWindow : Window
         }
         OpenDirectory(dir);
     }
-    
+
     private void OnOpenArtDir(object? sender, RoutedEventArgs e)
     {
-        var dir = _gameManager?.Globals?.Config?.ArtDir 
+        var dir = _gameManager?.Globals?.Config?.ArtDir
             ?? Path.Combine(LocalDirectory.Path, "Art");
         OpenDirectory(dir);
     }
-    
+
     #endregion
 
     private async void OnUpdateMaps(object? sender, RoutedEventArgs e)
     {
         // Determine the maps directory
         var mapDir = Path.Combine(LocalDirectory.Path, "Maps");
-        
+
         AppendText($"Updating Maps to {mapDir}...\n", Colors.Yellow);
         StatusText.Text = "Updating maps...";
-        
+
         try
         {
             var result = await Updater.UpdateMaps(mapDir);
@@ -657,10 +657,10 @@ public partial class MainWindow : Window
     {
         // Determine the plugins directory
         var pluginDir = Path.Combine(LocalDirectory.Path, "Plugins");
-        
+
         AppendText($"Updating Plugins to {pluginDir}...\n", Colors.Yellow);
         StatusText.Text = "Updating plugins...";
-        
+
         try
         {
             var result = await Updater.UpdatePlugins(pluginDir);
@@ -688,14 +688,14 @@ public partial class MainWindow : Window
         {
             // Send the movement command
             _gameManager?.SendCommand(direction);
-            
+
             // Echo to show it was sent
             AppendText($"> {direction}\n", Colors.Cyan);
         }
     }
 
     #region Script Handlers
-    
+
     private void OnScriptStarted(ScriptInfo info)
     {
         Dispatcher.UIThread.Post(() =>
@@ -703,7 +703,7 @@ public partial class MainWindow : Window
             UpdateScriptToolbar();
         });
     }
-    
+
     private void OnScriptStopped(ScriptInfo info)
     {
         Dispatcher.UIThread.Post(() =>
@@ -711,7 +711,7 @@ public partial class MainWindow : Window
             UpdateScriptToolbar();
         });
     }
-    
+
     private void OnScriptOutput(string message, bool isError)
     {
         Dispatcher.UIThread.Post(() =>
@@ -720,14 +720,14 @@ public partial class MainWindow : Window
             AppendText(message + "\n", color);
         });
     }
-    
+
     private void UpdateScriptToolbar()
     {
         var scripts = _gameManager?.ScriptManager?.GetRunningScripts();
         var hasScripts = scripts != null && scripts.Count > 0;
-        
+
         ScriptToolbar.IsVisible = hasScripts;
-        
+
         if (hasScripts)
         {
             ScriptButtons.ItemsSource = scripts;
@@ -737,7 +737,7 @@ public partial class MainWindow : Window
             ScriptButtons.ItemsSource = null;
         }
     }
-    
+
     private async void OnShowScriptExplorer(object? sender, RoutedEventArgs e)
     {
         await ScriptExplorerDialog.ShowDialog(this, _gameManager?.ScriptManager, scriptPath =>
@@ -746,42 +746,42 @@ public partial class MainWindow : Window
             UpdateScriptToolbar();
         });
     }
-    
+
     private async void OnShowAliases(object? sender, RoutedEventArgs e)
     {
         await AliasesDialog.ShowDialog(this, _gameManager?.Globals?.AliasList);
     }
-    
+
     private async void OnShowMacros(object? sender, RoutedEventArgs e)
     {
         // TODO: Create MacrosDialog
         AppendText("[Macros dialog not yet implemented]\n", Colors.Yellow);
     }
-    
+
     private async void OnShowTriggers(object? sender, RoutedEventArgs e)
     {
         // TODO: Create TriggersDialog
         AppendText("[Triggers dialog not yet implemented]\n", Colors.Yellow);
     }
-    
+
     private void OnAbortAllScripts(object? sender, RoutedEventArgs e)
     {
         _gameManager?.AbortScript(null);
         UpdateScriptToolbar();
     }
-    
+
     private void OnPauseAllScripts(object? sender, RoutedEventArgs e)
     {
         _gameManager?.PauseScript(null);
         UpdateScriptToolbar();
     }
-    
+
     private void OnResumeAllScripts(object? sender, RoutedEventArgs e)
     {
         _gameManager?.ResumeScript(null);
         UpdateScriptToolbar();
     }
-    
+
     private void OnScriptButtonClick(object? sender, PointerPressedEventArgs e)
     {
         // Toggle pause/resume on click
@@ -791,7 +791,7 @@ public partial class MainWindow : Window
             UpdateScriptToolbar();
         }
     }
-    
+
     private void OnScriptAbortClick(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is ScriptInfo info)
@@ -800,7 +800,7 @@ public partial class MainWindow : Window
             UpdateScriptToolbar();
         }
     }
-    
+
     #endregion
 
     private void OnCommandKeyDown(object? sender, KeyEventArgs e)
@@ -812,7 +812,7 @@ public partial class MainWindow : Window
             {
                 // Echo the command
                 AppendText($"> {command}\n", Colors.Cyan);
-                
+
                 // Check for script commands first (start with .)
                 if (command.StartsWith("."))
                 {
@@ -825,7 +825,7 @@ public partial class MainWindow : Window
                     e.Handled = true;
                     return;
                 }
-                
+
                 // Check for script control commands
                 if (command.Equals("#abort", StringComparison.OrdinalIgnoreCase) ||
                     command.Equals("#stop", StringComparison.OrdinalIgnoreCase))
@@ -836,7 +836,7 @@ public partial class MainWindow : Window
                     e.Handled = true;
                     return;
                 }
-                
+
                 if (command.StartsWith("#abort ", StringComparison.OrdinalIgnoreCase) ||
                     command.StartsWith("#stop ", StringComparison.OrdinalIgnoreCase))
                 {
@@ -847,7 +847,7 @@ public partial class MainWindow : Window
                     e.Handled = true;
                     return;
                 }
-                
+
                 if (command.Equals("#pause", StringComparison.OrdinalIgnoreCase))
                 {
                     _gameManager?.PauseScript(null);
@@ -856,7 +856,7 @@ public partial class MainWindow : Window
                     e.Handled = true;
                     return;
                 }
-                
+
                 if (command.StartsWith("#pause ", StringComparison.OrdinalIgnoreCase))
                 {
                     var scriptName = command.Split(' ', 2)[1];
@@ -866,7 +866,7 @@ public partial class MainWindow : Window
                     e.Handled = true;
                     return;
                 }
-                
+
                 if (command.Equals("#resume", StringComparison.OrdinalIgnoreCase) ||
                     command.Equals("#unpause", StringComparison.OrdinalIgnoreCase))
                 {
@@ -876,7 +876,7 @@ public partial class MainWindow : Window
                     e.Handled = true;
                     return;
                 }
-                
+
                 if (command.StartsWith("#resume ", StringComparison.OrdinalIgnoreCase) ||
                     command.StartsWith("#unpause ", StringComparison.OrdinalIgnoreCase))
                 {
@@ -887,7 +887,7 @@ public partial class MainWindow : Window
                     e.Handled = true;
                     return;
                 }
-                
+
                 if (command.Equals("#scripts", StringComparison.OrdinalIgnoreCase))
                 {
                     var scripts = _gameManager?.ScriptManager?.GetRunningScripts();
@@ -908,7 +908,7 @@ public partial class MainWindow : Window
                     e.Handled = true;
                     return;
                 }
-                
+
                 // Check for local commands first
                 if (command.Equals("test", StringComparison.OrdinalIgnoreCase))
                 {
@@ -967,7 +967,7 @@ public partial class MainWindow : Window
                 {
                     AppendText($"Not connected. Use File → Connect to connect to a game server.\n", Colors.Gray);
                 }
-                
+
                 CommandInput.Text = "";
             }
             e.Handled = true;
@@ -991,16 +991,16 @@ public partial class MainWindow : Window
     {
         EnsureHighlightProcessor();
         var globals = _gameManager?.Globals;
-        
+
         if (globals?.HighlightList == null)
         {
             AppendText("Highlights not initialized. Connect to game first or use #highlight to add test patterns.\n", Colors.Yellow);
             return;
         }
-        
+
         AppendText("Highlight System Info:\n", Colors.White);
         AppendText($"  String highlights: {globals.HighlightList.Count}\n", Colors.Gray);
-        
+
         if (globals.HighlightList.Count > 0)
         {
             AppendText("\nDefined Highlights:\n", Colors.LightGreen);
@@ -1015,7 +1015,7 @@ public partial class MainWindow : Window
                 }
             }
         }
-        
+
         AppendText("\nTest highlight with: #highlight <pattern> <color>\n", Colors.Gray);
         AppendText("Example: #highlight dragon red\n", Colors.Gray);
         AppendText("Example: #highlight treasure gold\n", Colors.Gray);
@@ -1030,17 +1030,17 @@ public partial class MainWindow : Window
             AppendText("Usage: #highlight <pattern> <color>\n", Colors.Yellow);
             return;
         }
-        
+
         var pattern = parts[1];
         var colorName = parts[2];
-        
+
         var globals = _gameManager?.Globals;
         if (globals?.HighlightList == null)
         {
             // Need to initialize globals first
             AppendText("Initializing highlight system...\n", Colors.Gray);
             _ = _gameManager?.ConnectAsync("", "", "", ""); // Trigger init
-            
+
             // Wait a bit for initialization
             System.Threading.Tasks.Task.Delay(500).ContinueWith(_ =>
             {
@@ -1058,22 +1058,23 @@ public partial class MainWindow : Window
             });
             return;
         }
-        
+
         DoAddHighlight(pattern, colorName);
     }
 
     private void DoAddHighlight(string pattern, string colorName)
     {
         var globals = _gameManager?.Globals;
-        if (globals?.HighlightList == null) return;
-        
+        if (globals?.HighlightList == null)
+            return;
+
         // Add the highlight
         globals.HighlightList.Add(pattern, false, colorName);
         globals.HighlightList.RebuildStringIndex();
-        
+
         // Recreate the highlight processor to pick up changes
         _highlightProcessor = new HighlightProcessor(globals);
-        
+
         var color = ColorCode.StringToGenieColor(colorName);
         var fg = Color.FromRgb(color.R, color.G, color.B);
         AppendText("Added highlight: ", Colors.Gray);
@@ -1088,18 +1089,18 @@ public partial class MainWindow : Window
     private void EchoWithHighlights(string text)
     {
         EnsureHighlightProcessor();
-        
+
         // Use default colors for echo
         var defaultFg = GenieColor.FromRgb(201, 209, 217); // #c9d1d9
         var defaultBg = GenieColor.Transparent;
-        
+
         if (_highlightProcessor != null)
         {
             var segments = _highlightProcessor.Process(text, defaultFg, defaultBg);
             foreach (var segment in segments)
             {
                 var fg = Color.FromRgb(segment.ForegroundColor.R, segment.ForegroundColor.G, segment.ForegroundColor.B);
-                var bg = segment.BackgroundColor != GenieColor.Transparent 
+                var bg = segment.BackgroundColor != GenieColor.Transparent
                     ? Color.FromRgb(segment.BackgroundColor.R, segment.BackgroundColor.G, segment.BackgroundColor.B)
                     : (Color?)null;
                 AppendStyledText(segment.Text, fg, bg);
@@ -1116,18 +1117,19 @@ public partial class MainWindow : Window
     /// </summary>
     private void AppendStyledTextTo(SelectableTextBlock output, string text, Color foreground, Color? background = null)
     {
-        if (string.IsNullOrEmpty(text)) return;
-        
+        if (string.IsNullOrEmpty(text))
+            return;
+
         var run = new Run(text)
         {
             Foreground = new SolidColorBrush(foreground)
         };
-        
+
         if (background.HasValue)
         {
             run.Background = new SolidColorBrush(background.Value);
         }
-        
+
         output.Inlines?.Add(run);
     }
 
@@ -1155,7 +1157,7 @@ public partial class MainWindow : Window
     {
         GameOutput.Inlines?.Clear();
     }
-    
+
     /// <summary>
     /// Clears a specific window's output.
     /// </summary>

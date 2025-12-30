@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -115,69 +115,69 @@ namespace GenieClient.Mapper
             switch (dir)
             {
                 case Direction.North:
-                    {
-                        oPoint3D.Offset(0, -distance);
-                        break;
-                    }
+                {
+                    oPoint3D.Offset(0, -distance);
+                    break;
+                }
 
                 case Direction.NorthEast:
-                    {
-                        oPoint3D.Offset(distance, -distance);
-                        break;
-                    }
+                {
+                    oPoint3D.Offset(distance, -distance);
+                    break;
+                }
 
                 case Direction.East:
-                    {
-                        oPoint3D.Offset(distance, 0);
-                        break;
-                    }
+                {
+                    oPoint3D.Offset(distance, 0);
+                    break;
+                }
 
                 case Direction.SouthEast:
-                    {
-                        oPoint3D.Offset(distance, distance);
-                        break;
-                    }
+                {
+                    oPoint3D.Offset(distance, distance);
+                    break;
+                }
 
                 case Direction.South:
-                    {
-                        oPoint3D.Offset(0, distance);
-                        break;
-                    }
+                {
+                    oPoint3D.Offset(0, distance);
+                    break;
+                }
 
                 case Direction.SouthWest:
-                    {
-                        oPoint3D.Offset(-distance, distance);
-                        break;
-                    }
+                {
+                    oPoint3D.Offset(-distance, distance);
+                    break;
+                }
 
                 case Direction.West:
-                    {
-                        oPoint3D.Offset(-distance, 0);
-                        break;
-                    }
+                {
+                    oPoint3D.Offset(-distance, 0);
+                    break;
+                }
 
                 case Direction.NorthWest:
-                    {
-                        oPoint3D.Offset(-distance, -distance);
-                        break;
-                    }
+                {
+                    oPoint3D.Offset(-distance, -distance);
+                    break;
+                }
 
                 case Direction.Up:
-                    {
-                        oPoint3D.Offset(0, -distance); // 1
-                        break;
-                    }
+                {
+                    oPoint3D.Offset(0, -distance); // 1
+                    break;
+                }
 
                 case Direction.Down:
-                    {
-                        oPoint3D.Offset(0, distance); // -1
-                        break;
-                    }
+                {
+                    oPoint3D.Offset(0, distance); // -1
+                    break;
+                }
 
                 default:
-                    {
-                        return;
-                    }
+                {
+                    return;
+                }
             }
 
             Offset(oPoint3D);
@@ -208,6 +208,11 @@ namespace GenieClient.Mapper
             }
 
             return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -294,6 +299,11 @@ namespace GenieClient.Mapper
             }
 
             return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -457,54 +467,54 @@ namespace GenieClient.Mapper
             switch (dir)
             {
                 case Direction.North:
-                    {
-                        return Direction.South;
-                    }
+                {
+                    return Direction.South;
+                }
 
                 case Direction.NorthEast:
-                    {
-                        return Direction.SouthWest;
-                    }
+                {
+                    return Direction.SouthWest;
+                }
 
                 case Direction.East:
-                    {
-                        return Direction.West;
-                    }
+                {
+                    return Direction.West;
+                }
 
                 case Direction.SouthEast:
-                    {
-                        return Direction.NorthWest;
-                    }
+                {
+                    return Direction.NorthWest;
+                }
 
                 case Direction.South:
-                    {
-                        return Direction.North;
-                    }
+                {
+                    return Direction.North;
+                }
 
                 case Direction.SouthWest:
-                    {
-                        return Direction.NorthEast;
-                    }
+                {
+                    return Direction.NorthEast;
+                }
 
                 case Direction.West:
-                    {
-                        return Direction.East;
-                    }
+                {
+                    return Direction.East;
+                }
 
                 case Direction.NorthWest:
-                    {
-                        return Direction.SouthEast;
-                    }
+                {
+                    return Direction.SouthEast;
+                }
 
                 case Direction.Up:
-                    {
-                        return Direction.Down;
-                    }
+                {
+                    return Direction.Down;
+                }
 
                 case Direction.Down:
-                    {
-                        return Direction.Up;
-                    }
+                {
+                    return Direction.Up;
+                }
             }
 
             return default;
@@ -522,9 +532,9 @@ namespace GenieClient.Mapper
                 case Direction.SouthWest:
                 case Direction.West:
                 case Direction.NorthWest:
-                    {
-                        return true;
-                    }
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -946,6 +956,11 @@ namespace GenieClient.Mapper
             {
                 return -1;
             }
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -1425,76 +1440,76 @@ namespace GenieClient.Mapper
                                 switch (switchExpr)
                                 {
                                     case Direction.North:
-                                        {
-                                            m_PathList.Insert(0, "n");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "n");
+                                        break;
+                                    }
 
                                     case Direction.NorthEast:
-                                        {
-                                            m_PathList.Insert(0, "ne");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "ne");
+                                        break;
+                                    }
 
                                     case Direction.East:
-                                        {
-                                            m_PathList.Insert(0, "e");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "e");
+                                        break;
+                                    }
 
                                     case Direction.SouthEast:
-                                        {
-                                            m_PathList.Insert(0, "se");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "se");
+                                        break;
+                                    }
 
                                     case Direction.South:
-                                        {
-                                            m_PathList.Insert(0, "s");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "s");
+                                        break;
+                                    }
 
                                     case Direction.SouthWest:
-                                        {
-                                            m_PathList.Insert(0, "sw");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "sw");
+                                        break;
+                                    }
 
                                     case Direction.West:
-                                        {
-                                            m_PathList.Insert(0, "w");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "w");
+                                        break;
+                                    }
 
                                     case Direction.NorthWest:
-                                        {
-                                            m_PathList.Insert(0, "nw");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "nw");
+                                        break;
+                                    }
 
                                     case Direction.Up:
-                                        {
-                                            m_PathList.Insert(0, "u");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "u");
+                                        break;
+                                    }
 
                                     case Direction.Down:
-                                        {
-                                            m_PathList.Insert(0, "d");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "d");
+                                        break;
+                                    }
 
                                     case Direction.Out:
-                                        {
-                                            m_PathList.Insert(0, "out");
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, "out");
+                                        break;
+                                    }
 
                                     default:
-                                        {
-                                            m_PathList.Insert(0, a.Move);
-                                            break;
-                                        }
+                                    {
+                                        m_PathList.Insert(0, a.Move);
+                                        break;
+                                    }
                                 }
                             }
 

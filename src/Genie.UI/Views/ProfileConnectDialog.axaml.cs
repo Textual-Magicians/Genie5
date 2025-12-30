@@ -18,7 +18,7 @@ public partial class ProfileConnectDialog : Window
     {
         InitializeComponent();
         _profileManager = new ProfileManager();
-        
+
         // Load profiles when dialog opens
         Opened += async (s, e) => await LoadProfilesAsync();
     }
@@ -27,7 +27,7 @@ public partial class ProfileConnectDialog : Window
     {
         await _profileManager.LoadAsync();
         ProfileListBox.ItemsSource = _profileManager.Profiles;
-        
+
         // Select the first profile if available
         if (_profileManager.Profiles.Count > 0)
         {
@@ -78,7 +78,7 @@ public partial class ProfileConnectDialog : Window
             _selectedProfile = null;
             ProfileListBox.ItemsSource = null;
             ProfileListBox.ItemsSource = _profileManager.Profiles;
-            
+
             ConnectButton.IsEnabled = false;
             DeleteButton.IsEnabled = false;
         }
@@ -101,7 +101,7 @@ public partial class ProfileConnectDialog : Window
     {
         if (_selectedProfile == null || string.IsNullOrEmpty(_selectedProfile.EncryptedPassword))
             return null;
-        
+
         return ProfileManager.DecryptPassword(_selectedProfile.EncryptedPassword, _selectedProfile.Account);
     }
 }

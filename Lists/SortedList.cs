@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Threading;
 
@@ -12,7 +12,7 @@ namespace GenieClient.Genie.Collections
         {
             try
             {
-                if(m_oRWLock.IsWriteLockHeld | m_oRWLock.IsReadLockHeld)
+                if (m_oRWLock.IsWriteLockHeld | m_oRWLock.IsReadLockHeld)
                 {
                     return false;
                 }
@@ -33,7 +33,7 @@ namespace GenieClient.Genie.Collections
                 }
                 return m_oRWLock.TryEnterReadLock(500);
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -59,7 +59,7 @@ namespace GenieClient.Genie.Collections
                 m_oRWLock.ExitReadLock();
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }

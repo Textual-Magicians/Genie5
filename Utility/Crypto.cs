@@ -160,14 +160,14 @@ namespace GenieClient
                     case Algorithm.SHA256:
                     case Algorithm.SHA384:
                     case Algorithm.SHA512:
-                        {
-                            return true;
-                        }
+                    {
+                        return true;
+                    }
 
                     default:
-                        {
-                            return false;
-                        }
+                    {
+                        return false;
+                    }
                 }
             }
         }
@@ -232,9 +232,9 @@ namespace GenieClient
                 fs.Dispose();
                 File.Delete(Target);
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 _exception = new CryptographicException(ERR_FILE_WRITE);
                 return false;
@@ -246,9 +246,9 @@ namespace GenieClient
             {
                 inStream = File.ReadAllBytes(Filename);
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 _exception = new CryptographicException(ERR_FILE_READ);
                 return false;
@@ -300,9 +300,9 @@ namespace GenieClient
                 fs.Dispose();
                 File.Delete(Target);
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 _exception = new CryptographicException(ERR_FILE_WRITE);
                 return false;
@@ -314,9 +314,9 @@ namespace GenieClient
             {
                 inStream = File.ReadAllBytes(Filename);
             }
-            #pragma warning disable CS0168
+#pragma warning disable CS0168
             catch (Exception ex)
-            #pragma warning restore CS0168
+#pragma warning restore CS0168
             {
                 _exception = new CryptographicException(ERR_FILE_READ);
                 return false;
@@ -359,40 +359,40 @@ namespace GenieClient
             switch (switchExpr)
             {
                 case Algorithm.SHA1:
-                    {
-                        hashAlgorithm = new SHA1CryptoServiceProvider();
-                        break;
-                    }
+                {
+                    hashAlgorithm = new SHA1CryptoServiceProvider();
+                    break;
+                }
 
                 case Algorithm.SHA256:
-                    {
-                        hashAlgorithm = new SHA256Managed();
-                        break;
-                    }
+                {
+                    hashAlgorithm = new SHA256Managed();
+                    break;
+                }
 
                 case Algorithm.SHA384:
-                    {
-                        hashAlgorithm = new SHA384Managed();
-                        break;
-                    }
+                {
+                    hashAlgorithm = new SHA384Managed();
+                    break;
+                }
 
                 case Algorithm.SHA512:
-                    {
-                        hashAlgorithm = new SHA512Managed();
-                        break;
-                    }
+                {
+                    hashAlgorithm = new SHA512Managed();
+                    break;
+                }
 
                 case Algorithm.MD5:
-                    {
-                        hashAlgorithm = new MD5CryptoServiceProvider();
-                        break;
-                    }
+                {
+                    hashAlgorithm = new MD5CryptoServiceProvider();
+                    break;
+                }
 
                 default:
-                    {
-                        _exception = new CryptographicException(ERR_INVALID_PROVIDER);
-                        break;
-                    }
+                {
+                    _exception = new CryptographicException(ERR_INVALID_PROVIDER);
+                    break;
+                }
             }
 
             try
@@ -459,8 +459,14 @@ namespace GenieClient
                     cipherBytes = RSAEncrypt(Content);
                 }
                 catch (CryptographicException ex)
-                {
+<<<<<<< TODO: Unmerged change from project 'Genie.Core(net10.0-windows)', Before:
                     throw ex;
+=======
+                    throw;
+>>>>>>> After
+
+                {
+                    throw;
                 }
             }
             else
@@ -470,37 +476,37 @@ namespace GenieClient
                 switch (switchExpr)
                 {
                     case Algorithm.DES:
-                        {
-                            provider = new DESCryptoServiceProvider();
-                            NumBytes = (int)KeySize.DES;
-                            break;
-                        }
+                    {
+                        provider = new DESCryptoServiceProvider();
+                        NumBytes = (int)KeySize.DES;
+                        break;
+                    }
 
                     case Algorithm.TripleDES:
-                        {
-                            provider = new TripleDESCryptoServiceProvider();
-                            NumBytes = (int)KeySize.TripleDES;
-                            break;
-                        }
+                    {
+                        provider = new TripleDESCryptoServiceProvider();
+                        NumBytes = (int)KeySize.TripleDES;
+                        break;
+                    }
 
                     case Algorithm.Rijndael:
-                        {
-                            provider = new RijndaelManaged();
-                            NumBytes = (int)KeySize.AES;
-                            break;
-                        }
+                    {
+                        provider = new RijndaelManaged();
+                        NumBytes = (int)KeySize.AES;
+                        break;
+                    }
 
                     case Algorithm.RC2:
-                        {
-                            provider = new RC2CryptoServiceProvider();
-                            NumBytes = (int)KeySize.RC2;
-                            break;
-                        }
+                    {
+                        provider = new RC2CryptoServiceProvider();
+                        NumBytes = (int)KeySize.RC2;
+                        break;
+                    }
 
                     default:
-                        {
-                            throw new CryptographicException(ERR_INVALID_PROVIDER);
-                        }
+                    {
+                        throw new CryptographicException(ERR_INVALID_PROVIDER);
+                    }
                 }
 
                 try
@@ -560,8 +566,14 @@ namespace GenieClient
                     clearBytes = RSADecrypt(encText);
                 }
                 catch (CryptographicException ex)
-                {
+<<<<<<< TODO: Unmerged change from project 'Genie.Core(net10.0-windows)', Before:
                     throw ex;
+=======
+                    throw;
+>>>>>>> After
+
+                {
+                    throw;
                 }
             }
             else
@@ -571,37 +583,37 @@ namespace GenieClient
                 switch (switchExpr)
                 {
                     case Algorithm.DES:
-                        {
-                            provider = new DESCryptoServiceProvider();
-                            NumBytes = (int)KeySize.DES;
-                            break;
-                        }
+                    {
+                        provider = new DESCryptoServiceProvider();
+                        NumBytes = (int)KeySize.DES;
+                        break;
+                    }
 
                     case Algorithm.TripleDES:
-                        {
-                            provider = new TripleDESCryptoServiceProvider();
-                            NumBytes = (int)KeySize.TripleDES;
-                            break;
-                        }
+                    {
+                        provider = new TripleDESCryptoServiceProvider();
+                        NumBytes = (int)KeySize.TripleDES;
+                        break;
+                    }
 
                     case Algorithm.Rijndael:
-                        {
-                            provider = new RijndaelManaged();
-                            NumBytes = (int)KeySize.AES;
-                            break;
-                        }
+                    {
+                        provider = new RijndaelManaged();
+                        NumBytes = (int)KeySize.AES;
+                        break;
+                    }
 
                     case Algorithm.RC2:
-                        {
-                            provider = new RC2CryptoServiceProvider();
-                            NumBytes = (int)KeySize.RC2;
-                            break;
-                        }
+                    {
+                        provider = new RC2CryptoServiceProvider();
+                        NumBytes = (int)KeySize.RC2;
+                        break;
+                    }
 
                     default:
-                        {
-                            throw new CryptographicException(ERR_INVALID_PROVIDER);
-                        }
+                    {
+                        throw new CryptographicException(ERR_INVALID_PROVIDER);
+                    }
                 }
 
                 try
@@ -609,8 +621,14 @@ namespace GenieClient
                     clearBytes = SymmetricDecrypt(provider, encText, _key, NumBytes);
                 }
                 catch (CryptographicException ex)
-                {
+<<<<<<< TODO: Unmerged change from project 'Genie.Core(net10.0-windows)', Before:
                     throw ex;
+=======
+                    throw;
+>>>>>>> After
+
+                {
+                    throw;
                 }
                 finally
                 {
@@ -644,34 +662,34 @@ namespace GenieClient
             switch (switchExpr)
             {
                 case 8:
-                    {
-                        ivBytes = IV_8;
-                        break;
-                    }
+                {
+                    ivBytes = IV_8;
+                    break;
+                }
 
                 case 16:
-                    {
-                        ivBytes = IV_16;
-                        break;
-                    }
+                {
+                    ivBytes = IV_16;
+                    break;
+                }
 
                 case 24:
-                    {
-                        ivBytes = IV_24;
-                        break;
-                    }
+                {
+                    ivBytes = IV_24;
+                    break;
+                }
 
                 case 32:
-                    {
-                        ivBytes = IV_32;
-                        break;
-                    }
+                {
+                    ivBytes = IV_32;
+                    break;
+                }
 
                 default:
-                    {
-                        break;
-                    }
-                    // TODO: Throw an error because an invalid key length has been passed
+                {
+                    break;
+                }
+                // TODO: Throw an error because an invalid key length has been passed
             }
 
             Provider.KeySize = keySize;
@@ -699,34 +717,34 @@ namespace GenieClient
             switch (switchExpr)
             {
                 case 8:
-                    {
-                        ivBytes = IV_8;
-                        break;
-                    }
+                {
+                    ivBytes = IV_8;
+                    break;
+                }
 
                 case 16:
-                    {
-                        ivBytes = IV_16;
-                        break;
-                    }
+                {
+                    ivBytes = IV_16;
+                    break;
+                }
 
                 case 24:
-                    {
-                        ivBytes = IV_24;
-                        break;
-                    }
+                {
+                    ivBytes = IV_24;
+                    break;
+                }
 
                 case 32:
-                    {
-                        ivBytes = IV_32;
-                        break;
-                    }
+                {
+                    ivBytes = IV_32;
+                    break;
+                }
 
                 default:
-                    {
-                        break;
-                    }
-                    // TODO: Throw an error because an invalid key length has been passed
+                {
+                    break;
+                }
+                // TODO: Throw an error because an invalid key length has been passed
             }
 
             // Generate a secure key based on the original password by using SALT
