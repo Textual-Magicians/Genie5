@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using GenieClient.Genie;
 using System;
@@ -226,25 +227,26 @@ public partial class AliasesDialog : Window
 
     private async void OnImportClick(object? sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog
+        var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Import Aliases",
-            Filters = new List<FileDialogFilter>
+            AllowMultiple = false,
+            FileTypeFilter = new[]
             {
-                new FileDialogFilter { Name = "Config Files", Extensions = { "cfg" } },
-                new FileDialogFilter { Name = "All Files", Extensions = { "*" } }
+                new FilePickerFileType("Config Files") { Patterns = new[] { "*.cfg" } },
+                new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
             }
-        };
+        });
 
-        var result = await dialog.ShowAsync(this);
-        if (result != null && result.Length > 0)
+        if (files.Count > 0)
         {
+            var filePath = files[0].Path.LocalPath;
             try
             {
-                _aliasList?.Load(result[0]);
+                _aliasList?.Load(filePath);
                 LoadAliases();
                 _hasUnsavedChanges = true;
-                _statusText.Text = $"✅ Imported from {System.IO.Path.GetFileName(result[0])}";
+                _statusText.Text = $"✅ Imported from {System.IO.Path.GetFileName(filePath)}";
                 _statusText.Foreground = Avalonia.Media.Brushes.LightGreen;
             }
             catch (Exception ex)
