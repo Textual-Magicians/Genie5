@@ -40,7 +40,7 @@
     <br />
     🖥️ <strong>Classic</strong> (Windows Forms) - Full-featured, Windows-only
     <br />
-    🌐 <strong>Cross-Platform</strong> (Avalonia UI) - Works on Windows, macOS, and Linux
+    🍎🐧 <strong>Cross-Platform</strong> (Avalonia UI) - <strong>Now runs on macOS and Linux!</strong>
   </p>
 </div>
 
@@ -120,20 +120,25 @@
   - [x] Game server connection
   - [x] Highlights system
   - [x] Multiple windows (Room, Inventory, Thoughts)
+  - [x] Script Explorer (run, stop, view scripts)
+  - [x] Aliases configuration dialog
+  - [x] Preferences dialog
 
 ### In Progress 🚧
 - [ ] Cross-Platform UI - Advanced Features
-  - [ ] Script management
-  - [ ] Configuration dialogs
-  - [ ] Auto-mapper
+  - [x] Script management ✅
+  - [x] Aliases configuration ✅
+  - [ ] Auto-mapper (UI started, integration pending)
   - [ ] Command history
-  - [ ] Macros and aliases
+  - [ ] Macros configuration
+  - [ ] Triggers configuration
+  - [ ] Highlights configuration
 - [ ] Upgrade Plugin Interface
 
 ### Future 📋
 - [ ] Get Latest Version (OneButton) <AInstallLogo>
     <img src="https://cdn.advancedinstaller.com/svg/pressinfo/AiLogoColor.svg" width="70" height="40"></AInstallLogo>
-- [ ] Native installers for macOS and Linux
+- [ ] Native installers (.dmg for macOS, .deb/.rpm for Linux)
 
 
 See the [open issues](https://github.com/GenieClient/Genie4/issues) for a full list of proposed features (and known issues).
@@ -272,19 +277,22 @@ Project Link: [https://github.com/GenieClient/Genie4](https://github.com/GenieCl
 
 | Feature | Classic (Windows Forms) | Cross-Platform (Avalonia) |
 |---------|------------------------|---------------------------|
-| **Platforms** | Windows only | Windows, macOS, Linux |
-| **Maturity** | Full-featured, stable | In development |
-| **Auto-Mapper** | ✅ Yes | ⏳ Coming soon |
-| **Script Manager** | ✅ Yes | ⏳ Coming soon |
-| **Config Dialogs** | ✅ Yes | ⏳ Coming soon |
-| **Plugins** | ✅ Yes | ⏳ Coming soon |
+| **Platforms** | Windows only | ✅ Windows, ✅ macOS, ✅ Linux |
+| **Maturity** | Full-featured, stable | Actively developed |
 | **Game Connection** | ✅ Yes | ✅ Yes |
 | **Highlights** | ✅ Yes | ✅ Yes |
 | **Multiple Windows** | ✅ Yes | ✅ Yes |
+| **Script Explorer** | ✅ Yes | ✅ Yes |
+| **Aliases Config** | ✅ Yes | ✅ Yes |
+| **Preferences** | ✅ Yes | ✅ Yes |
+| **Auto-Mapper** | ✅ Yes | 🚧 In progress |
+| **Macros Config** | ✅ Yes | ⏳ Coming soon |
+| **Triggers Config** | ✅ Yes | ⏳ Coming soon |
+| **Plugins** | ✅ Yes | ⏳ Coming soon |
 
 **Recommendation:** 
-- Use **Classic** if you're on Windows and need all features now
-- Use **Cross-Platform** if you're on macOS/Linux, or want to try the new UI
+- Use **Classic** if you're on Windows and need all features (auto-mapper, plugins, macros)
+- Use **Cross-Platform** if you're on **macOS or Linux** — it works great! Also available on Windows if you prefer the modern UI
 
 ---
 
@@ -304,7 +312,7 @@ We provide convenient build scripts for both editions:
 
 ### Cross-Platform UI (Avalonia) 🌐
 
-Works on Windows, macOS, and Linux.
+**✅ Works on Windows, macOS, and Linux!** Self-contained builds available for all platforms.
 
 #### Quick Build for Windows (Recommended for Development)
 
@@ -464,11 +472,16 @@ The codebase uses a shared core library with two UI options:
 ```
 Genie5.sln                   # Main solution
 ├── src/
-│   ├── Genie.Core/          # Shared core logic (used by both UIs)
+│   ├── Genie.Core/          # Shared core logic (multi-targeted: net10.0 + net10.0-windows)
 │   │   └── Genie.Core.csproj
 │   ├── Genie.UI/            # Cross-platform Avalonia UI 🌐
+│   │   ├── Views/           # AXAML windows and dialogs
+│   │   ├── Services/        # Game manager, highlight processor
 │   │   └── Genie.UI.csproj
+│   ├── Genie.UI.Tests/      # Unit tests (xUnit)
+│   │   └── Genie.UI.Tests.csproj
 │   └── Genie.Windows/       # Classic Windows Forms UI 🖥️
+│       ├── Services/        # Windows-specific service implementations
 │       └── Genie.Windows.csproj
 └── Plugin/
     └── Plugins.vbproj       # Plugin interfaces (VB.NET)
@@ -484,12 +497,15 @@ Platform-independent business logic used by both UIs:
 
 ### Genie.UI (Cross-Platform Edition) 🌐
 The new cross-platform UI built with Avalonia:
-- **Platforms:** Windows, macOS, Linux
+- **Platforms:** ✅ Windows, ✅ macOS, ✅ Linux (all with working builds!)
 - Modern dark theme interface
 - Game connection and text output
 - Vitals display, compass, status effects
-- Highlights and multiple windows
-- *In active development - more features coming!*
+- Highlights and multiple windows (Room, Inventory, Thoughts, etc.)
+- Script Explorer (run, stop, view scripts)
+- Aliases configuration dialog
+- Preferences dialog
+- *In active development - auto-mapper and more features coming!*
 
 ### Genie.Windows (Classic Edition) 🖥️
 The full-featured Windows-only GUI:
