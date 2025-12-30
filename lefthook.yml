@@ -1,0 +1,22 @@
+# Lefthook configuration for Genie5
+# https://github.com/evilmartians/lefthook
+#
+# Install lefthook: https://github.com/evilmartians/lefthook/blob/master/docs/install.md
+# After cloning, run: lefthook install
+
+pre-commit:
+  parallel: false
+  commands:
+    dotnet-format:
+      glob: "*.{cs,vb}"
+      run: dotnet format --include {staged_files} --verbosity quiet
+      stage_fixed: true
+
+    dotnet-format-analyzers:
+      glob: "*.{cs,vb}"
+      run: dotnet format analyzers --severity warn --verify-no-changes --verbosity quiet
+      fail_text: |
+        
+        ❌ Analyzer warnings found! Run 'dotnet format analyzers --severity warn' to auto-fix,
+           or 'dotnet build' to see the full list of warnings.
+

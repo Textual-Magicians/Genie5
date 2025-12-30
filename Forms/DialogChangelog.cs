@@ -14,6 +14,7 @@ namespace GenieClient
             Close();
         }
 
+        [Obsolete]
         public DialogChangelog()
         {
 

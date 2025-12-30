@@ -216,6 +216,7 @@ namespace GenieClient.Genie
             oGlobals = cl;
         }
 
+        [Obsolete]
         public async Task<string> ParseCommand(string sText, bool bSendToGame = false, bool bUserInput = false, string sOrigin = "", bool bParseQuickSend = true)
         {
             /* TODO ERROR: Skipped IfDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
@@ -390,14 +391,6 @@ namespace GenieClient.Genie
                                     case "connect":
                                     {
                                         Connect(oArgs);
-<<<<<<< TODO: Unmerged change from project 'Genie.Core(net10.0-windows)', Before:
-        }
-=======
-        }
-
-        [Obsolete]
->>>>>>> After
-
                                         break;
                                     }
                                     case "img":
@@ -2882,6 +2875,7 @@ namespace GenieClient.Genie
         // Return sResult
         // End Function
 
+        [Obsolete]
         private string ParseAllArgs(ArrayList oList, int iStartIndex = 1, bool bParseQuickSend = true)
         {
             string sResult = string.Empty;

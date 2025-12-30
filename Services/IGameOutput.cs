@@ -1,3 +1,4 @@
+#nullable enable
 namespace GenieClient.Services
 {
     /// <summary>

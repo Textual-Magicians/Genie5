@@ -778,13 +778,7 @@ namespace GenieClient.Genie
                         {
                             if (sValue.Length > 0)
                             {
-                                sUserActivityCommand = 
-<<<<<<< TODO: Unmerged change from project 'Genie.Core(net10.0-windows)', Before:
-                throw up;
-=======
-                throw;
->>>>>>> After
-sValue;
+                                sUserActivityCommand = sValue;
                             }
 
                             break;

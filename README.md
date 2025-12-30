@@ -67,7 +67,12 @@
     <li><a href="#running-tests">Running Tests</a></li>
     <li><a href="#features">Features</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
+    <li>
+      <a href="#contributing">Contributing</a>
+      <ul>
+        <li><a href="#developer-setup">Developer Setup</a></li>
+      </ul>
+    </li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
@@ -150,6 +155,65 @@ Don't forget to give the project a star! Thanks again!
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+### Developer Setup
+
+#### Code Formatting with Lefthook
+
+This project uses [Lefthook](https://github.com/evilmartians/lefthook) to automatically format code before commits. Lefthook runs `dotnet format` on staged C# and VB files to ensure consistent code style.
+
+**Installing Lefthook:**
+
+| Platform | Command |
+|----------|---------|
+| Windows (Scoop) | `scoop install lefthook` |
+| Windows (Winget) | `winget install evilmartians.lefthook` |
+| macOS (Homebrew) | `brew install lefthook` |
+| Linux (Homebrew) | `brew install lefthook` |
+| npm (any platform) | `npm install -g lefthook` |
+
+See the [official installation docs](https://github.com/evilmartians/lefthook/blob/master/docs/install.md) for more options.
+
+**Setting up Lefthook (after cloning the repo):**
+
+```bash
+lefthook install
+```
+
+This installs the git hooks. Now, whenever you commit, `dotnet format` will automatically run on your staged `.cs` and `.vb` files.
+
+**How it works:**
+
+On each commit, Lefthook runs two checks:
+
+1. **Auto-formatting** (`dotnet format`) - Fixes whitespace, indentation, and code style issues
+   - Fixed files are automatically re-staged
+   - Follows rules in `.editorconfig`
+
+2. **Analyzer warnings** (`dotnet format analyzers`) - Checks for code quality issues
+   - Configured via `Directory.Build.props` and `.editorconfig`
+   - Blocks commit if warnings are found (must be fixed manually or with `dotnet format analyzers`)
+
+**Manual formatting:**
+
+You can also run formatting manually at any time:
+
+```bash
+# Format all files in the solution (style only)
+dotnet format
+
+# Fix analyzer warnings
+dotnet format analyzers --severity warn
+
+# Format specific files
+dotnet format --include src/Genie.UI/
+
+# Check formatting without making changes
+dotnet format --verify-no-changes
+
+# See all warnings during build
+dotnet build
+```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

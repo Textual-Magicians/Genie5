@@ -690,7 +690,6 @@ namespace GenieClient
         }
 
         [Obsolete]
-        [Obsolete]
         public static DateTime AssemblyBuildDate(System.Reflection.Assembly a)
         {
             var AssemblyVersion = a.GetName().Version;

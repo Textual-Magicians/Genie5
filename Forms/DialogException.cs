@@ -14,6 +14,8 @@ namespace GenieClient
         }
 
         const string _whathappened = "There was an unexpected error in Genie. This may be due to a programming bug.";
+
+        [Obsolete]
         public void Show(IWin32Window owner, string details, string whathappened = null, string howaffected = null, string usercando = null)
         {
             const string _howaffected = "Restart Genie, and try repeating your last action. Try alternative methods of performing the same action.";
@@ -54,6 +56,7 @@ namespace GenieClient
             Clipboard.SetText(txtMore.Text.ToString());
         }
 
+        [Obsolete]
         internal static string SysInfoToString()
         {
             var objStringBuilder = new System.Text.StringBuilder();

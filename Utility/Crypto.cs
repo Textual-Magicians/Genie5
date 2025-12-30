@@ -458,13 +458,7 @@ namespace GenieClient
                 {
                     cipherBytes = RSAEncrypt(Content);
                 }
-                catch (CryptographicException ex)
-<<<<<<< TODO: Unmerged change from project 'Genie.Core(net10.0-windows)', Before:
-                    throw ex;
-=======
-                    throw;
->>>>>>> After
-
+                catch (CryptographicException)
                 {
                     throw;
                 }
@@ -565,13 +559,7 @@ namespace GenieClient
                 {
                     clearBytes = RSADecrypt(encText);
                 }
-                catch (CryptographicException ex)
-<<<<<<< TODO: Unmerged change from project 'Genie.Core(net10.0-windows)', Before:
-                    throw ex;
-=======
-                    throw;
->>>>>>> After
-
+                catch (CryptographicException)
                 {
                     throw;
                 }
@@ -620,13 +608,7 @@ namespace GenieClient
                 {
                     clearBytes = SymmetricDecrypt(provider, encText, _key, NumBytes);
                 }
-                catch (CryptographicException ex)
-<<<<<<< TODO: Unmerged change from project 'Genie.Core(net10.0-windows)', Before:
-                    throw ex;
-=======
-                    throw;
->>>>>>> After
-
+                catch (CryptographicException)
                 {
                     throw;
                 }
