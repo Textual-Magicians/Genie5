@@ -46,7 +46,7 @@
                 <MenuItem Header="_Macros..." Click="OnShowMacros"/>
                 <MenuItem Header="_Triggers..." Click="OnShowTriggers"/>
                 <Separator/>
-                <MenuItem Header="_Preferences..."/>
+                <MenuItem Header="_Preferences..." Click="OnShowPreferences"/>
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem x:Name="MenuShowRoom" Header="_Room Window" IsChecked="True" Click="OnToggleWindow"/>

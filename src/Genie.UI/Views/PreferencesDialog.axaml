@@ -1,0 +1,414 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+        x:Class="GenieClient.Views.PreferencesDialog"
+        Title="Preferences"
+        Width="700" Height="600"
+        MinWidth="600" MinHeight="500"
+        WindowStartupLocation="CenterOwner"
+        Background="#1a1a2e"
+        CanResize="True">
+
+    <Grid RowDefinitions="*,Auto">
+        <!-- Main Content with Tabs -->
+        <TabControl Grid.Row="0" Margin="8" Background="#16213e">
+            <TabControl.Styles>
+                <Style Selector="TabItem">
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="Padding" Value="12,8"/>
+                    <Setter Property="Background" Value="#1e3a5f"/>
+                    <Setter Property="Foreground" Value="#a0a0a0"/>
+                </Style>
+                <Style Selector="TabItem:selected">
+                    <Setter Property="Background" Value="#0f3460"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Style>
+            </TabControl.Styles>
+            
+            <!-- General Settings Tab -->
+            <TabItem Header="General">
+                <ScrollViewer Padding="16">
+                    <StackPanel Spacing="16">
+                        <!-- Script Settings -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Script Settings" FontWeight="Bold" Foreground="#3b82f6" FontSize="14"/>
+                                
+                                <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,8,0,0">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Script Character:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="ScriptCharTextBox" 
+                                             MaxLength="1" Width="40" HorizontalAlignment="Left"
+                                             Background="#16213e" Foreground="White"/>
+                                    
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Command Character:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="CommandCharTextBox" 
+                                             MaxLength="1" Width="40" HorizontalAlignment="Left" Margin="0,8,0,0"
+                                             Background="#16213e" Foreground="White"/>
+                                    
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Separator Character:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="SeparatorCharTextBox" 
+                                             MaxLength="1" Width="40" HorizontalAlignment="Left" Margin="0,8,0,0"
+                                             Background="#16213e" Foreground="White"/>
+                                    
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Script Timeout (ms):" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <NumericUpDown Grid.Row="3" Grid.Column="1" x:Name="ScriptTimeoutNumeric" 
+                                                   Minimum="1000" Maximum="60000" Increment="1000" Width="120" 
+                                                   HorizontalAlignment="Left" Margin="0,8,0,0"
+                                                   Background="#16213e" Foreground="White"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Behavior Settings -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Behavior" FontWeight="Bold" Foreground="#3b82f6" FontSize="14"/>
+                                
+                                <StackPanel Margin="0,8,0,0" Spacing="6">
+                                    <CheckBox x:Name="TriggerOnInputCheckBox" Content="Trigger on input" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="AutoLogCheckBox" Content="Auto-log sessions" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="ReconnectCheckBox" Content="Auto-reconnect on disconnect" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="KeepInputCheckBox" Content="Keep input text after sending" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="AbortDupeScriptCheckBox" Content="Abort duplicate scripts" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="PlaySoundsCheckBox" Content="Play sounds" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="ShowSpellTimerCheckBox" Content="Show spell timer" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="ShowLinksCheckBox" Content="Show hyperlinks" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="ShowImagesCheckBox" Content="Show images" 
+                                              Foreground="#e0e0e0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Prompt Settings -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Prompt" FontWeight="Bold" Foreground="#3b82f6" FontSize="14"/>
+                                
+                                <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto,Auto" Margin="0,8,0,0">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Prompt String:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="PromptTextBox" 
+                                             Width="100" HorizontalAlignment="Left"
+                                             Background="#16213e" Foreground="White"/>
+                                    
+                                    <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                                              x:Name="PromptBreakCheckBox" Content="Prompt forces line break" 
+                                              Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    
+                                    <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                              x:Name="CondensedCheckBox" Content="Condensed output (remove extra blank lines)" 
+                                              Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Directories Tab -->
+            <TabItem Header="Directories">
+                <ScrollViewer Padding="16">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Configure where Genie stores and loads files." 
+                                   Foreground="#a0a0a0" FontSize="12" Margin="0,0,0,8"/>
+                        
+                        <!-- Scripts Directory -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <Grid ColumnDefinitions="120,*,Auto">
+                                <TextBlock Grid.Column="0" Text="Scripts:" 
+                                           VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                <TextBox Grid.Column="1" x:Name="ScriptDirTextBox" 
+                                         Background="#16213e" Foreground="White" Margin="0,0,8,0"/>
+                                <Button Grid.Column="2" Content="Browse..." x:Name="BrowseScriptsBtn"
+                                        Click="OnBrowseScripts" Background="#1e3a5f" Foreground="White"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Maps Directory -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <Grid ColumnDefinitions="120,*,Auto">
+                                <TextBlock Grid.Column="0" Text="Maps:" 
+                                           VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                <TextBox Grid.Column="1" x:Name="MapDirTextBox" 
+                                         Background="#16213e" Foreground="White" Margin="0,0,8,0"/>
+                                <Button Grid.Column="2" Content="Browse..." x:Name="BrowseMapsBtn"
+                                        Click="OnBrowseMaps" Background="#1e3a5f" Foreground="White"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Logs Directory -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <Grid ColumnDefinitions="120,*,Auto">
+                                <TextBlock Grid.Column="0" Text="Logs:" 
+                                           VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                <TextBox Grid.Column="1" x:Name="LogDirTextBox" 
+                                         Background="#16213e" Foreground="White" Margin="0,0,8,0"/>
+                                <Button Grid.Column="2" Content="Browse..." x:Name="BrowseLogsBtn"
+                                        Click="OnBrowseLogs" Background="#1e3a5f" Foreground="White"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Sounds Directory -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <Grid ColumnDefinitions="120,*,Auto">
+                                <TextBlock Grid.Column="0" Text="Sounds:" 
+                                           VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                <TextBox Grid.Column="1" x:Name="SoundDirTextBox" 
+                                         Background="#16213e" Foreground="White" Margin="0,0,8,0"/>
+                                <Button Grid.Column="2" Content="Browse..." x:Name="BrowseSoundsBtn"
+                                        Click="OnBrowseSounds" Background="#1e3a5f" Foreground="White"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Plugins Directory -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <Grid ColumnDefinitions="120,*,Auto">
+                                <TextBlock Grid.Column="0" Text="Plugins:" 
+                                           VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                <TextBox Grid.Column="1" x:Name="PluginDirTextBox" 
+                                         Background="#16213e" Foreground="White" Margin="0,0,8,0"/>
+                                <Button Grid.Column="2" Content="Browse..." x:Name="BrowsePluginsBtn"
+                                        Click="OnBrowsePlugins" Background="#1e3a5f" Foreground="White"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Config Directory -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <Grid ColumnDefinitions="120,*,Auto">
+                                <TextBlock Grid.Column="0" Text="Config:" 
+                                           VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                <TextBox Grid.Column="1" x:Name="ConfigDirTextBox" 
+                                         Background="#16213e" Foreground="White" Margin="0,0,8,0"/>
+                                <Button Grid.Column="2" Content="Browse..." x:Name="BrowseConfigBtn"
+                                        Click="OnBrowseConfig" Background="#1e3a5f" Foreground="White"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Art Directory -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <Grid ColumnDefinitions="120,*,Auto">
+                                <TextBlock Grid.Column="0" Text="Art:" 
+                                           VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                <TextBox Grid.Column="1" x:Name="ArtDirTextBox" 
+                                         Background="#16213e" Foreground="White" Margin="0,0,8,0"/>
+                                <Button Grid.Column="2" Content="Browse..." x:Name="BrowseArtBtn"
+                                        Click="OnBrowseArt" Background="#1e3a5f" Foreground="White"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Timeouts Tab -->
+            <TabItem Header="Timeouts">
+                <ScrollViewer Padding="16">
+                    <StackPanel Spacing="16">
+                        <!-- Server Activity Timeout -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Server Activity Timeout" FontWeight="Bold" Foreground="#3b82f6" FontSize="14"/>
+                                <TextBlock Text="Send a command if no server activity for this many seconds (0 to disable)." 
+                                           Foreground="#a0a0a0" FontSize="12" TextWrapping="Wrap"/>
+                                
+                                <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto" Margin="0,8,0,0">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Timeout (seconds):" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                    <NumericUpDown Grid.Row="0" Grid.Column="1" x:Name="ServerTimeoutNumeric" 
+                                                   Minimum="0" Maximum="3600" Increment="30" Width="120" 
+                                                   HorizontalAlignment="Left"
+                                                   Background="#16213e" Foreground="White"/>
+                                    
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Command to send:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="ServerTimeoutCommandTextBox" 
+                                             Width="200" HorizontalAlignment="Left" Margin="0,8,0,0"
+                                             Background="#16213e" Foreground="White"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- User Activity Timeout -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="User Activity Timeout" FontWeight="Bold" Foreground="#3b82f6" FontSize="14"/>
+                                <TextBlock Text="Send a command if no user activity for this many seconds (0 to disable)." 
+                                           Foreground="#a0a0a0" FontSize="12" TextWrapping="Wrap"/>
+                                
+                                <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto" Margin="0,8,0,0">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Timeout (seconds):" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                    <NumericUpDown Grid.Row="0" Grid.Column="1" x:Name="UserTimeoutNumeric" 
+                                                   Minimum="0" Maximum="3600" Increment="30" Width="120" 
+                                                   HorizontalAlignment="Left"
+                                                   Background="#16213e" Foreground="White"/>
+                                    
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Command to send:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="UserTimeoutCommandTextBox" 
+                                             Width="200" HorizontalAlignment="Left" Margin="0,8,0,0"
+                                             Background="#16213e" Foreground="White"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Roundtime Offset -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Roundtime Offset" FontWeight="Bold" Foreground="#3b82f6" FontSize="14"/>
+                                <TextBlock Text="Adjust roundtime display by this many seconds (can be negative)." 
+                                           Foreground="#a0a0a0" FontSize="12" TextWrapping="Wrap"/>
+                                
+                                <Grid ColumnDefinitions="180,*" Margin="0,8,0,0">
+                                    <TextBlock Grid.Column="0" Text="Offset (seconds):" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                    <NumericUpDown Grid.Column="1" x:Name="RoundtimeOffsetNumeric" 
+                                                   Minimum="-10" Maximum="10" Increment="0.5" Width="120" 
+                                                   HorizontalAlignment="Left" FormatString="F1"
+                                                   Background="#16213e" Foreground="White"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Advanced Tab -->
+            <TabItem Header="Advanced">
+                <ScrollViewer Padding="16">
+                    <StackPanel Spacing="16">
+                        <!-- External Applications -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="External Applications" FontWeight="Bold" Foreground="#3b82f6" FontSize="14"/>
+                                
+                                <Grid ColumnDefinitions="120,*" RowDefinitions="Auto" Margin="0,8,0,0">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Text Editor:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="EditorTextBox"
+                                             Background="#16213e" Foreground="White"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Lich Integration (for advanced users) -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Lich Integration" FontWeight="Bold" Foreground="#3b82f6" FontSize="14"/>
+                                <TextBlock Text="Settings for Lich script proxy integration." 
+                                           Foreground="#a0a0a0" FontSize="12"/>
+                                
+                                <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="0,8,0,0">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Ruby Path:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="RubyPathTextBox"
+                                             Background="#16213e" Foreground="White"/>
+                                    
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Lich Path:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="LichPathTextBox"
+                                             Background="#16213e" Foreground="White" Margin="0,8,0,0"/>
+                                    
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Arguments:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="LichArgumentsTextBox"
+                                             Background="#16213e" Foreground="White" Margin="0,8,0,0"/>
+                                    
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Server:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="LichServerTextBox" Width="200"
+                                             HorizontalAlignment="Left"
+                                             Background="#16213e" Foreground="White" Margin="0,8,0,0"/>
+                                    
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Port:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <NumericUpDown Grid.Row="4" Grid.Column="1" x:Name="LichPortNumeric"
+                                                   Minimum="1024" Maximum="65535" Width="120" 
+                                                   HorizontalAlignment="Left" Margin="0,8,0,0"
+                                                   Background="#16213e" Foreground="White"/>
+                                    
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Start Pause (s):" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <NumericUpDown Grid.Row="5" Grid.Column="1" x:Name="LichStartPauseNumeric"
+                                                   Minimum="0" Maximum="60" Width="120" 
+                                                   HorizontalAlignment="Left" Margin="0,8,0,0"
+                                                   Background="#16213e" Foreground="White"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Other Settings -->
+                        <Border Background="#1e3a5f" CornerRadius="4" Padding="12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Other Settings" FontWeight="Bold" Foreground="#3b82f6" FontSize="14"/>
+                                
+                                <StackPanel Margin="0,8,0,0" Spacing="6">
+                                    <CheckBox x:Name="IgnoreScriptWarningsCheckBox" 
+                                              Content="Ignore script warnings" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="IgnoreCloseAlertCheckBox" 
+                                              Content="Ignore close alert (don't prompt when closing)" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="ParseGameOnlyCheckBox" 
+                                              Content="Parse game output only (not echoed text)" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="WebLinkSafetyCheckBox" 
+                                              Content="Web link safety (confirm before opening links)" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="AutoMapperCheckBox" 
+                                              Content="Auto-mapper enabled" 
+                                              Foreground="#e0e0e0"/>
+                                    <CheckBox x:Name="CheckForUpdatesCheckBox" 
+                                              Content="Check for updates on startup" 
+                                              Foreground="#e0e0e0"/>
+                                </StackPanel>
+
+                                <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto" Margin="0,12,0,0">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Max GoSub Depth:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0"/>
+                                    <NumericUpDown Grid.Row="0" Grid.Column="1" x:Name="MaxGoSubDepthNumeric"
+                                                   Minimum="10" Maximum="500" Increment="10" Width="120" 
+                                                   HorizontalAlignment="Left"
+                                                   Background="#16213e" Foreground="White"/>
+                                    
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Buffer Line Size:" 
+                                               VerticalAlignment="Center" Foreground="#e0e0e0" Margin="0,8,0,0"/>
+                                    <NumericUpDown Grid.Row="1" Grid.Column="1" x:Name="BufferLineSizeNumeric"
+                                                   Minimum="1" Maximum="100" Width="120" 
+                                                   HorizontalAlignment="Left" Margin="0,8,0,0"
+                                                   Background="#16213e" Foreground="White"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!-- Button Bar -->
+        <Border Grid.Row="1" Background="#16213e" Padding="12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button Content="💾 Save Settings" Click="OnSave" 
+                        Background="#166534" Foreground="White" Padding="16,8"/>
+                <Button Content="Apply" Click="OnApply" 
+                        Background="#1e3a8a" Foreground="White" Padding="16,8"/>
+                <Button Content="Cancel" Click="OnCancel" 
+                        Background="#374151" Foreground="White" Padding="16,8"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
+

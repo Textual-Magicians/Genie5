@@ -777,6 +777,11 @@ public partial class MainWindow : Window
         await AliasesDialog.ShowDialog(this, _gameManager?.Globals?.AliasList);
     }
 
+    private async void OnShowPreferences(object? sender, RoutedEventArgs e)
+    {
+        await PreferencesDialog.ShowDialog(this, _gameManager?.Globals?.Config);
+    }
+
     private async void OnShowMacros(object? sender, RoutedEventArgs e)
     {
         // TODO: Create MacrosDialog
