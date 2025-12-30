@@ -83,19 +83,58 @@ namespace GenieClient
 
         private void ComponentIconBar_Load(object sender, EventArgs e)
         {
-            if (Directory.Exists(LocalDirectory.Path + @"\Icons\"))
+            // Load icons from embedded resources
+            LoadEmbeddedIcons();
+            
+            // Also try to load from file system as fallback
+            string iconsPath = LocalDirectory.Path + @"\Icons\";
+            if (Directory.Exists(iconsPath))
             {
-                var oFiles = new DirectoryInfo(LocalDirectory.Path + @"\Icons\").GetFiles("*.png");
+                var oFiles = new DirectoryInfo(iconsPath).GetFiles("*.png");
                 foreach (FileInfo fi in oFiles)
                     AddImage(fi.Name);
-                var argp = PictureBoxCompass;
-                ShowImage(argp, "compass.png");
             }
-            else
+            
+            var argp = PictureBoxCompass;
+            ShowImage(argp, "compass.png");
+        }
+
+        private void LoadEmbeddedIcons()
+        {
+            // Load compass icons from embedded resources
+            AddEmbeddedImage("compass.png", My.Resources.Resources.compass);
+            AddEmbeddedImage("compass_north.png", My.Resources.Resources.compass_north);
+            AddEmbeddedImage("compass_northeast.png", My.Resources.Resources.compass_northeast);
+            AddEmbeddedImage("compass_east.png", My.Resources.Resources.compass_east);
+            AddEmbeddedImage("compass_southeast.png", My.Resources.Resources.compass_southeast);
+            AddEmbeddedImage("compass_south.png", My.Resources.Resources.compass_south);
+            AddEmbeddedImage("compass_southwest.png", My.Resources.Resources.compass_southwest);
+            AddEmbeddedImage("compass_west.png", My.Resources.Resources.compass_west);
+            AddEmbeddedImage("compass_northwest.png", My.Resources.Resources.compass_northwest);
+            AddEmbeddedImage("compass_up.png", My.Resources.Resources.compass_up);
+            AddEmbeddedImage("compass_down.png", My.Resources.Resources.compass_down);
+            AddEmbeddedImage("compass_out.png", My.Resources.Resources.compass_out);
+            
+            // Load status icons from embedded resources
+            AddEmbeddedImage("standing.png", My.Resources.Resources.standing);
+            AddEmbeddedImage("sitting.png", My.Resources.Resources.sitting);
+            AddEmbeddedImage("kneeling.png", My.Resources.Resources.kneeling);
+            AddEmbeddedImage("prone.png", My.Resources.Resources.prone);
+            AddEmbeddedImage("dead.png", My.Resources.Resources.dead);
+            AddEmbeddedImage("stunned.png", My.Resources.Resources.stunned);
+            AddEmbeddedImage("bleeding.png", My.Resources.Resources.bleeding);
+            AddEmbeddedImage("invisible.png", My.Resources.Resources.invisible);
+            AddEmbeddedImage("hidden.png", My.Resources.Resources.hidden);
+            AddEmbeddedImage("joined.png", My.Resources.Resources.joined);
+            AddEmbeddedImage("webbed.png", My.Resources.Resources.webbed);
+        }
+
+        private void AddEmbeddedImage(string sName, Bitmap image)
+        {
+            if (image != null && !ImageListIcons.Images.ContainsKey(sName))
             {
-                /* TODO ERROR: Skipped IfDirectiveTrivia */
-                Interaction.MsgBox("Missing icon files in Genie folder.");
-                /* TODO ERROR: Skipped EndIfDirectiveTrivia */
+                ImageListIcons.Images.Add(sName, image);
+                ImageListIcons.Images.Add(sName + "_gray", ImageToGrayScale(image));
             }
         }
 
@@ -212,27 +251,27 @@ namespace GenieClient
             {
                 try
                 {
-                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["dead"], 1, false)))
+                    if (m_Globals.VariableList["dead"]?.ToString() == "1")
                     {
                         var argp = PictureBoxStatus;
                         ShowImage(argp, "dead.png");
                     }
-                    else if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["standing"], 1, false)))
+                    else if (m_Globals.VariableList["standing"]?.ToString() == "1")
                     {
                         var argp1 = PictureBoxStatus;
                         ShowImage(argp1, "standing.png");
                     }
-                    else if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["kneeling"], 1, false)))
+                    else if (m_Globals.VariableList["kneeling"]?.ToString() == "1")
                     {
                         var argp4 = PictureBoxStatus;
                         ShowImage(argp4, "kneeling.png");
                     }
-                    else if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["sitting"], 1, false)))
+                    else if (m_Globals.VariableList["sitting"]?.ToString() == "1")
                     {
                         var argp3 = PictureBoxStatus;
                         ShowImage(argp3, "sitting.png");
                     }
-                    else if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["prone"], 1, false)))
+                    else if (m_Globals.VariableList["prone"]?.ToString() == "1")
                     {
                         var argp2 = PictureBoxStatus;
                         ShowImage(argp2, "prone.png");
@@ -251,7 +290,7 @@ namespace GenieClient
             {
                 try
                 {
-                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["stunned"], 1, false)))
+                    if (m_Globals.VariableList["stunned"]?.ToString() == "1")
                     {
                         var argp = PictureBoxStunned;
                         ShowImage(argp, "stunned.png");
@@ -274,7 +313,7 @@ namespace GenieClient
             {
                 try
                 {
-                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["bleeding"], 1, false)))
+                    if (m_Globals.VariableList["bleeding"]?.ToString() == "1")
                     {
                         var argp = PictureBoxBleeding;
                         ShowImage(argp, "bleeding.png");
@@ -297,7 +336,7 @@ namespace GenieClient
             {
                 try
                 {
-                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["invisible"], 1, false)))
+                    if (m_Globals.VariableList["invisible"]?.ToString() == "1")
                     {
                         var argp = PictureBoxInvisible;
                         ShowImage(argp, "invisible.png");
@@ -320,7 +359,7 @@ namespace GenieClient
             {
                 try
                 {
-                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["hidden"], 1, false)))
+                    if (m_Globals.VariableList["hidden"]?.ToString() == "1")
                     {
                         var argp = PictureBoxHidden;
                         ShowImage(argp, "hidden.png");
@@ -343,7 +382,7 @@ namespace GenieClient
             {
                 try
                 {
-                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["joined"], 1, false)))
+                    if (m_Globals.VariableList["joined"]?.ToString() == "1")
                     {
                         var argp = PictureBoxJoined;
                         ShowImage(argp, "joined.png");
@@ -366,7 +405,7 @@ namespace GenieClient
             {
                 try
                 {
-                    if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["webbed"], 1, false)))
+                    if (m_Globals.VariableList["webbed"]?.ToString() == "1")
                     {
                         var argp = PictureBoxWebbed;
                         ShowImage(argp, "webbed.png");
@@ -385,94 +424,83 @@ namespace GenieClient
 
         private void PictureBoxCompass_Paint(object sender, PaintEventArgs e)
         {
-            if (Monitor.TryEnter(m_Lock))
+            if (!Information.IsNothing(m_Globals))
             {
-                try
+                if (m_Globals.VariableList["north"]?.ToString() == "1")
                 {
-                    if (!Information.IsNothing(m_Globals))
-                    {
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["north"], 1, false)))
-                        {
-                            var argg = e.Graphics;
-                            string argsName = "compass_north.png";
-                            AppendImage(argg, argsName);
-                        }
-
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["northeast"], 1, false)))
-                        {
-                            var argg1 = e.Graphics;
-                            string argsName1 = "compass_northeast.png";
-                            AppendImage(argg1, argsName1);
-                        }
-
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["east"], 1, false)))
-                        {
-                            var argg2 = e.Graphics;
-                            string argsName2 = "compass_east.png";
-                            AppendImage(argg2, argsName2);
-                        }
-
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["southeast"], 1, false)))
-                        {
-                            var argg3 = e.Graphics;
-                            string argsName3 = "compass_southeast.png";
-                            AppendImage(argg3, argsName3);
-                        }
-
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["south"], 1, false)))
-                        {
-                            var argg4 = e.Graphics;
-                            string argsName4 = "compass_south.png";
-                            AppendImage(argg4, argsName4);
-                        }
-
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["southwest"], 1, false)))
-                        {
-                            var argg5 = e.Graphics;
-                            string argsName5 = "compass_southwest.png";
-                            AppendImage(argg5, argsName5);
-                        }
-
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["west"], 1, false)))
-                        {
-                            var argg6 = e.Graphics;
-                            string argsName6 = "compass_west.png";
-                            AppendImage(argg6, argsName6);
-                        }
-
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["northwest"], 1, false)))
-                        {
-                            var argg7 = e.Graphics;
-                            string argsName7 = "compass_northwest.png";
-                            AppendImage(argg7, argsName7);
-                        }
-
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["up"], 1, false)))
-                        {
-                            var argg8 = e.Graphics;
-                            string argsName8 = "compass_up.png";
-                            AppendImage(argg8, argsName8);
-                        }
-
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["down"], 1, false)))
-                        {
-                            var argg9 = e.Graphics;
-                            string argsName9 = "compass_down.png";
-                            AppendImage(argg9, argsName9);
-                        }
-
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(m_Globals.VariableList["out"], 1, false)))
-                        {
-                            var argg10 = e.Graphics;
-                            string argsName10 = "compass_out.png";
-                            AppendImage(argg10, argsName10);
-                        }
-                    }
+                    DrawCompassImage(e.Graphics, "compass_north.png");
                 }
-                finally
+
+                if (m_Globals.VariableList["northeast"]?.ToString() == "1")
                 {
-                    Monitor.Exit(m_Lock);
+                    DrawCompassImage(e.Graphics, "compass_northeast.png");
                 }
+
+                if (m_Globals.VariableList["east"]?.ToString() == "1")
+                {
+                    DrawCompassImage(e.Graphics, "compass_east.png");
+                }
+
+                if (m_Globals.VariableList["southeast"]?.ToString() == "1")
+                {
+                    DrawCompassImage(e.Graphics, "compass_southeast.png");
+                }
+
+                if (m_Globals.VariableList["south"]?.ToString() == "1")
+                {
+                    DrawCompassImage(e.Graphics, "compass_south.png");
+                }
+
+                if (m_Globals.VariableList["southwest"]?.ToString() == "1")
+                {
+                    DrawCompassImage(e.Graphics, "compass_southwest.png");
+                }
+
+                if (m_Globals.VariableList["west"]?.ToString() == "1")
+                {
+                    DrawCompassImage(e.Graphics, "compass_west.png");
+                }
+
+                if (m_Globals.VariableList["northwest"]?.ToString() == "1")
+                {
+                    DrawCompassImage(e.Graphics, "compass_northwest.png");
+                }
+
+                if (m_Globals.VariableList["up"]?.ToString() == "1")
+                {
+                    DrawCompassImage(e.Graphics, "compass_up.png");
+                }
+
+                if (m_Globals.VariableList["down"]?.ToString() == "1")
+                {
+                    DrawCompassImage(e.Graphics, "compass_down.png");
+                }
+
+                if (m_Globals.VariableList["out"]?.ToString() == "1")
+                {
+                    DrawCompassImage(e.Graphics, "compass_out.png");
+                }
+            }
+        }
+
+        // Simple helper to draw compass image without locks
+        private void DrawCompassImage(Graphics g, string sName)
+        {
+            if (m_IsConnected == false)
+            {
+                sName = sName.Replace(".png", "_gray.png");
+                // Also try without the replacement in case gray version doesn't exist
+                if (Information.IsNothing(ImageListIcons.Images[sName]))
+                {
+                    sName = sName.Replace("_gray.png", ".png") + "_gray";
+                }
+            }
+            
+            if (!Information.IsNothing(ImageListIcons.Images[sName]))
+            {
+                Bitmap b = (Bitmap)ImageListIcons.Images[sName];
+                b.MakeTransparent(Color.Black);
+                g.DrawImage(b, 0, 0);
             }
         }
     }

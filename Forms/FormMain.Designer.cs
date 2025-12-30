@@ -1239,7 +1239,7 @@ namespace GenieClient
             _PanelStatus.Name = "_PanelStatus";
             _PanelStatus.Size = new Size(1449, 43);
             _PanelStatus.TabIndex = 12;
-            _PanelStatus.Visible = false;
+            _PanelStatus.Visible = true;
             // 
             // _TableLayoutPanelFlow
             // 
@@ -1306,7 +1306,7 @@ namespace GenieClient
             _IconBar.Location = new Point(136, 0);
             _IconBar.Margin = new Padding(0);
             _IconBar.Name = "_IconBar";
-            _IconBar.Size = new Size(262, 37);
+            _IconBar.Size = new Size(229, 42);
             _IconBar.TabIndex = 0;
             // 
             // _ToolStripButtons

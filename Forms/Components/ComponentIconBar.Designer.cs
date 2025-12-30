@@ -54,8 +54,8 @@ namespace GenieClient
             SuspendLayout();
             // 
             // PictureBoxCompass
-            // 
-            _PictureBoxCompass.Location = new Point(2, 0);
+            //
+            _PictureBoxCompass.Location = new Point(2, 5);
             _PictureBoxCompass.Name = "PictureBoxCompass";
             _PictureBoxCompass.Size = new Size(28, 32);
             _PictureBoxCompass.TabIndex = 0;
@@ -69,7 +69,7 @@ namespace GenieClient
             // 
             // PictureBoxStatus
             // 
-            _PictureBoxStatus.Location = new Point(30, 0);
+            _PictureBoxStatus.Location = new Point(30, 5);
             _PictureBoxStatus.Name = "PictureBoxStatus";
             _PictureBoxStatus.Size = new Size(28, 32);
             _PictureBoxStatus.TabIndex = 1;
@@ -77,7 +77,7 @@ namespace GenieClient
             // 
             // PictureBoxStunned
             // 
-            _PictureBoxStunned.Location = new Point(58, 0);
+            _PictureBoxStunned.Location = new Point(58, 5);
             _PictureBoxStunned.Name = "PictureBoxStunned";
             _PictureBoxStunned.Size = new Size(28, 32);
             _PictureBoxStunned.TabIndex = 2;
@@ -85,7 +85,7 @@ namespace GenieClient
             // 
             // PictureBoxBleeding
             // 
-            _PictureBoxBleeding.Location = new Point(86, 0);
+            _PictureBoxBleeding.Location = new Point(86, 5);
             _PictureBoxBleeding.Name = "PictureBoxBleeding";
             _PictureBoxBleeding.Size = new Size(28, 32);
             _PictureBoxBleeding.TabIndex = 3;
@@ -93,7 +93,7 @@ namespace GenieClient
             // 
             // PictureBoxInvisible
             // 
-            _PictureBoxInvisible.Location = new Point(114, 0);
+            _PictureBoxInvisible.Location = new Point(114, 5);
             _PictureBoxInvisible.Name = "PictureBoxInvisible";
             _PictureBoxInvisible.Size = new Size(28, 32);
             _PictureBoxInvisible.TabIndex = 4;
@@ -101,7 +101,7 @@ namespace GenieClient
             // 
             // PictureBoxHidden
             // 
-            _PictureBoxHidden.Location = new Point(142, 0);
+            _PictureBoxHidden.Location = new Point(142, 5);
             _PictureBoxHidden.Name = "PictureBoxHidden";
             _PictureBoxHidden.Size = new Size(28, 32);
             _PictureBoxHidden.TabIndex = 5;
@@ -109,7 +109,7 @@ namespace GenieClient
             // 
             // PictureBoxJoined
             // 
-            _PictureBoxJoined.Location = new Point(170, 0);
+            _PictureBoxJoined.Location = new Point(170, 5);
             _PictureBoxJoined.Name = "PictureBoxJoined";
             _PictureBoxJoined.Size = new Size(28, 32);
             _PictureBoxJoined.TabIndex = 6;
@@ -117,7 +117,7 @@ namespace GenieClient
             // 
             // PictureBoxWebbed
             // 
-            _PictureBoxWebbed.Location = new Point(198, 0);
+            _PictureBoxWebbed.Location = new Point(198, 5);
             _PictureBoxWebbed.Name = "PictureBoxWebbed";
             _PictureBoxWebbed.Size = new Size(28, 32);
             _PictureBoxWebbed.TabIndex = 7;
@@ -138,7 +138,7 @@ namespace GenieClient
             Controls.Add(_PictureBoxCompass);
             Margin = new Padding(0);
             Name = "ComponentIconBar";
-            Size = new Size(229, 32);
+            Size = new Size(229, 42);
             ((System.ComponentModel.ISupportInitialize)_PictureBoxCompass).EndInit();
             ((System.ComponentModel.ISupportInitialize)_PictureBoxStatus).EndInit();
             ((System.ComponentModel.ISupportInitialize)_PictureBoxStunned).EndInit();

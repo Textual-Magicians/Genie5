@@ -187,4 +187,73 @@
   <data name="control_stop" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\control_stop.gif;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="compass" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_north" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_north.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_northeast" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_northeast.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_east" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_east.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_southeast" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_southeast.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_south" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_south.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_southwest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_southwest.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_west" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_west.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_northwest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_northwest.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_up.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_down.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compass_out" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\compass_out.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="standing" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\standing.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sitting" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\sitting.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="kneeling" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\kneeling.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="prone" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\prone.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dead" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\dead.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="stunned" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\stunned.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="bleeding" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\bleeding.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="invisible" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\invisible.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="hidden" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\hidden.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="joined" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\joined.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="webbed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\webbed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

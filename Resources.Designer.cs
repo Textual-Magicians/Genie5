@@ -273,5 +273,214 @@ namespace GenieClient.My.Resources
                 return (Bitmap)obj;
             }
         }
+
+        // Compass icons
+        internal static Bitmap compass
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_north
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_north", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_northeast
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_northeast", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_east
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_east", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_southeast
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_southeast", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_south
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_south", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_southwest
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_southwest", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_west
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_west", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_northwest
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_northwest", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_up
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_up", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_down
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_down", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap compass_out
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("compass_out", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        // Status icons
+        internal static Bitmap standing
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("standing", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap sitting
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("sitting", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap kneeling
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("kneeling", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap prone
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("prone", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap dead
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("dead", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap stunned
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("stunned", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap bleeding
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("bleeding", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap invisible
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("invisible", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap hidden
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("hidden", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap joined
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("joined", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
+
+        internal static Bitmap webbed
+        {
+            get
+            {
+                var obj = ResourceManager.GetObject("webbed", resourceCulture);
+                return (Bitmap)obj;
+            }
+        }
     }
 }
