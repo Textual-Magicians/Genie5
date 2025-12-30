@@ -50,59 +50,14 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
+    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#building-from-source">Building from Source</a></li>
     <li><a href="#running-tests">Running Tests</a></li>
-    <li><a href="#features">Features</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li>
-      <a href="#contributing">Contributing</a>
-      <ul>
-        <li><a href="#developer-setup">Developer Setup</a></li>
-      </ul>
-    </li>
+    <li><a href="#project-architecture">Project Architecture</a></li>
     <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
-
-
-### Built With
-
-* [C#](https://docs.microsoft.com/en-us/dotnet/csharp/)
-* [Visual Basic](https://docs.microsoft.com/en-us/dotnet/visual-basic/)
-
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- GETTING STARTED -->
-## Getting Started
-1. Download the Latest Release at
-	[https://github.com/GenieClient/Genie4/releases/latest] 	
-
-2. Upgrade and First Time Installation Instructions can be found at
- 	[https://github.com/GenieClient/Genie4/wiki]
-
-3. Get Maps Updates from the Team at
-	[https://github.com/GenieClient/Maps]
-
-
-<p align="right">(<a href="#top">back to top</a>)</p>
 
 
 <!-- ROADMAP -->
@@ -147,83 +102,6 @@ See the [open issues](https://github.com/GenieClient/Genie4/issues) for a full l
 
 
 
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make is **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Developer Setup
-
-#### Code Formatting with Lefthook
-
-This project uses [Lefthook](https://github.com/evilmartians/lefthook) to automatically format code before commits. Lefthook runs `dotnet format` on staged C# and VB files to ensure consistent code style.
-
-**Installing Lefthook:**
-
-| Platform | Command |
-|----------|---------|
-| Windows (Scoop) | `scoop install lefthook` |
-| Windows (Winget) | `winget install evilmartians.lefthook` |
-| macOS (Homebrew) | `brew install lefthook` |
-| Linux (Homebrew) | `brew install lefthook` |
-| npm (any platform) | `npm install -g lefthook` |
-
-See the [official installation docs](https://github.com/evilmartians/lefthook/blob/master/docs/install.md) for more options.
-
-**Setting up Lefthook (after cloning the repo):**
-
-```bash
-lefthook install
-```
-
-This installs the git hooks. Now, whenever you commit, `dotnet format` will automatically run on your staged `.cs` and `.vb` files.
-
-**How it works:**
-
-On each commit, Lefthook runs two checks:
-
-1. **Auto-formatting** (`dotnet format`) - Fixes whitespace, indentation, and code style issues
-   - Fixed files are automatically re-staged
-   - Follows rules in `.editorconfig`
-
-2. **Analyzer warnings** (`dotnet format analyzers`) - Checks for code quality issues
-   - Configured via `Directory.Build.props` and `.editorconfig`
-   - Blocks commit if warnings are found (must be fixed manually or with `dotnet format analyzers`)
-
-**Manual formatting:**
-
-You can also run formatting manually at any time:
-
-```bash
-# Format all files in the solution (style only)
-dotnet format
-
-# Fix analyzer warnings
-dotnet format analyzers --severity warn
-
-# Format specific files
-dotnet format --include src/Genie.UI/
-
-# Check formatting without making changes
-dotnet format --verify-no-changes
-
-# See all warnings during build
-dotnet build
-```
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
 <!-- LICENSE -->
 ## License
 
@@ -233,39 +111,16 @@ Distributed under the GPL 3.0 License. See `LICENSE` for more information.
 
 
 
-<!-- CONTACT -->
-## Contact
-
-
-Project Link: [https://github.com/GenieClient/Genie4](https://github.com/GenieClient/Genie4)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* [https://github.com/walcon] Conny - Origional Developer)
+* [https://github.com/walcon] Conny - Origional Developer
+* [https://github.com/mj-colonel-panic] Mark Cherry (Djordje aka Colonel Panic) Genie 4
+* All others who contributed to the Genie open-source effort.
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/GenieClient/Genie4.svg?style=for-the-badge
-[contributors-url]: https://github.com/GenieClient/Genie4/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/GenieClient/Genie4.svg?style=for-the-badge
-[forks-url]: https://github.com/GenieClient/Genie4/network/members
-[stars-shield]: https://img.shields.io/github/stars/GenieClient/Genie4.svg?style=for-the-badge
-[stars-url]: https://github.com/GenieClient/Genie4/stargazers
-[issues-shield]: https://img.shields.io/github/issues/GenieClient/Genie4.svg?style=for-the-badge
-[issues-url]: https://github.com/GenieClient/Genie4/issues
-[license-shield]: https://img.shields.io/github/license/GenieClient/Genie4.svg?style=for-the-badge
-[license-url]: https://github.com/GenieClient/Genie4/blob/master/LICENSE.txt
-[product-screenshot]: images/screenshot.png
 
 
 ## Building from Source
