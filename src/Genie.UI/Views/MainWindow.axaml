@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:services="clr-namespace:GenieClient.UI.Services"
+        xmlns:local="clr-namespace:GenieClient.Views"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="GenieClient.Views.MainWindow"
         Title="Genie 5"
@@ -115,7 +116,7 @@
         </Border>
 
         <!-- Main Content Area with Side Panels -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="8,8,8,4">
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" Margin="8,8,8,4">
             <!-- Left: Thoughts + Main Game Output -->
             <Grid RowDefinitions="Auto,*">
                 <!-- Thoughts Panel (above main) -->
@@ -195,6 +196,12 @@
                     </Grid>
                 </Border>
             </Grid>
+
+            <!-- Right: Integrated AutoMapper Panel (hidden by default) -->
+            <Border x:Name="MapperColumn" Grid.Column="2" Width="350" Margin="4,0,0,0"
+                    IsVisible="False" CornerRadius="8" ClipToBounds="True">
+                <local:AutoMapperPanel x:Name="IntegratedMapperPanel"/>
+            </Border>
         </Grid>
 
         <!-- Command Input -->

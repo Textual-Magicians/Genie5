@@ -1,0 +1,131 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GenieClient.Views"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
+        x:Class="GenieClient.Views.AutoMapperPanel"
+        Background="#1a1a2e">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <!-- Header with title and mode toggle -->
+        <Border Grid.Row="0" Background="#0f3460" Padding="6,4">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <TextBlock Text="🗺️ AutoMapper" Foreground="#60a5fa" 
+                           FontWeight="SemiBold" FontSize="12"
+                           VerticalAlignment="Center"/>
+                
+                <!-- Mode toggle button -->
+                <Button Grid.Column="2" x:Name="ModeToggleButton"
+                        ToolTip.Tip="Toggle between integrated and popup window mode"
+                        Background="Transparent" Foreground="#888"
+                        Padding="4,2" FontSize="12"
+                        Click="OnModeToggleClick">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock x:Name="ModeIcon" Text="⧉" FontSize="14"/>
+                        <TextBlock x:Name="ModeText" Text="Popup" FontSize="10" 
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Compact Toolbar -->
+        <Border Grid.Row="1" Background="#16213e" Padding="4">
+            <Grid RowDefinitions="Auto,Auto">
+                <!-- Row 1: Map selector and Find Me -->
+                <Grid ColumnDefinitions="*,Auto,Auto">
+                    <ComboBox x:Name="MapSelector" 
+                              Background="#0d1117" Foreground="#c9d1d9"
+                              FontSize="11" Padding="4,2"
+                              SelectionChanged="OnMapSelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="local:MapInfo">
+                                <TextBlock Text="{Binding DisplayName}" FontSize="11"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Column="1" Content="🔄" ToolTip.Tip="Reload Maps" 
+                            Background="#1e3a5f" Foreground="White"
+                            Padding="6,2" FontSize="12" Margin="4,0,0,0"
+                            Click="OnReloadMapsClick"/>
+                    <Button Grid.Column="2" Content="📍" ToolTip.Tip="Find Me - Locate current room" 
+                            Background="#166534" Foreground="White"
+                            Padding="6,2" FontSize="12" Margin="4,0,0,0"
+                            Click="OnFindMeClick"/>
+                </Grid>
+
+                <!-- Row 2: Zoom and Level controls -->
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                    <!-- Zoom controls -->
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="−" ToolTip.Tip="Zoom Out"
+                                Background="#2a2a3e" Foreground="White"
+                                Padding="6,2" FontSize="12" FontWeight="Bold"
+                                Click="OnZoomOutClick"/>
+                        <TextBlock x:Name="ZoomText" Text="100%" 
+                                   Foreground="#888" VerticalAlignment="Center"
+                                   Width="40" TextAlignment="Center" FontSize="10"/>
+                        <Button Content="+" ToolTip.Tip="Zoom In"
+                                Background="#2a2a3e" Foreground="White"
+                                Padding="6,2" FontSize="12" FontWeight="Bold"
+                                Click="OnZoomInClick"/>
+                        <Button Content="⟳" ToolTip.Tip="Reset View"
+                                Background="#2a2a3e" Foreground="White"
+                                Padding="6,2" FontSize="10" Margin="4,0,0,0"
+                                Click="OnResetViewClick"/>
+                    </StackPanel>
+
+                    <!-- Level controls -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2">
+                        <TextBlock Text="L:" Foreground="#666" 
+                                   VerticalAlignment="Center" FontSize="10"/>
+                        <Button Content="▲" ToolTip.Tip="Level Up"
+                                Background="#2a2a3e" Foreground="White"
+                                Padding="4,2" FontSize="10"
+                                Click="OnLevelUpClick"/>
+                        <TextBlock x:Name="LevelText" Text="0" 
+                                   Foreground="#60a5fa" VerticalAlignment="Center"
+                                   Width="20" TextAlignment="Center" FontWeight="Bold" FontSize="11"/>
+                        <Button Content="▼" ToolTip.Tip="Level Down"
+                                Background="#2a2a3e" Foreground="White"
+                                Padding="4,2" FontSize="10"
+                                Click="OnLevelDownClick"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Map Canvas Area -->
+        <Border Grid.Row="2" Margin="4" Background="#0d1117" CornerRadius="4" 
+                ClipToBounds="True">
+            <ScrollViewer x:Name="MapScrollViewer" 
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto"
+                          Focusable="False">
+                <Canvas x:Name="MapCanvas" 
+                        Background="#0d1117"
+                        Focusable="False"
+                        PointerPressed="OnCanvasPointerPressed"
+                        PointerMoved="OnCanvasPointerMoved"
+                        PointerReleased="OnCanvasPointerReleased"
+                        PointerWheelChanged="OnCanvasPointerWheelChanged">
+                    <!-- Map content will be drawn programmatically -->
+                </Canvas>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3" Background="#16213e" Padding="4,2">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock x:Name="StatusText" Text="No map loaded" 
+                           Foreground="#888" VerticalAlignment="Center" FontSize="10"
+                           TextTrimming="CharacterEllipsis"/>
+                <TextBlock Grid.Column="1" x:Name="HoverNodeText" Text="" 
+                           Foreground="#fbbf24" VerticalAlignment="Center" 
+                           FontSize="10" Margin="8,0,0,0"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
+

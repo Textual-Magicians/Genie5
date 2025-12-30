@@ -34,6 +34,9 @@ public partial class MainWindow : Window
     private bool _isProgrammaticScroll = false;
     private double _lastScrollMax = 0;
 
+    // Integrated mapper state
+    private bool _integratedMapperInitialized = false;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -837,6 +840,70 @@ public partial class MainWindow : Window
         await AutoMapperWindow.ShowWindow(this, mapDir, _gameManager);
     }
 
+    /// <summary>
+    /// Shows the integrated mapper panel in the main window.
+    /// Called when switching from popup to integrated mode.
+    /// </summary>
+    public void ShowIntegratedMapper(string mapDirectory, GameManager? gameManager)
+    {
+        // Initialize the integrated mapper if not already done
+        if (!_integratedMapperInitialized)
+        {
+            IntegratedMapperPanel.Initialize(mapDirectory, gameManager);
+            IntegratedMapperPanel.ModeToggleRequested += OnIntegratedMapperModeToggle;
+            _integratedMapperInitialized = true;
+        }
+        
+        IntegratedMapperPanel.CurrentMode = AutoMapperMode.Integrated;
+        MapperColumn.IsVisible = true;
+        
+        // Focus back to command input
+        CommandInput.Focus();
+    }
+
+    /// <summary>
+    /// Hides the integrated mapper panel.
+    /// </summary>
+    public void HideIntegratedMapper()
+    {
+        MapperColumn.IsVisible = false;
+    }
+
+    /// <summary>
+    /// Handles mode toggle request from the integrated mapper panel.
+    /// </summary>
+    private async void OnIntegratedMapperModeToggle(object? sender, ModeToggleRequestedEventArgs e)
+    {
+        if (e.RequestedMode == AutoMapperMode.Popup)
+        {
+            // Hide the integrated panel
+            HideIntegratedMapper();
+            
+            // Unsubscribe from the integrated panel events
+            IntegratedMapperPanel.UnsubscribeFromGameEvents();
+            
+            // Show the popup window
+            var mapDir = _gameManager?.Globals?.Config?.MapDir
+                ?? Path.Combine(LocalDirectory.Path, "Maps");
+            await AutoMapperWindow.ShowWindow(this, mapDir, _gameManager);
+        }
+    }
+
+    /// <summary>
+    /// Gets the active mapper panel, whether integrated or popup.
+    /// </summary>
+    private AutoMapperPanel? GetActiveMapperPanel()
+    {
+        // Prefer integrated if visible
+        if (MapperColumn.IsVisible)
+        {
+            return IntegratedMapperPanel;
+        }
+        
+        // Fall back to popup window if open
+        return AutoMapperWindow.ActiveInstance?.Panel;
+    }
+
     private async void OnUpdateMaps(object? sender, RoutedEventArgs e)
     {
         // Determine the maps directory
@@ -1465,8 +1532,11 @@ public partial class MainWindow : Window
     /// <returns>True if the command was handled, false otherwise.</returns>
     private bool TryHandleMapperCommand(string command)
     {
-        // Parse the command to check if it's a mapper command
-        var parts = command.TrimStart('#').Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        // Mapper commands MUST start with # - otherwise it's a regular game command
+        if (!command.StartsWith('#')) return false;
+
+        // Parse the command (strip the # prefix)
+        var parts = command.Substring(1).Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 0) return false;
 
         var cmdName = parts[0].ToLowerInvariant();
@@ -1487,15 +1557,21 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// Handles a goto command by opening/activating the automapper and navigating.
+    /// Handles a goto command by using the active mapper (integrated or popup) and navigating.
     /// </summary>
     private async void HandleMapperGoto(string argument)
     {
-        // Get or create the AutoMapper window
         var mapDir = _gameManager?.Globals?.Config?.MapDir
             ?? Path.Combine(LocalDirectory.Path, "Maps");
 
-        // Check if AutoMapper is already open
+        // First check if integrated mapper is visible
+        if (MapperColumn.IsVisible)
+        {
+            IntegratedMapperPanel.HandleGotoCommand(argument);
+            return;
+        }
+
+        // Check if popup AutoMapper is already open
         var mapper = AutoMapperWindow.ActiveInstance;
         
         if (mapper == null)
