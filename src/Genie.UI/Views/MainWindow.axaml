@@ -63,6 +63,8 @@
                 <MenuItem Header="_Resume All Scripts" Click="OnResumeAllScripts"/>
             </MenuItem>
             <MenuItem Header="_Automapper">
+                <MenuItem Header="_Show Window" Click="OnShowAutoMapper"/>
+                <Separator/>
                 <MenuItem Header="_Update Maps" Click="OnUpdateMaps"/>
                 <MenuItem Header="Update _Plugins" Click="OnUpdatePlugins"/>
             </MenuItem>
