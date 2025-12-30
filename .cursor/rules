@@ -1,0 +1,489 @@
+# Genie5 Project Rules
+
+## Project Overview
+Genie5 is a cross-platform game client for DragonRealms (Simutronics). It uses a **dual UI strategy**:
+- **Classic Edition** (Windows Forms): Full-featured, mature, Windows-only
+- **Cross-Platform Edition** (Avalonia UI): Modern UI for Windows, macOS, and Linux
+
+Both UIs share the same `Genie.Core` library with platform-agnostic business logic.
+
+## Architecture
+
+### Project Structure
+```
+src/
+├── Genie.Core/          # Shared platform-agnostic core (multi-targeted)
+│   ├── Core/            # Game connection, commands, error handling
+│   ├── Lists/           # Aliases, macros, highlights, configuration
+│   ├── Script/          # Script engine (Genie, JavaScript, Lua)
+│   ├── Services/        # Service interfaces and platform-agnostic types
+│   └── Utility/         # Cross-platform utilities
+├── Genie.Windows/       # Windows Forms UI (Classic Edition)
+│   ├── Forms/           # Windows Forms dialogs and UI
+│   ├── Mapper/          # Auto-mapper with visual display
+│   ├── Services/        # Windows-specific service implementations
+│   └── Utility/         # Windows-only P/Invoke utilities
+└── Genie.UI/            # Avalonia UI (Cross-Platform Edition)
+    ├── Views/           # Avalonia windows and dialogs
+    ├── ViewModels/      # MVVM view models
+    └── Services/        # Cross-platform service implementations
+```
+
+### Multi-Targeting Strategy
+`Genie.Core` targets BOTH `net10.0` and `net10.0-windows`:
+- **net10.0**: Cross-platform build (no Windows dependencies)
+- **net10.0-windows**: Windows build (includes System.Drawing, Windows Forms helpers)
+- Use `#if WINDOWS` for Windows-specific code in Core
+- Windows-only files are conditionally compiled
+
+### Service-Based Architecture
+**Design Principle**: Core defines interfaces, platform projects provide implementations
+
+#### Service Location Pattern
+```csharp
+// Services registered in GenieServices static locator
+ISoundService soundService = GenieServices.Sound;
+IWindowAttentionService attention = GenieServices.WindowAttention;
+
+// Windows initialization (called at startup)
+WindowsServiceInitializer.Initialize();
+```
+
+#### Common Service Interfaces
+- `ISoundService` - Platform-specific audio playback
+- `IWindowAttentionService` - Flash window/taskbar for attention
+- `IRichTextService` - Rich text control operations
+- `IImageService` - Cross-platform image loading/manipulation
+- `IWindowChromeService` - Custom window skinning
+- `IColorParsingService` - Color name parsing
+- `IGameService` - Game output and interaction
+- `IConnectionService` - Network connection management
+
+#### Service Implementation Rules
+1. **Interfaces in Core** - All service contracts in `Services/` folder
+2. **Implementations per Platform** - Each UI project implements its services
+3. **Null Services for Graceful Degradation** - No-op implementations in `NullServices.cs`
+4. **No `#if WINDOWS` in Service Interfaces** - Keep interfaces platform-agnostic
+5. **Register at Startup** - Services must be registered before use
+
+## Platform-Agnostic Types
+
+### GenieColor (replaces System.Drawing.Color)
+```csharp
+// Core code always uses GenieColor
+GenieColor color = GenieColor.FromRgb(255, 128, 0);
+string hex = color.ToHex(); // "#FF8000"
+
+// Conversion at UI boundary (Windows only)
+#if WINDOWS
+System.Drawing.Color drawingColor = color.ToDrawingColor();
+GenieColor genieColor = drawingColor.ToGenieColor();
+#endif
+```
+
+**Rules**:
+- Use `GenieColor` everywhere in Core
+- Use `.Foreground` and `.Background` properties (not `.FgColor`/`.BgColor`)
+- Legacy properties `.FgColor`/`.BgColor` wrapped in `#if WINDOWS` for compatibility
+- Convert at UI boundary using `ColorConverter` extension methods
+- Named colors available: `GenieColor.White`, `GenieColor.Red`, etc.
+
+### GenieFont (replaces System.Drawing.Font)
+```csharp
+GenieFont font = new GenieFont("Consolas", 12, bold: false, italic: false);
+#if WINDOWS
+System.Drawing.Font drawingFont = font.ToDrawingFont();
+#endif
+```
+
+### KeyCode Enum
+Platform-agnostic key codes (mirrors Windows virtual key codes but available everywhere)
+
+## Code Style
+
+### C# Language Features
+- **Target Framework**: .NET 10
+- **Language Version**: Latest
+- **Nullable**: Disabled (`#nullable disable`)
+- **Implicit Usings**: Disabled - explicit using statements required
+- **Async/Await**: Prefer `async`/`await` for I/O operations
+
+### Formatting (Allman Style)
+```csharp
+// Opening braces on new line
+public void Method()
+{
+    if (condition)
+    {
+        // Code here
+    }
+}
+
+// 4-space indentation
+public class Example
+{
+    private int m_iValue;
+    
+    public void DoSomething()
+    {
+        // Code indented 4 spaces
+    }
+}
+
+// No single-line statements
+if (condition)
+{
+    statement; // Always use braces
+}
+```
+
+### Naming Conventions
+- **Private fields**: `m_` prefix + camelCase (`m_oSocket`, `m_iCount`, `m_sName`)
+  - Prefix type hints: `o` (object), `i` (int), `s` (string), `b` (bool), `d` (double)
+- **Public properties**: PascalCase (`EventCount`, `PlayerName`)
+- **Methods**: PascalCase (`ProcessCommand`, `SendToGame`)
+- **Constants**: PascalCase (`MaxBufferSize`)
+- **Interfaces**: `I` prefix + PascalCase (`IGameService`, `ISoundService`)
+- **Local variables**: camelCase or descriptive names
+- **Parameters**: camelCase
+
+### Variable Declaration Style
+```csharp
+// Explicit types preferred (not var) except when type is obvious
+string name = "Player";
+int count = 0;
+Connection socket = new Connection();
+
+// OK to use var when type is obvious
+var list = new List<string>();
+var result = GetResult(); // When return type is clear from method name
+```
+
+### Expression Style
+```csharp
+// Traditional method bodies (not expression-bodied)
+public string GetName()
+{
+    return m_sName;
+}
+
+// OK for simple properties
+public string Name => m_sName;
+
+// Traditional constructors
+public Game()
+{
+    m_oSocket = new Connection();
+}
+```
+
+### Error Handling
+```csharp
+// Use try-catch for expected errors
+try
+{
+    ProcessData(data);
+}
+catch (GenieException ex)
+{
+    EventPrintError?.Invoke(ex.Message);
+}
+
+// Null checks
+if (m_oGlobals != null)
+{
+    // Use object
+}
+
+// Null propagation for events
+EventPrintText?.Invoke(text, color, bgcolor, window, windowString, mono, prompt, input);
+```
+
+## Event-Driven Architecture
+
+### Event Declaration Pattern
+```csharp
+// Declare event with delegate
+public event EventPrintTextEventHandler EventPrintText;
+public delegate void EventPrintTextEventHandler(string text, GenieColor color, GenieColor bgcolor, 
+    WindowTarget targetwindow, string targetwindowstring, bool mono, bool isprompt, bool isinput);
+
+// Invoke with null check
+EventPrintText?.Invoke(text, color, bgcolor, window, windowString, mono, prompt, input);
+
+// Subscribe in UI
+game.EventPrintText += OnGamePrintText;
+
+private void OnGamePrintText(string text, GenieColor color, GenieColor bgcolor, ...)
+{
+    // Handle event
+}
+```
+
+### Event Naming
+- Events: `Event` prefix + action (`EventPrintText`, `EventRoundTime`, `EventVariableChanged`)
+- Event handlers: `Event` + action + `EventHandler` (`EventPrintTextEventHandler`)
+- Handler methods: `On` + context + action (`OnGamePrintText`, `Simutronics_EventPrintText`)
+
+## Dependency Injection
+
+### Service Registration
+```csharp
+// In Program.cs or App.axaml.cs
+public static void ConfigureServices(IServiceCollection services)
+{
+    // Register core services
+    services.AddGenieServices();
+    
+    // Register UI
+    services.AddSingleton<MainWindow>();
+}
+
+// Initialization for Windows
+WindowsServiceInitializer.Initialize(); // Registers Windows services with GenieServices locator
+```
+
+### Service Usage
+```csharp
+// Constructor injection (preferred for UI)
+public FormMain(IGameService gameService)
+{
+    m_oGameService = gameService;
+}
+
+// Service locator (used in Core)
+GenieServices.Sound.PlayWaveFile("alert.wav");
+```
+
+## File Organization
+
+### Linked Files
+Files are physically in root directories but linked into projects:
+```xml
+<!-- In Genie.Core.csproj -->
+<Compile Include="..\..\Core\Game.cs" Link="Core\Game.cs" />
+<Compile Include="..\..\Services\GenieColor.cs" Link="Services\GenieColor.cs" />
+```
+
+### Conditional Compilation
+```csharp
+// Windows-only code
+#if WINDOWS
+using System.Drawing;
+
+public System.Drawing.Color ToDrawingColor()
+{
+    return System.Drawing.Color.FromArgb(A, R, G, B);
+}
+#endif
+
+// Cross-platform always available
+public string ToHex()
+{
+    return $"#{R:X2}{G:X2}{B:X2}";
+}
+```
+
+### Resource Files
+- **Graphics**: `Graphics/` folder - icons, logos
+- **Resources**: `Resources/` folder - images, bitmaps embedded as resources
+- **Icons**: `Icons/` folder - status icons (bleeding, stunned, etc.)
+- **.resx files**: Embedded resources for Forms and localization
+
+## Scripting System
+
+### Script Types Supported
+- **Genie Scripts**: Custom scripting language (`.cmd` files)
+- **JavaScript**: Via Jint engine
+- **Lua**: Via Lua scripting engine
+
+### Script Functions
+Scripts use a custom command system with functions like:
+- `put` - Send command to game
+- `match` - Wait for text pattern
+- `matchre` - Wait for regex pattern
+- `waitfor` - Wait for specific text
+- `pause` - Wait specified time
+- `goto` - Jump to label
+- `gosub`/`return` - Subroutine calls
+- `if`/`else` - Conditional logic
+
+## Configuration Management
+
+### Config Structure
+```csharp
+// Global configuration in Lists/Config.cs
+public class Config
+{
+    public char m_cScriptChar = '.';      // Script command prefix
+    public char cCommandChar = '#';        // Command separator
+    public int iScriptTimeout = 5000;      // Script timeout ms
+    public bool bAutoMapper = true;        // Enable auto-mapper
+    public string sScriptDir = "Scripts";  // Script directory
+    // ... many more settings
+}
+```
+
+### Configuration Patterns
+- Settings stored in XML files in `Config/` directory
+- Per-profile configuration supported
+- Directory paths configurable (Scripts, Sounds, Maps, Plugins, Config)
+
+## Testing
+
+### Test Framework
+- xUnit for unit testing
+- Tests in `src/Genie.UI.Tests/`
+
+### Running Tests
+```powershell
+dotnet test Genie5.sln
+dotnet test --verbosity detailed
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+## Build System
+
+### Lefthook Pre-commit Hooks
+```yaml
+# Runs automatically on commit
+- dotnet format --include {staged_files}      # Auto-format
+- dotnet format analyzers --severity warn     # Check warnings
+```
+
+### Build Scripts
+- `build.ps1` - Quick build for Windows Forms
+- `build-and-run.ps1` - Build and run Windows Forms
+- `build-avalonia.ps1` - Build Avalonia UI
+- `build-crossplatform.ps1` - Cross-platform publish
+
+### Manual Formatting
+```powershell
+dotnet format                                    # Format all
+dotnet format analyzers --severity warn          # Fix warnings
+dotnet format --verify-no-changes                # Check only
+```
+
+## Best Practices for Code Generation
+
+### When Adding New Features
+
+1. **Determine Platform Scope**
+   - Cross-platform? → Add to `Genie.Core`
+   - Windows-only? → Add to `Genie.Windows`
+   - Avalonia UI? → Add to `Genie.UI`
+
+2. **Platform Abstraction Needed?**
+   - Create interface in `Services/I*.cs`
+   - Implement in `Genie.Windows/Services/Windows*.cs`
+   - Implement in `Genie.UI/Services/Avalonia*.cs` (or cross-platform)
+   - Add null implementation in `NullServices.cs`
+   - Register in service initializer
+
+3. **Use Platform-Agnostic Types**
+   - Colors? Use `GenieColor`, not `System.Drawing.Color`
+   - Fonts? Use `GenieFont`, not `System.Drawing.Font`
+   - Keys? Use `KeyCode` enum
+   - Need Windows types? Wrap in `#if WINDOWS` and convert at boundary
+
+4. **Follow Event Pattern**
+   - Declare delegate type
+   - Declare event
+   - Invoke with null propagation
+   - Document parameters
+
+5. **Maintain Existing Patterns**
+   - Use `m_` prefix for private fields
+   - Use Allman brace style
+   - Follow existing naming patterns in file
+   - Match indentation (4 spaces)
+
+6. **Legacy Code Compatibility**
+   - Don't break existing Windows Forms UI
+   - Maintain backward compatibility with plugins
+   - Keep existing public APIs stable
+   - Add new features alongside old ones
+
+### When Modifying Core Code
+
+1. **Check Multi-Target Implications**
+   - Will it work on `net10.0` (cross-platform)?
+   - Need Windows-specific code? Use `#if WINDOWS`
+   - Avoid `using System.Drawing` outside `#if WINDOWS`
+
+2. **Service Dependencies**
+   - Use service locator: `GenieServices.Sound`
+   - Don't call static Windows APIs directly
+   - Check service availability before use
+
+3. **Color Handling**
+   - Use `GenieColor` for all color properties
+   - Use `.Foreground`/`.Background` (not `.FgColor`/`.BgColor`)
+   - Legacy properties for compatibility wrapped in `#if WINDOWS`
+
+### When Creating New UI Elements
+
+**Windows Forms (Genie.Windows)**:
+```csharp
+// Use System.Drawing.Color directly
+textBox.ForeColor = System.Drawing.Color.White;
+
+// Or convert from GenieColor
+textBox.ForeColor = genieColor.ToDrawingColor();
+```
+
+**Avalonia UI (Genie.UI)**:
+```csharp
+// Convert GenieColor to Avalonia Color
+textBlock.Foreground = new SolidColorBrush(
+    Color.FromArgb(genieColor.A, genieColor.R, genieColor.G, genieColor.B)
+);
+```
+
+## Common Patterns
+
+### Game Communication
+```csharp
+// Send to game
+m_oSocket.Send(command);
+
+// Print to game output
+EventPrintText?.Invoke(text, GenieColor.White, GenieColor.Black, 
+    WindowTarget.Main, "", mono: false, isprompt: false, isinput: false);
+```
+
+### Variable Management
+```csharp
+// Global variables
+string value = m_oGlobals.GetVariable("varname");
+m_oGlobals.SetVariable("varname", "value");
+EventVariableChanged?.Invoke("varname");
+```
+
+### Script Execution
+```csharp
+// Start script
+Script script = new Script(scriptName, m_oGlobals, arguments);
+script.Start();
+
+// Stop script
+script.Stop();
+```
+
+## License
+GPL 3.0 - All code must be compatible with GPL 3.0 license
+
+## Important Notes
+
+1. **Dual UI Strategy is Key**: Never suggest removing Windows Forms UI. Both UIs coexist.
+2. **Core Must Stay Cross-Platform**: Genie.Core `net10.0` target must build without Windows dependencies
+3. **Service Abstraction is Required**: New platform-specific features need service interfaces
+4. **Legacy Code Exists**: Not all code follows modern patterns; that's OK, maintain consistency in each file
+5. **VB.NET Plugin System**: Plugin interface is VB.NET, maintain compatibility
+6. **Performance Matters**: This is a real-time game client, avoid unnecessary allocations in hot paths
+7. **Event Thread Safety**: Events may fire from background threads, UI must marshal to UI thread
+
+## Version Information
+- .NET: 10.0
+- Avalonia: 11.2.2
+- Target OS: Windows 7+ (Windows Forms), Windows/macOS/Linux (Avalonia)
