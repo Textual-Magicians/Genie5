@@ -139,6 +139,17 @@ public partial class MainWindow : Window
         _gameManager.ScriptStarted += OnScriptStarted;
         _gameManager.ScriptStopped += OnScriptStopped;
         _gameManager.ScriptOutput += OnScriptOutput;
+
+        // Subscribe to mapper events
+        _gameManager.MapperOutput += OnMapperOutput;
+    }
+
+    private void OnMapperOutput(string message)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            AppendText(message + "\n", Colors.LightGray);
+        });
     }
 
     private void OnWindowTextReceived(GameWindowType windowType, string customId, string text, GenieColor color, GenieColor bgcolor)
@@ -1114,6 +1125,14 @@ public partial class MainWindow : Window
                     return;
                 }
 
+                // Handle mapper commands (#goto, #go, #g, #walk, #walkto, #path)
+                if (TryHandleMapperCommand(command))
+                {
+                    CommandInput.Text = "";
+                    e.Handled = true;
+                    return;
+                }
+
                 // Check for local commands first
                 if (command.Equals("test", StringComparison.OrdinalIgnoreCase))
                 {
@@ -1394,5 +1413,69 @@ public partial class MainWindow : Window
             output.Inlines?.Clear();
         }
     }
+
+    #region Mapper Commands
+
+    /// <summary>
+    /// Tries to handle mapper commands like #goto, #go, #g, #walk, #walkto, #path.
+    /// </summary>
+    /// <returns>True if the command was handled, false otherwise.</returns>
+    private bool TryHandleMapperCommand(string command)
+    {
+        // Parse the command to check if it's a mapper command
+        var parts = command.TrimStart('#').Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0) return false;
+
+        var cmdName = parts[0].ToLowerInvariant();
+        var argument = parts.Length > 1 ? parts[1] : "";
+
+        // Check if this is a goto-style command
+        bool isGotoCommand = cmdName switch
+        {
+            "goto" or "go" or "g" or "walk" or "walkto" or "path" => true,
+            _ => false
+        };
+
+        if (!isGotoCommand) return false;
+
+        // Handle the goto command
+        HandleMapperGoto(argument);
+        return true;
+    }
+
+    /// <summary>
+    /// Handles a goto command by opening/activating the automapper and navigating.
+    /// </summary>
+    private async void HandleMapperGoto(string argument)
+    {
+        // Get or create the AutoMapper window
+        var mapDir = _gameManager?.Globals?.Config?.MapDir
+            ?? Path.Combine(LocalDirectory.Path, "Maps");
+
+        // Check if AutoMapper is already open
+        var mapper = AutoMapperWindow.ActiveInstance;
+        
+        if (mapper == null)
+        {
+            // Open the AutoMapper window
+            mapper = await AutoMapperWindow.ShowWindow(this, mapDir, _gameManager);
+            
+            // Give it a moment to load and sync
+            await Task.Delay(100);
+        }
+
+        // Execute the goto command
+        if (mapper != null)
+        {
+            mapper.HandleGotoCommand(argument);
+            mapper.Activate(); // Bring to front
+        }
+        else
+        {
+            AppendText("[Mapper] Failed to open AutoMapper window.\n", Colors.Red);
+        }
+    }
+
+    #endregion
 }
 

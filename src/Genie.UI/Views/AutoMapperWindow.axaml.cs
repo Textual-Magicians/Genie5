@@ -31,6 +31,9 @@ public partial class AutoMapperWindow : Window
     private GameManager? _gameManager;
     private Globals? _globals;
 
+    // Static reference to the active AutoMapper window for command routing
+    private static AutoMapperWindow? _activeInstance;
+
     // Colors matching the Windows Forms version
     private readonly IBrush _nodeColor = new SolidColorBrush(Color.FromRgb(255, 255, 192));
     private readonly IBrush _nodeBorderColor = new SolidColorBrush(Color.FromRgb(100, 100, 100));
@@ -49,8 +52,15 @@ public partial class AutoMapperWindow : Window
         Closed += OnWindowClosed;
     }
 
-    public static async Task ShowWindow(Window owner, string mapDirectory, GameManager? gameManager = null)
+    public static async Task<AutoMapperWindow> ShowWindow(Window owner, string mapDirectory, GameManager? gameManager = null)
     {
+        // If we already have an active instance, just bring it to focus
+        if (_activeInstance != null)
+        {
+            _activeInstance.Activate();
+            return _activeInstance;
+        }
+
         var window = new AutoMapperWindow();
         window._mapDirectory = mapDirectory;
         window._gameManager = gameManager;
@@ -58,8 +68,16 @@ public partial class AutoMapperWindow : Window
         window.LoadAvailableMaps();
         window.SubscribeToGameEvents();
         window.SyncWithCurrentLocation();
+        
+        _activeInstance = window;
         window.Show(owner);
+        return window;
     }
+
+    /// <summary>
+    /// Gets the currently active AutoMapper window, or null if not open.
+    /// </summary>
+    public static AutoMapperWindow? ActiveInstance => _activeInstance;
     
     /// <summary>
     /// Gets the current Globals instance from the GameManager.
@@ -84,6 +102,12 @@ public partial class AutoMapperWindow : Window
         if (_gameManager != null)
         {
             _gameManager.VariableChanged -= OnVariableChanged;
+        }
+        
+        // Clear the static instance reference
+        if (_activeInstance == this)
+        {
+            _activeInstance = null;
         }
     }
 
@@ -842,6 +866,114 @@ public partial class AutoMapperWindow : Window
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Handles a goto command (e.g., "#goto 123" or "#goto bank").
+    /// Matches the behavior of the Windows AutoMapper.
+    /// </summary>
+    /// <param name="argument">The destination - either a node ID or a note search term.</param>
+    /// <returns>True if navigation was started, false otherwise.</returns>
+    public bool HandleGotoCommand(string argument)
+    {
+        if (string.IsNullOrWhiteSpace(argument))
+        {
+            EchoText("[Mapper] Goto - please specify a room id to travel to.");
+            SetDestination("0");
+            return false;
+        }
+
+        if (_currentMap == null)
+        {
+            EchoText("[Mapper] No map loaded - select a map first.");
+            SetDestination("0");
+            return false;
+        }
+
+        int nodeId = 0;
+
+        // First try to parse as a node ID
+        if (argument.Length <= 5 || !int.TryParse(argument, out nodeId))
+        {
+            int.TryParse(argument, out nodeId);
+        }
+
+        // If not a valid node ID, search node notes for a match
+        if (nodeId == 0)
+        {
+            foreach (var node in _currentMap.Nodes.Values)
+            {
+                if (string.IsNullOrEmpty(node.Note)) continue;
+
+                foreach (var note in node.Note.Split('|'))
+                {
+                    if (note.StartsWith(argument, StringComparison.OrdinalIgnoreCase))
+                    {
+                        EchoText($"[Mapper] Goto: {note}");
+                        nodeId = node.Id;
+                        break;
+                    }
+                }
+                if (nodeId > 0) break;
+            }
+        }
+
+        if (nodeId > 0)
+        {
+            if (_currentMap.Nodes.TryGetValue(nodeId, out var destinationNode))
+            {
+                EchoText($"#goto {argument}");
+                SetDestination(nodeId.ToString());
+                ParseMapperText("DESTINATION FOUND");
+                NavigateToNode(destinationNode);
+                return true;
+            }
+            else
+            {
+                EchoText($"[Mapper] Destination ID #{nodeId} not found - your current location is unknown.");
+                SetDestination("0");
+                ParseMapperText("DESTINATION NOT FOUND");
+                return false;
+            }
+        }
+        else
+        {
+            EchoText($"[Mapper] Destination ID \"{argument}\" not found.");
+            SetDestination("0");
+            ParseMapperText("DESTINATION NOT FOUND");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Echoes text to the main game output.
+    /// </summary>
+    private void EchoText(string message)
+    {
+        _gameManager?.EchoMapperText(message);
+        StatusText.Text = message;
+    }
+
+    /// <summary>
+    /// Sets the destination global variable.
+    /// </summary>
+    private void SetDestination(string nodeId)
+    {
+        var globals = GetGlobals();
+        if (globals?.VariableList != null)
+        {
+            globals.VariableList["destination"] = nodeId;
+        }
+    }
+
+    /// <summary>
+    /// Parses mapper-related text through the game for script triggers.
+    /// </summary>
+    private void ParseMapperText(string text)
+    {
+        // In the full implementation, this would trigger script matchers
+        // For now, we just log it
+        Console.WriteLine($"[Mapper] {text}");
     }
 
     /// <summary>

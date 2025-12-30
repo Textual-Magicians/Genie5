@@ -49,6 +49,9 @@ public class GameManager : IDisposable
     public event Action<ScriptInfo>? ScriptStopped;
     public event Action<string, bool>? ScriptOutput; // (message, isError)
 
+    // Mapper events
+    public event Action<string>? MapperOutput; // Echo text from mapper
+
     public bool IsConnected => _game?.IsConnected ?? false;
     public string? LastError { get; private set; }
 
@@ -285,6 +288,14 @@ public class GameManager : IDisposable
     public void ResumeScript(string? scriptName = null)
     {
         _scriptManager?.ResumeScript(scriptName);
+    }
+
+    /// <summary>
+    /// Echoes text from the mapper to the main output window.
+    /// </summary>
+    public void EchoMapperText(string message)
+    {
+        MapperOutput?.Invoke(message);
     }
 
     private void OnGamePrintText(string text, GenieColor color, GenieColor bgcolor,
