@@ -54,11 +54,21 @@ public partial class AutoMapperWindow : Window
         var window = new AutoMapperWindow();
         window._mapDirectory = mapDirectory;
         window._gameManager = gameManager;
-        window._globals = gameManager?.Globals;
+        // Don't cache globals - fetch dynamically via GetGlobals() to handle late connection
         window.LoadAvailableMaps();
         window.SubscribeToGameEvents();
         window.SyncWithCurrentLocation();
         window.Show(owner);
+    }
+    
+    /// <summary>
+    /// Gets the current Globals instance from the GameManager.
+    /// This handles the case where the mapper is opened before the game connects.
+    /// </summary>
+    private Genie.Globals? GetGlobals()
+    {
+        // Always fetch from GameManager to handle late initialization
+        return _gameManager?.Globals ?? _globals;
     }
 
     private void SubscribeToGameEvents()
@@ -124,7 +134,8 @@ public partial class AutoMapperWindow : Window
             return;
         }
         
-        if (_globals?.VariableList == null)
+        var globals = GetGlobals();
+        if (globals?.VariableList == null)
         {
             StatusText.Text = "Game not connected";
             return;
@@ -203,9 +214,9 @@ public partial class AutoMapperWindow : Window
             CenterOnCurrentNode();
             
             // Update the global variable so scripts can use it
-            if (_globals?.VariableList != null)
+            if (globals?.VariableList != null)
             {
-                _globals.VariableList["roomid"] = foundNode.Id.ToString();
+                globals.VariableList["roomid"] = foundNode.Id.ToString();
             }
             
             StatusText.Text = $"Located: #{foundNode.Id} {foundNode.Name}";
@@ -225,9 +236,9 @@ public partial class AutoMapperWindow : Window
                 {
                     SetCurrentNode(connectedCandidate.Id);
                     CenterOnCurrentNode();
-                    if (_globals?.VariableList != null)
+                    if (globals?.VariableList != null)
                     {
-                        _globals.VariableList["roomid"] = connectedCandidate.Id.ToString();
+                        globals.VariableList["roomid"] = connectedCandidate.Id.ToString();
                     }
                     StatusText.Text = $"Located: #{connectedCandidate.Id} {connectedCandidate.Name}";
                     return;
@@ -288,9 +299,10 @@ public partial class AutoMapperWindow : Window
 
     private string GetVariable(string name)
     {
-        if (_globals?.VariableList?.ContainsKey(name) == true)
+        var globals = GetGlobals();
+        if (globals?.VariableList?.ContainsKey(name) == true)
         {
-            return _globals.VariableList[name]?.ToString() ?? "";
+            return globals.VariableList[name]?.ToString() ?? "";
         }
         return "";
     }
@@ -311,15 +323,16 @@ public partial class AutoMapperWindow : Window
     /// </summary>
     private void SyncWithCurrentLocation()
     {
-        if (_globals?.VariableList == null) return;
+        var globals = GetGlobals();
+        if (globals?.VariableList == null) return;
 
         // Try to load the current zone's map
         TryLoadMapForCurrentZone();
 
         // First check if roomid is already set (from Windows AutoMapper)
-        if (_globals.VariableList.ContainsKey("roomid"))
+        if (globals.VariableList.ContainsKey("roomid"))
         {
-            var roomIdStr = _globals.VariableList["roomid"]?.ToString() ?? "0";
+            var roomIdStr = globals.VariableList["roomid"]?.ToString() ?? "0";
             if (int.TryParse(roomIdStr, out int roomId) && roomId > 0)
             {
                 SetCurrentNode(roomId);
@@ -347,14 +360,15 @@ public partial class AutoMapperWindow : Window
 
     private void TryLoadMapForCurrentZone()
     {
-        if (_globals?.VariableList == null) return;
+        var globals = GetGlobals();
+        if (globals?.VariableList == null) return;
 
         // Get current zone info from game state
-        var zoneId = _globals.VariableList.ContainsKey("zoneid") 
-            ? _globals.VariableList["zoneid"]?.ToString() ?? "" 
+        var zoneId = globals.VariableList.ContainsKey("zoneid") 
+            ? globals.VariableList["zoneid"]?.ToString() ?? "" 
             : "";
-        var zoneName = _globals.VariableList.ContainsKey("zonename") 
-            ? _globals.VariableList["zonename"]?.ToString() ?? "" 
+        var zoneName = globals.VariableList.ContainsKey("zonename") 
+            ? globals.VariableList["zonename"]?.ToString() ?? "" 
             : "";
 
         if (string.IsNullOrEmpty(zoneId) && string.IsNullOrEmpty(zoneName))
@@ -1076,7 +1090,8 @@ public partial class AutoMapperWindow : Window
         // Clear any highlighted path
         _highlightedPath.Clear();
         
-        if (_globals?.VariableList == null)
+        var globals = GetGlobals();
+        if (globals?.VariableList == null)
         {
             StatusText.Text = "Game not connected";
             return;
