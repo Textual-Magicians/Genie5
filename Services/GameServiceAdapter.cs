@@ -427,7 +427,13 @@ namespace GenieClient.Services
 
         public event EventHandler<GameTextEventArgs>? TextOutput;
         public event EventHandler<string>? ErrorOutput;
+        
+        // Event is part of IGameService interface contract but not currently raised
+        // TODO: Wire up to Game connection events when refactoring connection handling
+#pragma warning disable CS0067 // Event is never used
         public event EventHandler<GameConnectionState>? ConnectionStateChanged;
+#pragma warning restore CS0067
+        
         public event EventHandler<RoomChangedEventArgs>? RoomChanged;
         public event EventHandler<VitalsChangedEventArgs>? VitalsChanged;
         public event EventHandler<CharacterStatus>? StatusChanged;

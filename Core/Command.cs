@@ -72,10 +72,6 @@ namespace GenieClient.Genie
 
         public delegate void EventStatusBarEventHandler(string sText, int iIndex);
 
-        public event EventCopyDataEventHandler EventCopyData;
-
-        public delegate void EventCopyDataEventHandler(string sDestination, string sData);
-
         public event EventListScriptsEventHandler EventListScripts;
 
         public delegate void EventListScriptsEventHandler(string sFilter);

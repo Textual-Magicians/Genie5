@@ -185,16 +185,10 @@ namespace GenieClient.Genie
         private string m_sRoomObjs = string.Empty;
         private string m_sRoomPlayers = string.Empty;
         private string m_sRoomExits = string.Empty;
-        private int m_iHealth = 100;
-        private int m_iMana = 100;
-        private int m_iSpirit = 100;
-        private int m_iStamina = 100;
-        private int m_iConcentration = 100;
         private int m_iEncumbrance = 0;
         private string m_sCharacterName = string.Empty;
         private string m_sGameName = string.Empty;
         private int m_iRoundTime = 0;
-        private int m_iSpellTime = 0;
         private int m_iCastTime = 0;
         private int m_iGameTime = 0;
         private string m_sTriggerBuffer = string.Empty;
@@ -553,7 +547,6 @@ namespace GenieClient.Genie
             int iBoldIndex = 0;
             char cPreviousChar = Conversions.ToChar("");
             bool bCombatRow = false;
-            bool bPromptRow = false;
 
             // Fix for DR html encoding problems
             if (sText.StartsWith("< "))
@@ -3186,7 +3179,6 @@ namespace GenieClient.Genie
                     m_bManualDisconnect = false;
                     m_oReconnectTime = default;
                     m_oSocket.Send(m_sConnectKey + Constants.vbLf + "FE:WRAYTH /VERSION:1.0.1.22 /P:WIN_UNKNOWN /XML" + Constants.vbLf);    // TEMP
-                    string argkey = "connected";
                     m_oGlobals.VariableList["connected"] = m_oSocket.IsConnected ? "1" : "0";
                     VariableChanged("$connected");
                     m_oGlobals.VariableList["account"] = AccountName;

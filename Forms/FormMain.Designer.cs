@@ -1311,10 +1311,12 @@ namespace GenieClient
             // 
             // _ToolStripButtons
             // 
+            _ToolStripButtons.AutoSize = false;
             _ToolStripButtons.BackColor = SystemColors.Control;
             _ToolStripButtons.ContextMenuStrip = _ContextMenuStripButtons;
             _ToolStripButtons.GripStyle = ToolStripGripStyle.Hidden;
             _ToolStripButtons.Location = new Point(0, 24);
+            _ToolStripButtons.MinimumSize = new Size(0, 25);
             _ToolStripButtons.Name = "_ToolStripButtons";
             _ToolStripButtons.RenderMode = ToolStripRenderMode.System;
             _ToolStripButtons.Size = new Size(1449, 25);

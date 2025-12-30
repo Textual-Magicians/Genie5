@@ -667,7 +667,6 @@ namespace GenieClient
         private bool m_bWaitForPrompt = true;
         private bool m_bWaitForMatch = true;
         private string m_sWaitForMatchLabel = string.Empty;
-        private Func<bool> WaitForMatchAction = null;
         private string m_sWaitForEventText = string.Empty;
         private bool m_bWaitForEvent = true;
         private DateTime m_oMatchTimeout;
@@ -1674,7 +1673,6 @@ namespace GenieClient
                                 m_oTraceList.Add("matchwait timeout", GetFileName());
                                 // PrintText("MatchWait Timeout")
                                 MatchList.Clear();
-                                WaitForMatchAction = null;
                                 m_bMatchTimeoutState = false;
                                 RunScript();
                             }
@@ -2301,7 +2299,6 @@ namespace GenieClient
                       // Reset all depth in blocks
                     m_oCurrentLine.Clear();
                     MatchList.Clear();
-                    WaitForMatchAction = null;
                     m_oCurrentLine.LineValue = iResult;
                     return;
                 }
@@ -3304,7 +3301,6 @@ namespace GenieClient
             if ((sText.ToLower() ?? "") == "clear")
             {
                 MatchList.Clear();
-                WaitForMatchAction = null;
                 return true;
             }
 

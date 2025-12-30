@@ -1431,7 +1431,7 @@ namespace GenieClient.Genie
                 }
                 return messages;
             }
-            catch (Exception up)
+            catch
             {
                 throw;
             }
