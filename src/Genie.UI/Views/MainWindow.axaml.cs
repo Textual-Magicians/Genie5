@@ -649,6 +649,131 @@ public partial class MainWindow : Window
 
     #endregion
 
+    #region Edit Script Handler
+
+    /// <summary>
+    /// Opens a script file in the configured editor.
+    /// </summary>
+    private void EditScript(string scriptName)
+    {
+        try
+        {
+            // Ensure Globals/Config is initialized before accessing config
+            _gameManager?.EnsureInitialized();
+
+            var scriptDir = _gameManager?.ScriptManager?.GetScriptDirectory()
+                ?? Path.Combine(LocalDirectory.Path, "Scripts");
+            var scriptExt = _gameManager?.ScriptManager?.GetScriptExtension() ?? "cmd";
+
+            // Add extension if not present
+            var lowerName = scriptName.ToLower();
+            if (!lowerName.EndsWith($".{scriptExt}") && !lowerName.EndsWith(".js"))
+            {
+                scriptName += $".{scriptExt}";
+            }
+
+            // Build full path if no directory separator present
+            string fullPath;
+            if (!scriptName.Contains(Path.DirectorySeparatorChar) && !scriptName.Contains(Path.AltDirectorySeparatorChar))
+            {
+                fullPath = Path.Combine(scriptDir, scriptName);
+            }
+            else
+            {
+                fullPath = scriptName;
+            }
+
+            // Get the configured editor
+            var editor = _gameManager?.Globals?.Config?.sEditor ?? "";
+
+            // Launch the editor with the script file
+            OpenFileInEditor(fullPath, editor);
+        }
+        catch (Exception ex)
+        {
+            AppendText($"Error editing script: {ex.Message}\n", Colors.Red);
+        }
+    }
+
+    /// <summary>
+    /// Opens a file in the specified editor, or the system default editor if none specified.
+    /// </summary>
+    private void OpenFileInEditor(string filePath, string? editor)
+    {
+        try
+        {
+            // Check if file exists - if not, create it
+            if (!File.Exists(filePath))
+            {
+                // Create an empty file so the editor can open it
+                var dir = Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                File.WriteAllText(filePath, "");
+                AppendText($"Created new script: {Path.GetFileName(filePath)}\n", Colors.Yellow);
+            }
+
+            ProcessStartInfo psi;
+
+            // If an editor is configured, use it directly
+            if (!string.IsNullOrWhiteSpace(editor))
+            {
+                psi = new ProcessStartInfo
+                {
+                    FileName = editor,
+                    Arguments = $"\"{filePath}\"",
+                    UseShellExecute = true
+                };
+            }
+            else
+            {
+                // No editor configured - use platform default
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    psi = new ProcessStartInfo
+                    {
+                        FileName = "notepad.exe",
+                        Arguments = $"\"{filePath}\"",
+                        UseShellExecute = true
+                    };
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    // macOS: use 'open' to open with default text editor
+                    psi = new ProcessStartInfo
+                    {
+                        FileName = "open",
+                        Arguments = $"-t \"{filePath}\"",
+                        UseShellExecute = true
+                    };
+                }
+                else
+                {
+                    // Linux: use xdg-open for default application
+                    psi = new ProcessStartInfo
+                    {
+                        FileName = "xdg-open",
+                        Arguments = $"\"{filePath}\"",
+                        UseShellExecute = true
+                    };
+                }
+            }
+
+            Process.Start(psi);
+            AppendText($"Opening {Path.GetFileName(filePath)} in editor...\n", Colors.Gray);
+        }
+        catch (Exception ex)
+        {
+            AppendText($"Error opening editor: {ex.Message}\n", Colors.Red);
+            AppendText($"Configured editor: {editor ?? "(none)"}\n", Colors.Gray);
+            AppendText("You can change the editor in Edit → Preferences → Advanced.\n", Colors.Gray);
+        }
+    }
+
+    #endregion
+
     private async void OnUpdateMaps(object? sender, RoutedEventArgs e)
     {
         // Determine the maps directory
@@ -779,6 +904,8 @@ public partial class MainWindow : Window
 
     private async void OnShowPreferences(object? sender, RoutedEventArgs e)
     {
+        // Ensure Globals/Config is initialized before opening preferences
+        _gameManager?.EnsureInitialized();
         await PreferencesDialog.ShowDialog(this, _gameManager?.Globals?.Config);
     }
 
@@ -933,6 +1060,23 @@ public partial class MainWindow : Window
                     else
                     {
                         AppendText("No scripts running.\n", Colors.Gray);
+                    }
+                    CommandInput.Text = "";
+                    e.Handled = true;
+                    return;
+                }
+
+                // #edit scriptname - open script in configured editor
+                if (command.StartsWith("#edit ", StringComparison.OrdinalIgnoreCase))
+                {
+                    var scriptName = command.Substring(6).Trim();
+                    if (!string.IsNullOrEmpty(scriptName))
+                    {
+                        EditScript(scriptName);
+                    }
+                    else
+                    {
+                        AppendText("Usage: #edit <scriptname>\n", Colors.Yellow);
                     }
                     CommandInput.Text = "";
                     e.Handled = true;

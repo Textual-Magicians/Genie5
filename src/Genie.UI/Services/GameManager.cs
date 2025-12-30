@@ -99,6 +99,15 @@ public class GameManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Ensures that Globals and Config are initialized (but not necessarily connected).
+    /// Call this before accessing Globals/Config for preferences or #edit commands.
+    /// </summary>
+    public bool EnsureInitialized()
+    {
+        return Initialize();
+    }
+
     private bool Initialize()
     {
         if (_initialized)
