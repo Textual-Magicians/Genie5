@@ -945,8 +945,7 @@ namespace GenieClient
         // ********************************************************
         private static byte[] DerivePassword(string originalPassword, int passwordLength)
         {
-            var derivedBytes = new Rfc2898DeriveBytes(originalPassword, SALT_BYTES, 5);
-            return derivedBytes.GetBytes(passwordLength);
+            return Rfc2898DeriveBytes.Pbkdf2(originalPassword, SALT_BYTES, 5, HashAlgorithmName.SHA1, passwordLength);
         }
 
         // ********************************************************
