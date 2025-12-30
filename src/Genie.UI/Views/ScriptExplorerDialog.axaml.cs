@@ -84,8 +84,16 @@ public partial class ScriptExplorerDialog : Window
 
         if (!Directory.Exists(scriptDir))
         {
-            StatusText.Text = $"Script directory not found: {scriptDir}";
-            return;
+            try
+            {
+                Directory.CreateDirectory(scriptDir);
+                StatusText.Text = $"Created script directory: {scriptDir}";
+            }
+            catch (Exception ex)
+            {
+                StatusText.Text = $"Failed to create script directory: {scriptDir} - {ex.Message}";
+                return;
+            }
         }
 
         var rootNodes = new ObservableCollection<ScriptTreeNode>();

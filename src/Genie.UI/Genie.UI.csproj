@@ -8,6 +8,10 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <RootNamespace>GenieClient</RootNamespace>
     <AssemblyName>Genie</AssemblyName>
+    <ApplicationTitle>Genie 5</ApplicationTitle>
+    <Product>Genie 5</Product>
+    <CFBundleName>Genie 5</CFBundleName>
+    <CFBundleDisplayName>Genie 5</CFBundleDisplayName>
   </PropertyGroup>
 
   <ItemGroup>
