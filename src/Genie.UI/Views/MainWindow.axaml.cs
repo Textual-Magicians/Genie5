@@ -778,7 +778,7 @@ public partial class MainWindow : Window
     {
         var mapDir = _gameManager?.Globals?.Config?.MapDir
             ?? Path.Combine(LocalDirectory.Path, "Maps");
-        await AutoMapperWindow.ShowWindow(this, mapDir);
+        await AutoMapperWindow.ShowWindow(this, mapDir, _gameManager);
     }
 
     private async void OnUpdateMaps(object? sender, RoutedEventArgs e)

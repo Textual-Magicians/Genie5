@@ -12,6 +12,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 
+using GenieClient.Genie;
+using GenieClient.UI.Services;
+
 namespace GenieClient.Views;
 
 public partial class AutoMapperWindow : Window
@@ -25,6 +28,8 @@ public partial class AutoMapperWindow : Window
     private bool _isPanning;
     private string _mapDirectory = "";
     private int? _currentNodeId;
+    private GameManager? _gameManager;
+    private Globals? _globals;
 
     // Colors matching the Windows Forms version
     private readonly IBrush _nodeColor = new SolidColorBrush(Color.FromRgb(255, 255, 192));
@@ -39,14 +44,347 @@ public partial class AutoMapperWindow : Window
     public AutoMapperWindow()
     {
         InitializeComponent();
+        Closed += OnWindowClosed;
     }
 
-    public static async Task ShowWindow(Window owner, string mapDirectory)
+    public static async Task ShowWindow(Window owner, string mapDirectory, GameManager? gameManager = null)
     {
         var window = new AutoMapperWindow();
         window._mapDirectory = mapDirectory;
+        window._gameManager = gameManager;
+        window._globals = gameManager?.Globals;
         window.LoadAvailableMaps();
+        window.SubscribeToGameEvents();
+        window.SyncWithCurrentLocation();
         window.Show(owner);
+    }
+
+    private void SubscribeToGameEvents()
+    {
+        if (_gameManager != null)
+        {
+            _gameManager.VariableChanged += OnVariableChanged;
+        }
+    }
+
+    private void OnWindowClosed(object? sender, EventArgs e)
+    {
+        if (_gameManager != null)
+        {
+            _gameManager.VariableChanged -= OnVariableChanged;
+        }
+    }
+
+    private void OnVariableChanged(string variable, string value)
+    {
+        // Handle zone/room changes from the game
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            if (variable == "zoneid" || variable == "zonename")
+            {
+                // Zone changed - try to load the matching map
+                TryLoadMapForCurrentZone();
+            }
+            else if (variable == "roomid")
+            {
+                // Room changed - update the current node highlight
+                if (int.TryParse(value, out int roomId) && roomId > 0)
+                {
+                    SetCurrentNode(roomId);
+                    CenterOnCurrentNode();
+                }
+                else
+                {
+                    SetCurrentNode(null);
+                }
+            }
+            else if (variable == "roomname" || variable == "prompt")
+            {
+                // Room name changed or prompt received - try to find the room on the map
+                // The "prompt" variable change signals end of room update
+                if (variable == "prompt")
+                {
+                    TryLocateCurrentRoom();
+                }
+            }
+        });
+    }
+
+    /// <summary>
+    /// Tries to find the current room on the loaded map based on room name and description.
+    /// This is a simplified version of the full AutoMapper room matching.
+    /// </summary>
+    private void TryLocateCurrentRoom()
+    {
+        if (_currentMap == null || _globals?.VariableList == null) return;
+
+        var roomName = GetVariable("roomname");
+        var roomDesc = GetVariable("roomdesc");
+
+        if (string.IsNullOrEmpty(roomName)) return;
+
+        // Get available exits for matching
+        var exits = new HashSet<string>();
+        if (GetVariable("north") == "1") exits.Add("north");
+        if (GetVariable("northeast") == "1") exits.Add("northeast");
+        if (GetVariable("east") == "1") exits.Add("east");
+        if (GetVariable("southeast") == "1") exits.Add("southeast");
+        if (GetVariable("south") == "1") exits.Add("south");
+        if (GetVariable("southwest") == "1") exits.Add("southwest");
+        if (GetVariable("west") == "1") exits.Add("west");
+        if (GetVariable("northwest") == "1") exits.Add("northwest");
+        if (GetVariable("up") == "1") exits.Add("up");
+        if (GetVariable("down") == "1") exits.Add("down");
+        if (GetVariable("out") == "1") exits.Add("out");
+
+        // Find matching nodes
+        var candidates = new List<MapNode>();
+        foreach (var node in _currentMap.Nodes.Values)
+        {
+            // Skip map link nodes
+            if (node.IsMapLink) continue;
+
+            // Check room name match
+            if (!string.Equals(node.Name, roomName, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            // Check description match if we have descriptions
+            bool descMatch = true;
+            if (node.Descriptions.Count > 0 && !string.IsNullOrEmpty(roomDesc))
+            {
+                descMatch = node.Descriptions.Any(d => 
+                    string.Equals(d.Trim(), roomDesc.Trim(), StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!descMatch) continue;
+
+            // Check exit match (cardinal directions only)
+            bool exitsMatch = true;
+            var nodeCardinalExits = node.Arcs
+                .Where(a => IsCardinalDirection(a.Direction))
+                .Select(a => a.Exit.ToLower())
+                .ToHashSet();
+
+            // The node should have the same exits as the room (for cardinal directions)
+            if (exits.Count > 0 && nodeCardinalExits.Count > 0)
+            {
+                // Allow for some flexibility - at least half the exits should match
+                var matchingExits = exits.Count(e => nodeCardinalExits.Contains(e.ToLower()));
+                exitsMatch = matchingExits >= Math.Min(exits.Count, nodeCardinalExits.Count) / 2;
+            }
+
+            if (exitsMatch)
+            {
+                candidates.Add(node);
+            }
+        }
+
+        // If we found exactly one match, use it
+        if (candidates.Count == 1)
+        {
+            var foundNode = candidates[0];
+            SetCurrentNode(foundNode.Id);
+            CenterOnCurrentNode();
+            
+            // Update the global variable so scripts can use it
+            if (_globals?.VariableList != null)
+            {
+                _globals.VariableList["roomid"] = foundNode.Id.ToString();
+            }
+            
+            StatusText.Text = $"Located: #{foundNode.Id} {foundNode.Name}";
+        }
+        else if (candidates.Count > 1)
+        {
+            // Multiple matches - try to use last known position to disambiguate
+            if (_currentNodeId.HasValue)
+            {
+                // Find a candidate that's connected to current room
+                var connectedCandidate = candidates.FirstOrDefault(c =>
+                    _currentMap.Nodes.Values.Any(n => 
+                        n.Id == _currentNodeId.Value && 
+                        n.Arcs.Any(a => a.DestinationId == c.Id)));
+
+                if (connectedCandidate != null)
+                {
+                    SetCurrentNode(connectedCandidate.Id);
+                    CenterOnCurrentNode();
+                    if (_globals?.VariableList != null)
+                    {
+                        _globals.VariableList["roomid"] = connectedCandidate.Id.ToString();
+                    }
+                    StatusText.Text = $"Located: #{connectedCandidate.Id} {connectedCandidate.Name}";
+                    return;
+                }
+            }
+
+            // Can't disambiguate - just use first match
+            var firstMatch = candidates[0];
+            SetCurrentNode(firstMatch.Id);
+            CenterOnCurrentNode();
+            StatusText.Text = $"Multiple matches ({candidates.Count}) - showing #{firstMatch.Id}";
+        }
+        else
+        {
+            // No match found - try to auto-load a different map
+            if (!TryLoadMapForRoom(roomName, roomDesc))
+            {
+                StatusText.Text = $"Room not found on map: {roomName}";
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tries to find and load a map that contains the given room.
+    /// </summary>
+    private bool TryLoadMapForRoom(string roomName, string roomDesc)
+    {
+        foreach (var mapInfo in _availableMaps)
+        {
+            // Skip current map
+            if (_currentMap != null && mapInfo.FilePath == 
+                _availableMaps.FirstOrDefault(m => m.ZoneId == _currentMap.ZoneId)?.FilePath)
+                continue;
+
+            try
+            {
+                // Quick scan of map file for room name
+                var content = File.ReadAllText(mapInfo.FilePath);
+                if (content.Contains($"name=\"{roomName}\"", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Load this map and try to find the room
+                    LoadMap(mapInfo.FilePath);
+                    MapSelector.SelectedItem = mapInfo;
+                    
+                    // Now try to locate again
+                    TryLocateCurrentRoom();
+                    return true;
+                }
+            }
+            catch
+            {
+                // Skip maps that can't be read
+            }
+        }
+
+        return false;
+    }
+
+    private string GetVariable(string name)
+    {
+        if (_globals?.VariableList?.ContainsKey(name) == true)
+        {
+            return _globals.VariableList[name]?.ToString() ?? "";
+        }
+        return "";
+    }
+
+    private static bool IsCardinalDirection(MapDirection dir)
+    {
+        return dir switch
+        {
+            MapDirection.North or MapDirection.NorthEast or MapDirection.East or
+            MapDirection.SouthEast or MapDirection.South or MapDirection.SouthWest or
+            MapDirection.West or MapDirection.NorthWest => true,
+            _ => false
+        };
+    }
+
+    /// <summary>
+    /// Syncs the AutoMapper with the current game location on window open.
+    /// </summary>
+    private void SyncWithCurrentLocation()
+    {
+        if (_globals?.VariableList == null) return;
+
+        // Try to load the current zone's map
+        TryLoadMapForCurrentZone();
+
+        // First check if roomid is already set (from Windows AutoMapper)
+        if (_globals.VariableList.ContainsKey("roomid"))
+        {
+            var roomIdStr = _globals.VariableList["roomid"]?.ToString() ?? "0";
+            if (int.TryParse(roomIdStr, out int roomId) && roomId > 0)
+            {
+                SetCurrentNode(roomId);
+                CenterOnCurrentNode();
+                return;
+            }
+        }
+
+        // Otherwise, try to find the room by name/description
+        TryLocateCurrentRoom();
+    }
+
+    private void TryLoadMapForCurrentZone()
+    {
+        if (_globals?.VariableList == null) return;
+
+        // Get current zone info from game state
+        var zoneId = _globals.VariableList.ContainsKey("zoneid") 
+            ? _globals.VariableList["zoneid"]?.ToString() ?? "" 
+            : "";
+        var zoneName = _globals.VariableList.ContainsKey("zonename") 
+            ? _globals.VariableList["zonename"]?.ToString() ?? "" 
+            : "";
+
+        if (string.IsNullOrEmpty(zoneId) && string.IsNullOrEmpty(zoneName))
+            return;
+
+        // Check if we already have this map loaded
+        if (_currentMap != null)
+        {
+            if (_currentMap.ZoneId == zoneId || 
+                _currentMap.ZoneName.Equals(zoneName, StringComparison.OrdinalIgnoreCase))
+            {
+                return; // Already on the right map
+            }
+        }
+
+        // Find and load the matching map
+        var mapInfo = _availableMaps.FirstOrDefault(m =>
+            m.ZoneId == zoneId ||
+            (!string.IsNullOrEmpty(zoneName) && m.ZoneName.Equals(zoneName, StringComparison.OrdinalIgnoreCase)));
+
+        if (mapInfo != null)
+        {
+            MapSelector.SelectedItem = mapInfo;
+            LoadMap(mapInfo.FilePath);
+            StatusText.Text = $"Auto-loaded: {mapInfo.ZoneName}";
+        }
+    }
+
+    private void CenterOnCurrentNode()
+    {
+        if (_currentMap == null || _currentNodeId == null) return;
+        if (!_currentMap.Nodes.TryGetValue(_currentNodeId.Value, out var node)) return;
+
+        // Switch to the node's level if different
+        if (node.Z != _currentLevel)
+        {
+            _currentLevel = node.Z;
+            LevelText.Text = _currentLevel.ToString();
+            RedrawMap();
+        }
+
+        // Calculate the position to center on
+        var minX = _currentMap.Nodes.Values.Min(n => n.X);
+        var minY = _currentMap.Nodes.Values.Min(n => n.Y);
+        var padding = 40;
+        var offsetX = -minX + padding;
+        var offsetY = -minY + padding;
+
+        var nodeScreenX = (node.X + offsetX) * _scale;
+        var nodeScreenY = (node.Y + offsetY) * _scale;
+
+        // Center the scroll viewer on the node
+        var viewportWidth = MapScrollViewer.Viewport.Width;
+        var viewportHeight = MapScrollViewer.Viewport.Height;
+
+        var scrollX = Math.Max(0, nodeScreenX - viewportWidth / 2);
+        var scrollY = Math.Max(0, nodeScreenY - viewportHeight / 2);
+
+        MapScrollViewer.Offset = new Vector(scrollX, scrollY);
     }
 
     private void LoadAvailableMaps()
@@ -540,6 +878,23 @@ public partial class AutoMapperWindow : Window
     private void OnReloadMapsClick(object? sender, RoutedEventArgs e)
     {
         LoadAvailableMaps();
+    }
+
+    private void OnFindMeClick(object? sender, RoutedEventArgs e)
+    {
+        // First try to locate on current map
+        TryLocateCurrentRoom();
+        
+        // If not found, try other maps
+        if (_currentNodeId == null && _globals?.VariableList != null)
+        {
+            var roomName = GetVariable("roomname");
+            var roomDesc = GetVariable("roomdesc");
+            if (!string.IsNullOrEmpty(roomName))
+            {
+                TryLoadMapForRoom(roomName, roomDesc);
+            }
+        }
     }
 
     private static string GetAttribute(XmlNode node, string name, string defaultValue = "")
