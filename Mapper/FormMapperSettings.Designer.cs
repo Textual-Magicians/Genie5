@@ -1,4 +1,5 @@
-﻿namespace GenieClient.Forms
+﻿#pragma warning disable CS0649 // Designer-generated field is initialized by Windows Forms designer
+namespace GenieClient.Forms
 {
     partial class FormMapperSettings
     {
@@ -247,7 +248,6 @@
         #endregion
         private System.Windows.Forms.CheckedListBox CheckedListVariables;
         private System.Windows.Forms.TextBox _TextboxTypeahead;
-        private System.Windows.Forms.Button ButtonSetTypeahead;
         private System.Windows.Forms.Label lblTypeahead;
         private System.Windows.Forms.Label lblDragTarget;
         private System.Windows.Forms.TextBox _TextboxDragging;
@@ -262,7 +262,6 @@
         private System.Windows.Forms.Button _ButtonSetUserWalk;
         private System.Windows.Forms.TextBox _TextboxClass;
         private System.Windows.Forms.Label lblClasses;
-        private System.Windows.Forms.Button ButtonSetClasses;
         private System.Windows.Forms.Button _ButtonSetClasses;
         private System.Windows.Forms.Button _ButtonSetTypeahead;
     }

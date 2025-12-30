@@ -23,7 +23,9 @@ namespace GenieClient
         }
 
         // Required by the Windows Form Designer
+#pragma warning disable CS0649 // components is initialized by Windows Forms designer when needed
         private System.ComponentModel.IContainer components;
+#pragma warning restore CS0649
 
         // NOTE: The following procedure is required by the Windows Form Designer
         // It can be modified using the Windows Form Designer.  

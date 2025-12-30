@@ -11,7 +11,9 @@ namespace GenieClient.Forms
 
         public event EventVariableChangedEventHandler EventVariableChanged;
         public delegate void EventVariableChangedEventHandler(string sVariable);
+#pragma warning disable CS0067 // Event is part of the mapper settings API
         public event EventClassChangeEventHandler EventClassChange;
+#pragma warning restore CS0067
         public delegate void EventClassChangeEventHandler();
         public FormMapperSettings(ref Globals globals)
         {

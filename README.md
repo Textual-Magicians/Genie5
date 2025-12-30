@@ -222,11 +222,87 @@ Project Link: [https://github.com/GenieClient/Genie4](https://github.com/GenieCl
 - Use **Classic** if you're on Windows and need all features now
 - Use **Cross-Platform** if you're on macOS/Linux, or want to try the new UI
 
-### Build and Run
+---
 
-#### Cross-Platform UI (Avalonia) 🌐
+### Build Scripts
+
+We provide convenient build scripts for both editions:
+
+| Script | Platform | Builds | Description |
+|--------|----------|--------|-------------|
+| `build.ps1` | Windows | Classic (WinForms) | Quick build, copies to `bin\Run` |
+| `build-and-run.ps1` | Windows | Classic (WinForms) | Build and optionally launch |
+| `build-avalonia.ps1` | Windows | Cross-Platform (Avalonia) | Quick build, copies to `bin\Avalonia` |
+| `build-crossplatform.ps1` | Windows | Cross-Platform (Avalonia) | Build/publish for any platform |
+| `build-crossplatform.sh` | macOS/Linux | Cross-Platform (Avalonia) | Build/publish for any platform |
+
+---
+
+### Cross-Platform UI (Avalonia) 🌐
 
 Works on Windows, macOS, and Linux.
+
+#### Quick Build for Windows (Recommended for Development)
+
+```powershell
+# Build and copy to bin\Avalonia
+.\build-avalonia.ps1
+
+# Build and run immediately
+.\build-avalonia.ps1 -Run
+```
+
+This is the simplest option for day-to-day Windows development. It copies output to `bin\Avalonia`, so you can keep Genie running while rebuilding.
+
+#### Cross-Platform Publishing
+
+For creating self-contained executables for distribution:
+
+**Windows (PowerShell):**
+```powershell
+# Simple build for current platform
+.\build-crossplatform.ps1
+
+# Create self-contained executable
+.\build-crossplatform.ps1 -Publish
+
+# Build for a specific platform
+.\build-crossplatform.ps1 -Runtime osx-arm64 -Publish   # macOS Apple Silicon
+.\build-crossplatform.ps1 -Runtime linux-x64 -Publish   # Linux 64-bit
+.\build-crossplatform.ps1 -Runtime win-x64 -Publish     # Windows 64-bit
+```
+
+**macOS/Linux (Bash):**
+```bash
+# Make executable (first time only)
+chmod +x build-crossplatform.sh
+
+# Simple build for current platform
+./build-crossplatform.sh
+
+# Create self-contained executable
+./build-crossplatform.sh --publish
+
+# Build for a specific platform
+./build-crossplatform.sh --runtime osx-arm64 --publish  # macOS Apple Silicon
+./build-crossplatform.sh --runtime linux-x64 --publish  # Linux 64-bit
+```
+
+**Supported Runtime Identifiers (RIDs):**
+| Runtime | Platform |
+|---------|----------|
+| `win-x64` | Windows 64-bit |
+| `win-arm64` | Windows ARM64 |
+| `osx-x64` | macOS Intel |
+| `osx-arm64` | macOS Apple Silicon |
+| `linux-x64` | Linux 64-bit |
+| `linux-arm64` | Linux ARM64 |
+
+**Output Locations:**
+- Build: `src/Genie.UI/bin/Release/net10.0/`
+- Publish: `bin/CrossPlatform/<runtime>/`
+
+#### Direct Commands (Alternative)
 
 Dev Mode, Windows:
 ```powershell
@@ -248,25 +324,38 @@ Build Release version and run, macOS/Linux:
 dotnet build Genie5.sln --configuration Release && dotnet run --project src/Genie.UI/Genie.UI.csproj
 ```
 
-#### Classic Windows UI (Windows Forms) 🖥️
+---
 
-Full-featured Windows-only edition:
+### Classic Windows UI (Windows Forms) 🖥️
 
-**Option 1: Using the build script (recommended for development)**
+Full-featured Windows-only edition.
 
-This copies the build output to a separate `bin\Run` folder, allowing you to keep Genie running while rebuilding:
+#### Using Build Scripts (Recommended)
 
+**Quick build:**
+```powershell
+.\build.ps1
+```
+This builds and copies output to `bin\Run`, allowing you to keep Genie running while rebuilding.
+
+**Build and run interactively:**
+```powershell
+.\build-and-run.ps1
+```
+This builds, copies to `bin\Run`, and prompts to launch Genie.
+
+**Build and run immediately:**
 ```powershell
 .\build.ps1; if ($LASTEXITCODE -eq 0) { .\bin\Run\Genie.exe }
 ```
 
-**Option 2: Direct build**
+#### Direct Build (Alternative)
 
 ```powershell
 dotnet build Genie5.sln --configuration Release; if ($LASTEXITCODE -eq 0) { .\src\Genie.Windows\bin\Release\net10.0-windows\Genie.exe }
 ```
 
-> **Note:** If Genie is running, the direct build will fail because the files are locked. Use the build script instead, which outputs to a separate folder.
+> **Note:** If Genie is running, direct builds will fail because files are locked. Use the build scripts instead, which output to a separate `bin\Run` folder.
 
 ## Running Tests
 

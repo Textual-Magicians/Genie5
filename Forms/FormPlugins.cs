@@ -22,6 +22,7 @@ namespace GenieClient
             m_PluginList = pluginList;
         }
 
+#pragma warning disable CS0067 // Events are part of the plugin API contract
         public event LoadPluginEventHandler LoadPlugin;
 
         public delegate void LoadPluginEventHandler(string filename);
@@ -37,6 +38,7 @@ namespace GenieClient
         public event ReloadPluginsEventHandler ReloadPlugins;
 
         public delegate void ReloadPluginsEventHandler();
+#pragma warning restore CS0067
 
         private Collection<ComponentPluginItem> m_PluginListItems = new Collection<ComponentPluginItem>();
 

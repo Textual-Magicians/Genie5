@@ -723,6 +723,7 @@ namespace GenieClient
 
         private bool m_bUnloadWindow = false;
 
+        [Obsolete("OnClosing is obsolete, use OnFormClosing instead")]
         protected override void OnClosing(CancelEventArgs e)
         {
             if (this.MdiParent == null)

@@ -13,7 +13,9 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <ApplicationIcon>..\..\Graphics\Taleweaver.ico</ApplicationIcon>
-    <NoWarn>$(NoWarn);WFO1000</NoWarn>
+    <!-- Suppress WFO1000 (Windows Forms serialization) and CA1416 (Platform compatibility) -->
+    <!-- CA1416 is suppressed because this entire project is Windows-only by design -->
+    <NoWarn>$(NoWarn);WFO1000;CA1416</NoWarn>
     
     <!-- Minimum supported Windows version (Windows 7 = 6.1) to suppress CA1416 warnings -->
     <SupportedOSPlatformVersion>6.1</SupportedOSPlatformVersion>

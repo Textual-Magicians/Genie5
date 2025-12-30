@@ -4767,9 +4767,9 @@ namespace GenieClient
                     {
                         if (!bInput)
                         {
-                            if (sText.StartsWith(Constants.vbNewLine) == false && m_oGlobals.Config.PromptBreak)
+                            if (sText.StartsWith(System.Environment.NewLine) == false && m_oGlobals.Config.PromptBreak)
                             {
-                                sText = Constants.vbNewLine + sText;
+                                sText = System.Environment.NewLine + sText;
                             }
                         }
 

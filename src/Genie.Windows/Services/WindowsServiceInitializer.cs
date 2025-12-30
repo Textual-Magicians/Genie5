@@ -1,3 +1,4 @@
+#nullable enable
 using GenieClient.Services;
 
 namespace GenieClient.Windows.Services

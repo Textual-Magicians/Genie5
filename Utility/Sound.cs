@@ -53,7 +53,7 @@ namespace GenieClient.Genie
             // bring stream into a byte array
             byte[] wavData;
             wavData = new byte[Conversions.ToInteger(resourceStream.Length) + 1];
-            resourceStream.Read(wavData, 0, Conversions.ToInteger(resourceStream.Length));
+            resourceStream.ReadExactly(wavData, 0, Conversions.ToInteger(resourceStream.Length));
 
             // play the resource
             PlaySound(wavData, 0, SND_ASYNC | SND_MEMORY);

@@ -11,7 +11,9 @@ namespace GenieClient
     {
         public DialogDownload()
         {
+#pragma warning disable SYSLIB0014 // WebClient is obsolete but used for download progress events
             myWebClient = new WebClient();
+#pragma warning restore SYSLIB0014
             InitializeComponent();
         }
 

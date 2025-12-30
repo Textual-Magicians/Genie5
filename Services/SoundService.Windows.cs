@@ -87,7 +87,7 @@ namespace GenieClient.Services
                     return;
 
                 var wavData = new byte[stream.Length];
-                stream.Read(wavData, 0, (int)stream.Length);
+                stream.ReadExactly(wavData, 0, (int)stream.Length);
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
