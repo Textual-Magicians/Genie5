@@ -2975,45 +2975,6 @@ namespace GenieClient.Genie
             }
 
             text = ParseSubstitutions(text);
-            if (0 == 1)//(text.Trim().Length > 0)
-            {
-                // Substitute Lists Switch this to text = ParseSubstrings(text) so theres only one place subs are processed at
-                if (m_oGlobals.SubstituteList.AcquireReaderLock())
-                {
-                    try
-                    {
-                        foreach (Globals.SubstituteRegExp.Substitute sl in m_oGlobals.SubstituteList)
-                        {
-                            if (sl.IsActive && !Information.IsNothing(sl.SubstituteRegex))
-                            {
-                                if (sl.SubstituteRegex.Match(Utility.Trim(text)).Success)
-                                {
-                                    bool bNewLineStart = text.StartsWith(System.Environment.NewLine);
-                                    bool bNewLineEnd = text.EndsWith(System.Environment.NewLine);
-                                    text = sl.SubstituteRegex.Replace(Utility.Trim(text), sl.sReplaceBy.ToString());
-                                    if (bNewLineStart == true)
-                                    {
-                                        text = System.Environment.NewLine + text;
-                                    }
-
-                                    if (bNewLineEnd == true)
-                                    {
-                                        text += System.Environment.NewLine;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        m_oGlobals.SubstituteList.ReleaseReaderLock();
-                    }
-                }
-                else
-                {
-                    GenieError.Error("PrintTextToWindow", "Unable to aquire reader lock.");
-                }
-            }
 
             if (targetwindow == WindowTarget.Main)
             {
@@ -3037,12 +2998,6 @@ namespace GenieClient.Genie
                 if (m_oGlobals.Config.bAutoLog == true)
                 {
                     m_oGlobals.Log?.LogText(text, Conversions.ToString(m_oGlobals.VariableList["charactername"]), Conversions.ToString(m_oGlobals.VariableList["game"]));
-                    //if (m_bLastRowWasPrompt == true)
-                    //{
-                    //    m_oGlobals.Log?.LogText(text + System.Environment.NewLine, Conversions.ToString(m_oGlobals.VariableList["charactername"]), Conversions.ToString(m_oGlobals.VariableList["game"]));
-                    //}
-
-                    //     m_oGlobals.Log.LogText(text, Conversions.ToString(m_oGlobals.VariableList["charactername"]), Conversions.ToString(m_oGlobals.VariableList["game"]));
                 }
             }
 

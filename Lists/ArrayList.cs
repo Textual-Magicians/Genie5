@@ -108,8 +108,6 @@ namespace GenieClient.Genie.Collections
             {
                 throw new Exception("Unable to aquire writer lock.");
             }
-
-            return -1;
         }
 
         public new void Remove(object key)

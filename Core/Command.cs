@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
@@ -2665,6 +2665,8 @@ namespace GenieClient.Genie
                 }
             }
         }
+
+        [Obsolete]
         private void Connect(ArrayList args, bool isLich = false)
         {
             if (args.Count == 1)

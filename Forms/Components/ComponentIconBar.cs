@@ -85,7 +85,7 @@ namespace GenieClient
         {
             // Load icons from embedded resources
             LoadEmbeddedIcons();
-            
+
             // Also try to load from file system as fallback
             string iconsPath = LocalDirectory.Path + @"\Icons\";
             if (Directory.Exists(iconsPath))
@@ -94,7 +94,7 @@ namespace GenieClient
                 foreach (FileInfo fi in oFiles)
                     AddImage(fi.Name);
             }
-            
+
             var argp = PictureBoxCompass;
             ShowImage(argp, "compass.png");
         }
@@ -114,7 +114,7 @@ namespace GenieClient
             AddEmbeddedImage("compass_up.png", My.Resources.Resources.compass_up);
             AddEmbeddedImage("compass_down.png", My.Resources.Resources.compass_down);
             AddEmbeddedImage("compass_out.png", My.Resources.Resources.compass_out);
-            
+
             // Load status icons from embedded resources
             AddEmbeddedImage("standing.png", My.Resources.Resources.standing);
             AddEmbeddedImage("sitting.png", My.Resources.Resources.sitting);
@@ -495,7 +495,7 @@ namespace GenieClient
                     sName = sName.Replace("_gray.png", ".png") + "_gray";
                 }
             }
-            
+
             if (!Information.IsNothing(ImageListIcons.Images[sName]))
             {
                 Bitmap b = (Bitmap)ImageListIcons.Images[sName];

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
@@ -694,7 +694,7 @@ namespace GenieClient
             DateTime dt;
             dt = Conversions.ToDate("01/01/2000").AddDays(AssemblyVersion.Build).AddSeconds(AssemblyVersion.Revision * 2);
 
-            if (TimeZone.IsDaylightSavingTime(dt, TimeZone.CurrentTimeZone.GetDaylightChanges(dt.Year)))
+            if (TimeZoneInfo.Local.IsDaylightSavingTime(dt))
             {
                 dt = dt.AddHours(1);
             }
@@ -831,7 +831,7 @@ namespace GenieClient
             {
                 string configPath = Path.Combine(LocalDirectory.Path, "Config");
                 string layoutPath = Path.Combine(LocalDirectory.Path, "Config", "Layout");
-                
+
                 if (Directory.Exists(configPath))
                 {
                     string[] layoutFiles = Directory.GetFiles(configPath, "*.layout");
