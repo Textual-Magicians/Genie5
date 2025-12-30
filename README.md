@@ -1,32 +1,7 @@
 <div id="top"></div>
-<!--
-*** Genie Client is a Community focused development of Conny's Open Source Version of GenieClient.
-*** we want to take a moment and thank Conny for his hard work on GenieClient over the years and 
-*** for allowing the community to take a part in the future development of the Client.
-*** 
-*** Thanks again! Now team go create something AMAZING! :D
--->
 
 
 
-<!-- PROJECT SHIELDS -->
-<!--
-*** This Readme is using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![GPU License][license-shield]][license-url]
-
-
-
-
-<!-- PROJECT LOGO -->
 <br />
 <div align="center">
 
@@ -64,7 +39,6 @@
 ## Roadmap
 
 ### Completed ✅
-- [x] .NET 6 Upgrade
 - [x] .NET 10 Upgrade  
 - [x] Refactor Core Logic away from GUI
 - [x] Cross-Platform UI Foundation (Avalonia)
@@ -95,8 +69,6 @@
     <img src="https://cdn.advancedinstaller.com/svg/pressinfo/AiLogoColor.svg" width="70" height="40"></AInstallLogo>
 - [ ] Native installers (.dmg for macOS, .deb/.rpm for Linux)
 
-
-See the [open issues](https://github.com/GenieClient/Genie4/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
