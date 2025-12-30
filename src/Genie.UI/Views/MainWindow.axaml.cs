@@ -25,6 +25,9 @@ public partial class MainWindow : Window
     // Window scrollers for auto-scroll
     private readonly Dictionary<GameWindowType, ScrollViewer> _windowScrollers = new();
     private readonly Dictionary<GameWindowType, SelectableTextBlock> _windowOutputs = new();
+    
+    // Track whether auto-scroll is enabled for each window (true = should auto-scroll)
+    private readonly Dictionary<GameWindowType, bool> _autoScrollEnabled = new();
 
     public MainWindow()
     {
@@ -62,6 +65,33 @@ public partial class MainWindow : Window
 
         // Find scrollers (parent ScrollViewer)
         _windowScrollers[GameWindowType.Main] = OutputScroller;
+        
+        // Initialize auto-scroll to enabled for all windows
+        _autoScrollEnabled[GameWindowType.Main] = true;
+        
+        // Hook up scroll changed event to detect user scrolling
+        OutputScroller.ScrollChanged += OnOutputScrollChanged;
+    }
+    
+    private void OnOutputScrollChanged(object? sender, ScrollChangedEventArgs e)
+    {
+        if (sender is not ScrollViewer scroller)
+            return;
+            
+        // Check if this was a user-initiated scroll (not programmatic)
+        // If extent changed, it means content was added, not user scrolling
+        if (e.ExtentDelta.Y != 0)
+        {
+            // Content was added, don't change auto-scroll state
+            return;
+        }
+        
+        // User scrolled - check if they're at the bottom
+        var tolerance = 5.0;
+        var isAtBottom = scroller.Offset.Y >= scroller.ScrollBarMaximum.Y - tolerance;
+        
+        // Update auto-scroll state based on whether user is at bottom
+        _autoScrollEnabled[GameWindowType.Main] = isAtBottom;
     }
 
     private void InitializeGameManager()
@@ -147,12 +177,7 @@ public partial class MainWindow : Window
                 var avaloniaColor = Color.FromRgb(color.R, color.G, color.B);
                 AppendStyledTextTo(output, text, avaloniaColor);
             }
-
-            // Auto-scroll if we have a scroller for this window
-            if (_windowScrollers.TryGetValue(windowType, out var scroller))
-            {
-                scroller.ScrollToEnd();
-            }
+            // Note: Auto-scroll is now handled inside AppendStyledTextTo
         });
     }
 
@@ -1114,12 +1139,27 @@ public partial class MainWindow : Window
 
     /// <summary>
     /// Appends styled text to a specific SelectableTextBlock.
+    /// Automatically handles scroll preservation: only auto-scrolls if user was already at bottom.
     /// </summary>
     private void AppendStyledTextTo(SelectableTextBlock output, string text, Color foreground, Color? background = null)
     {
         if (string.IsNullOrEmpty(text))
             return;
 
+        // Find the scroller and window type for this output
+        ScrollViewer? scroller = null;
+        GameWindowType? windowType = null;
+        foreach (var kvp in _windowOutputs)
+        {
+            if (kvp.Value == output)
+            {
+                windowType = kvp.Key;
+                _windowScrollers.TryGetValue(kvp.Key, out scroller);
+                break;
+            }
+        }
+
+        // Add the text
         var run = new Run(text)
         {
             Foreground = new SolidColorBrush(foreground)
@@ -1131,6 +1171,12 @@ public partial class MainWindow : Window
         }
 
         output.Inlines?.Add(run);
+
+        // Auto-scroll if enabled for this window
+        if (scroller != null && windowType.HasValue && _autoScrollEnabled.GetValueOrDefault(windowType.Value, true))
+        {
+            scroller.ScrollToEnd();
+        }
     }
 
     /// <summary>
@@ -1139,7 +1185,7 @@ public partial class MainWindow : Window
     private void AppendStyledText(string text, Color foreground, Color? background = null)
     {
         AppendStyledTextTo(GameOutput, text, foreground, background);
-        OutputScroller.ScrollToEnd();
+        // Note: Auto-scroll is now handled inside AppendStyledTextTo
     }
 
     /// <summary>
